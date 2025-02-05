@@ -1,0 +1,264 @@
+CREATE TABLE rental_search_history
+(
+    device_unique_id char(38) Not Null,
+    operation_time timestamp Not Null,
+    user_id varchar(20),
+    logical_delete boolean Not Null DEFAULT FALSE,
+    favorite boolean Not Null DEFAULT FALSE,
+    min_yachin int,
+    max_yachin int,
+    include_kanrihi boolean Not Null DEFAULT FALSE,
+    include_tyunedan boolean Not Null DEFAULT FALSE,
+    no_reikin boolean Not Null DEFAULT FALSE,
+    no_shikikin boolean Not Null DEFAULT FALSE,
+    syokihiyo_credit_card boolean Not Null DEFAULT FALSE,
+    yachin_credit_card boolean Not Null DEFAULT FALSE,
+    freerent boolean Not Null DEFAULT FALSE,
+    tokuteiyuryou boolean Not Null DEFAULT FALSE,
+    oneroom boolean Not Null DEFAULT FALSE,
+    room_1k boolean Not Null DEFAULT FALSE,
+    room_1dk boolean Not Null DEFAULT FALSE,
+    room_1ldk boolean Not Null DEFAULT FALSE,
+    room_2k boolean Not Null DEFAULT FALSE,
+    room_2dk boolean Not Null DEFAULT FALSE,
+    room_2ldk boolean Not Null DEFAULT FALSE,
+    room_3k boolean Not Null DEFAULT FALSE,
+    room_3dk boolean Not Null DEFAULT FALSE,
+    room_3ldk boolean Not Null DEFAULT FALSE,
+    room_4k boolean Not Null DEFAULT FALSE,
+    room_4dk boolean Not Null DEFAULT FALSE,
+    room_4ldk boolean Not Null DEFAULT FALSE,
+    room_5k boolean Not Null DEFAULT FALSE,
+    mansion boolean Not Null DEFAULT FALSE,
+    apartment boolean Not Null DEFAULT FALSE,
+    detached_house boolean Not Null DEFAULT FALSE,
+    rebar boolean Not Null DEFAULT FALSE,
+    steel boolean Not Null DEFAULT FALSE,
+    wooden boolean Not Null DEFAULT FALSE,
+    block boolean Not Null DEFAULT FALSE,
+    toho smallint,
+    min_men smallint,
+    max_men smallint,
+    chikunensu smallint,
+    north boolean Not Null DEFAULT FALSE,
+    northeast boolean Not Null DEFAULT FALSE,
+    east boolean Not Null DEFAULT FALSE,
+    southeast boolean Not Null DEFAULT FALSE,
+    south boolean Not Null DEFAULT FALSE,
+    southwest boolean Not Null DEFAULT FALSE,
+    west boolean Not Null DEFAULT FALSE,
+    northwest boolean Not Null DEFAULT FALSE,
+    new_today boolean Not Null DEFAULT FALSE,
+    new_last_week boolean Not Null DEFAULT FALSE,
+    with_video boolean Not Null DEFAULT FALSE,
+    with_panorama boolean Not Null DEFAULT FALSE,
+    with_floor_plan boolean Not Null DEFAULT FALSE,
+    with_photo boolean Not Null DEFAULT FALSE,
+    first_floor boolean Not Null DEFAULT FALSE,
+    second_floor boolean Not Null DEFAULT FALSE,
+    top_floor boolean Not Null DEFAULT FALSE,
+    kadobeya boolean Not Null DEFAULT FALSE,
+    minamimuki boolean Not Null DEFAULT FALSE,
+    has_gaskonro boolean Not Null DEFAULT FALSE,
+    ih boolean Not Null DEFAULT FALSE,
+    has_2_gaskonro boolean Not Null DEFAULT FALSE,
+    denka boolean Not Null DEFAULT FALSE,
+    sisukit boolean Not Null DEFAULT FALSE,
+    ckittin boolean Not Null DEFAULT FALSE,
+    btbetu boolean Not Null DEFAULT FALSE,
+    senjoub boolean Not Null DEFAULT FALSE,
+    ykansouki boolean Not Null DEFAULT FALSE,
+    oidaki boolean Not Null DEFAULT FALSE,
+    syawaaroom boolean Not Null DEFAULT FALSE,
+    intanet boolean Not Null DEFAULT FALSE,
+    bs boolean Not Null DEFAULT FALSE,
+    cs boolean Not Null DEFAULT FALSE,
+    catv boolean Not Null DEFAULT FALSE,
+    inetmuryou boolean Not Null DEFAULT FALSE,
+    situsentaku boolean Not Null DEFAULT FALSE,
+    senmennomi boolean Not Null DEFAULT FALSE,
+    furoringu boolean Not Null DEFAULT FALSE,
+    mezonetto boolean Not Null DEFAULT FALSE,
+    rofuto boolean Not Null DEFAULT FALSE,
+    bouon boolean Not Null DEFAULT FALSE,
+    chikashitsu boolean Not Null DEFAULT FALSE,
+    kagutsuki boolean Not Null DEFAULT FALSE,
+    kadentsuki boolean Not Null DEFAULT FALSE,
+    eakon boolean Not Null DEFAULT FALSE,
+    yukadan boolean Not Null DEFAULT FALSE,
+    touyudan boolean Not Null DEFAULT FALSE,
+    gasdan boolean Not Null DEFAULT FALSE,
+    ysyuunou boolean Not Null DEFAULT FALSE,
+    kutsubako boolean Not Null DEFAULT FALSE,
+    torankur boolean Not Null DEFAULT FALSE,
+    wkurozet boolean Not Null DEFAULT FALSE,
+    outorok boolean Not Null DEFAULT FALSE,
+    yujin boolean Not Null DEFAULT FALSE,
+    tvdoahon boolean Not Null DEFAULT FALSE,
+    bouhan_camera boolean Not Null DEFAULT FALSE,
+    sekyurithikaisya boolean Not Null DEFAULT FALSE,
+    tyuusya boolean Not Null DEFAULT FALSE,
+    tyuusya2dai boolean Not Null DEFAULT FALSE,
+    shikichityuusya boolean Not Null DEFAULT FALSE,
+    tyuurin boolean Not Null DEFAULT FALSE,
+    baiku boolean Not Null DEFAULT FALSE,
+    erebeta boolean Not Null DEFAULT FALSE,
+    takuhaib boolean Not Null DEFAULT FALSE,
+    gomiokiba boolean Not Null DEFAULT FALSE,
+    barukoni boolean Not Null DEFAULT FALSE,
+    rbarukoni boolean Not Null DEFAULT FALSE,
+    niwa boolean Not Null DEFAULT FALSE,
+    city_gas boolean Not Null DEFAULT FALSE,
+    lp_gas boolean Not Null DEFAULT FALSE,
+    bfree boolean Not Null DEFAULT FALSE,
+    dezaina boolean Not Null DEFAULT FALSE,
+    itjusetu boolean Not Null DEFAULT FALSE,
+    bunjou boolean Not Null DEFAULT FALSE,
+    hosyounin boolean Not Null DEFAULT FALSE,
+    tawaman boolean Not Null DEFAULT FALSE,
+    reform boolean Not Null DEFAULT FALSE,
+    renova boolean Not Null DEFAULT FALSE,
+    sokujihiki boolean Not Null DEFAULT FALSE,
+    jyosei boolean Not Null DEFAULT FALSE,
+    koureisya boolean Not Null DEFAULT FALSE,
+    lgbt boolean Not Null DEFAULT FALSE,
+    petka boolean Not Null DEFAULT FALSE,
+    gakki boolean Not Null DEFAULT FALSE,
+    jimusyoriyou boolean Not Null DEFAULT FALSE,
+    roomshare boolean Not Null DEFAULT FALSE,
+    customizeka boolean Not Null DEFAULT FALSE,
+    diyka boolean Not Null DEFAULT FALSE,
+    no_teisyaku boolean Not Null DEFAULT FALSE,
+    PRIMARY KEY (device_unique_id, operation_time)
+);
+
+COMMENT ON TABLE rental_search_history IS '賃貸物件検索履歴';
+COMMENT ON COLUMN rental_search_history.device_unique_id IS 'デバイス一意ID';
+COMMENT ON COLUMN rental_search_history.operation_time IS '操作時間';
+COMMENT ON COLUMN rental_search_history.user_id IS 'ユーザーID';
+COMMENT ON COLUMN rental_search_history.logical_delete IS '論理削除';
+COMMENT ON COLUMN rental_search_history.favorite IS 'お気に入り';
+COMMENT ON COLUMN rental_search_history.min_yachin IS '賃料下限';
+COMMENT ON COLUMN rental_search_history.max_yachin IS '賃料上限';
+COMMENT ON COLUMN rental_search_history.include_kanrihi IS '管理費・共益費込み';
+COMMENT ON COLUMN rental_search_history.include_tyunedan IS '駐車場代込み';
+COMMENT ON COLUMN rental_search_history.no_reikin IS '礼金なし';
+COMMENT ON COLUMN rental_search_history.no_shikikin IS '敷金・保証金なし';
+COMMENT ON COLUMN rental_search_history.syokihiyo_credit_card IS '初期費用カード決済可';
+COMMENT ON COLUMN rental_search_history.yachin_credit_card IS '家賃カード決済可';
+COMMENT ON COLUMN rental_search_history.freerent IS 'フリーレント';
+COMMENT ON COLUMN rental_search_history.tokuteiyuryou IS '特定優良賃貸住宅';
+COMMENT ON COLUMN rental_search_history.oneroom IS 'ワンルーム';
+COMMENT ON COLUMN rental_search_history.room_1k IS '1K';
+COMMENT ON COLUMN rental_search_history.room_1dk IS '1DK';
+COMMENT ON COLUMN rental_search_history.room_1ldk IS '1LDK';
+COMMENT ON COLUMN rental_search_history.room_2k IS '2K';
+COMMENT ON COLUMN rental_search_history.room_2dk IS '2DK';
+COMMENT ON COLUMN rental_search_history.room_2ldk IS '2LDK';
+COMMENT ON COLUMN rental_search_history.room_3k IS '3K';
+COMMENT ON COLUMN rental_search_history.room_3dk IS '3DK';
+COMMENT ON COLUMN rental_search_history.room_3ldk IS '3LDK';
+COMMENT ON COLUMN rental_search_history.room_4k IS '4K';
+COMMENT ON COLUMN rental_search_history.room_4dk IS '4DK';
+COMMENT ON COLUMN rental_search_history.room_4ldk IS '4LDK';
+COMMENT ON COLUMN rental_search_history.room_5k IS '5K以上';
+COMMENT ON COLUMN rental_search_history.mansion IS 'マンション';
+COMMENT ON COLUMN rental_search_history.apartment IS 'アパート';
+COMMENT ON COLUMN rental_search_history.detached_house IS '一戸建て・その他';
+COMMENT ON COLUMN rental_search_history.rebar IS '鉄筋系';
+COMMENT ON COLUMN rental_search_history.steel IS '鉄骨系';
+COMMENT ON COLUMN rental_search_history.wooden IS '木造';
+COMMENT ON COLUMN rental_search_history.block IS 'ブロック・その他';
+COMMENT ON COLUMN rental_search_history.toho IS '駅徒歩';
+COMMENT ON COLUMN rental_search_history.min_men IS '面積下限';
+COMMENT ON COLUMN rental_search_history.max_men IS '面積上限';
+COMMENT ON COLUMN rental_search_history.chikunensu IS '築後年数';
+COMMENT ON COLUMN rental_search_history.north IS '北';
+COMMENT ON COLUMN rental_search_history.northeast IS '北東';
+COMMENT ON COLUMN rental_search_history.east IS '東';
+COMMENT ON COLUMN rental_search_history.southeast IS '南東';
+COMMENT ON COLUMN rental_search_history.south IS '南';
+COMMENT ON COLUMN rental_search_history.southwest IS '南西';
+COMMENT ON COLUMN rental_search_history.west IS '西';
+COMMENT ON COLUMN rental_search_history.northwest IS '北西';
+COMMENT ON COLUMN rental_search_history.new_today IS '本日の新着物件';
+COMMENT ON COLUMN rental_search_history.new_last_week IS '新着（2～7日前）';
+COMMENT ON COLUMN rental_search_history.with_video IS '物件動画付き';
+COMMENT ON COLUMN rental_search_history.with_panorama IS 'パノラマ付き';
+COMMENT ON COLUMN rental_search_history.with_floor_plan IS '間取り図付き';
+COMMENT ON COLUMN rental_search_history.with_photo IS '写真付き';
+COMMENT ON COLUMN rental_search_history.first_floor IS '1 階の物件';
+COMMENT ON COLUMN rental_search_history.second_floor IS '2 階以上';
+COMMENT ON COLUMN rental_search_history.top_floor IS '最上階';
+COMMENT ON COLUMN rental_search_history.kadobeya IS '角部屋';
+COMMENT ON COLUMN rental_search_history.minamimuki IS '南向き';
+COMMENT ON COLUMN rental_search_history.has_gaskonro IS 'ガスコンロ対応';
+COMMENT ON COLUMN rental_search_history.ih IS 'IHコンロ';
+COMMENT ON COLUMN rental_search_history.has_2_gaskonro IS 'コンロ2口以上';
+COMMENT ON COLUMN rental_search_history.denka IS 'オール電化';
+COMMENT ON COLUMN rental_search_history.sisukit IS 'システムキッチン';
+COMMENT ON COLUMN rental_search_history.ckittin IS 'カウンターキッチン';
+COMMENT ON COLUMN rental_search_history.btbetu IS 'バス・トイレ別';
+COMMENT ON COLUMN rental_search_history.senjoub IS '温水洗浄便座';
+COMMENT ON COLUMN rental_search_history.ykansouki IS '浴室乾燥機';
+COMMENT ON COLUMN rental_search_history.oidaki IS '追い焚き風呂';
+COMMENT ON COLUMN rental_search_history.syawaaroom IS 'シャワールーム';
+COMMENT ON COLUMN rental_search_history.intanet IS 'インターネット接続可';
+COMMENT ON COLUMN rental_search_history.bs IS 'BSアンテナ';
+COMMENT ON COLUMN rental_search_history.cs IS 'CSアンテナ';
+COMMENT ON COLUMN rental_search_history.catv IS 'ケーブルテレビ';
+COMMENT ON COLUMN rental_search_history.inetmuryou IS 'インターネット無料';
+COMMENT ON COLUMN rental_search_history.situsentaku IS '室内洗濯機置場';
+COMMENT ON COLUMN rental_search_history.senmennomi IS '洗面所独立';
+COMMENT ON COLUMN rental_search_history.furoringu IS 'フローリング';
+COMMENT ON COLUMN rental_search_history.mezonetto IS 'メゾネット';
+COMMENT ON COLUMN rental_search_history.rofuto IS 'ロフト';
+COMMENT ON COLUMN rental_search_history.bouon IS '防音室';
+COMMENT ON COLUMN rental_search_history.chikashitsu IS '地下室';
+COMMENT ON COLUMN rental_search_history.kagutsuki IS '家具付';
+COMMENT ON COLUMN rental_search_history.kadentsuki IS '家電付';
+COMMENT ON COLUMN rental_search_history.eakon IS 'エアコン付き';
+COMMENT ON COLUMN rental_search_history.yukadan IS '床暖房';
+COMMENT ON COLUMN rental_search_history.touyudan IS '灯油暖房';
+COMMENT ON COLUMN rental_search_history.gasdan IS 'ガス暖房';
+COMMENT ON COLUMN rental_search_history.ysyuunou IS '床下収納';
+COMMENT ON COLUMN rental_search_history.kutsubako IS 'シューズボックス';
+COMMENT ON COLUMN rental_search_history.torankur IS 'トランクルーム';
+COMMENT ON COLUMN rental_search_history.wkurozet IS 'ウォークインクローゼット';
+COMMENT ON COLUMN rental_search_history.outorok IS 'オートロック';
+COMMENT ON COLUMN rental_search_history.yujin IS '管理人有り';
+COMMENT ON COLUMN rental_search_history.tvdoahon IS 'TVモニタ付きインタホン';
+COMMENT ON COLUMN rental_search_history.bouhan_camera IS '防犯カメラ';
+COMMENT ON COLUMN rental_search_history.sekyurithikaisya IS 'セキュリティ会社加入済';
+COMMENT ON COLUMN rental_search_history.tyuusya IS '駐車場あり';
+COMMENT ON COLUMN rental_search_history.tyuusya2dai IS '駐車場2台以上';
+COMMENT ON COLUMN rental_search_history.shikichityuusya IS '敷地内駐車場';
+COMMENT ON COLUMN rental_search_history.tyuurin IS '駐輪場あり';
+COMMENT ON COLUMN rental_search_history.baiku IS 'バイク置場あり';
+COMMENT ON COLUMN rental_search_history.erebeta IS 'エレベーター';
+COMMENT ON COLUMN rental_search_history.takuhaib IS '宅配ボックス';
+COMMENT ON COLUMN rental_search_history.gomiokiba IS '敷地内ゴミ置場';
+COMMENT ON COLUMN rental_search_history.barukoni IS 'バルコニー付';
+COMMENT ON COLUMN rental_search_history.rbarukoni IS 'ルーフバルコニー付';
+COMMENT ON COLUMN rental_search_history.niwa IS '専用庭';
+COMMENT ON COLUMN rental_search_history.city_gas IS '都市ガス';
+COMMENT ON COLUMN rental_search_history.lp_gas IS 'プロパンガス';
+COMMENT ON COLUMN rental_search_history.bfree IS 'バリアフリー';
+COMMENT ON COLUMN rental_search_history.dezaina IS 'デザイナーズ物件';
+COMMENT ON COLUMN rental_search_history.itjusetu IS 'IT重説 対応物件';
+COMMENT ON COLUMN rental_search_history.bunjou IS '分譲賃貸';
+COMMENT ON COLUMN rental_search_history.hosyounin IS '保証人不要';
+COMMENT ON COLUMN rental_search_history.tawaman IS 'タワーマンション';
+COMMENT ON COLUMN rental_search_history.reform IS 'リフォーム済み';
+COMMENT ON COLUMN rental_search_history.renova IS 'リノベーション物件';
+COMMENT ON COLUMN rental_search_history.sokujihiki IS '即入居可';
+COMMENT ON COLUMN rental_search_history.jyosei IS '女性限定';
+COMMENT ON COLUMN rental_search_history.koureisya IS '高齢者歓迎';
+COMMENT ON COLUMN rental_search_history.lgbt IS 'LGBTフレンドリー';
+COMMENT ON COLUMN rental_search_history.petka IS 'ペット相談可';
+COMMENT ON COLUMN rental_search_history.gakki IS '楽器相談可';
+COMMENT ON COLUMN rental_search_history.jimusyoriyou IS '事務所利用可';
+COMMENT ON COLUMN rental_search_history.roomshare IS 'ルームシェア可';
+COMMENT ON COLUMN rental_search_history.customizeka IS 'カスタマイズ可';
+COMMENT ON COLUMN rental_search_history.diyka IS 'DIY可';
+COMMENT ON COLUMN rental_search_history.no_teisyaku IS '定期借家を含まない';

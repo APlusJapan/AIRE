@@ -1,6 +1,6 @@
 CREATE TABLE prefecture
 (
-    prefecture_id char(6) Not Null,
+    prefecture_id char(5) Not Null,
     prefecture_name varchar(10) Not Null,
     PRIMARY KEY (prefecture_id)
 );

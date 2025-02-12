@@ -7,9 +7,13 @@
     Shell.FlyoutBehavior="Flyout"
     Title="AIRE_App">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Title="FlyoutItem" Route="FlyoutItem">
+        <Tab Title="Tab" Route="Tab">
+            <ShellContent
+                Title="ShellContent"
+                ContentTemplate="{DataTemplate local:MainPage}"
+                Route="MainPage" />
+        </Tab>
+    </FlyoutItem>
 
 </Shell>

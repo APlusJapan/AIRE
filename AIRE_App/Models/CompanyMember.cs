@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace EFCore.Models;
+
+/// <summary>
+/// 会社メンバー
+/// </summary>
+public partial class CompanyMember
+{
+    /// <summary>
+    /// 会社ID
+    /// </summary>
+    public string CompanyId { get; set; }
+
+    /// <summary>
+    /// 社員ID
+    /// </summary>
+    public string StaffId { get; set; }
+
+    /// <summary>
+    /// 社員名
+    /// </summary>
+    public string StaffName { get; set; }
+
+    /// <summary>
+    /// 電話番号
+    /// </summary>
+    public string PhoneNumber { get; set; }
+
+    /// <summary>
+    /// Eメール
+    /// </summary>
+    public string Email { get; set; }
+}

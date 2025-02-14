@@ -1,12 +1,22 @@
-﻿namespace AIRE_App
-{
-    public partial class AppShell : Shell
-    {
-        private App app = Application.Current as App;
+﻿using AIRE_App.Views;
 
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+namespace AIRE_App;
+
+public partial class AppShell : Shell
+{
+    public AppShell()
+    {
+        InitializeComponent();
+
+        RegisterRoute();
+    }
+
+    /// <summary>
+    /// Shell ナビゲーション
+    /// https://learn.microsoft.com/dotnet/maui/fundamentals/shell/navigation
+    /// </summary>
+    private void RegisterRoute()
+    {
+        Routing.RegisterRoute("Search/1st", typeof(Search1stView));
     }
 }

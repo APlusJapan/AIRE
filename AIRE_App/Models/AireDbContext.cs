@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFCore.Models;
+namespace AIRE_DB.Models;
 
 public partial class AireDbContext : DbContext
 {

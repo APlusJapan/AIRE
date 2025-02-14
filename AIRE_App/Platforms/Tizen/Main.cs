@@ -8,7 +8,7 @@ namespace AIRE_App
     {
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
-        static void Main(string[] args)
+        static void Main(String[] args)
         {
             var app = new Program();
             app.Run(args);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EFCore.Models;
+namespace AIRE_DB.Models;
 
 /// <summary>
 /// 会社メンバー

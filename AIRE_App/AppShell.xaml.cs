@@ -17,6 +17,6 @@ public partial class AppShell : Shell
     /// </summary>
     private void RegisterRoute()
     {
-        Routing.RegisterRoute("Search/1st", typeof(Search1stView));
+        Routing.RegisterRoute("Search", typeof(SearchView));
     }
 }

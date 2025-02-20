@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Models="clr-namespace:AIRE_DB.Models"
+             xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
+             x:DataType="ViewModels:SearchViewModel"
+             x:Class="AIRE_App.Views.SearchView">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout>
+                <HorizontalStackLayout>
+                    <Button Text="沿線から検索" Clicked="StationSearch"/>
+                    <Button Text="エリアから検索" Clicked="AreaSearch"/>
+                </HorizontalStackLayout>
+                <ListView ItemsSource="{Binding Groups}" ItemTapped="OnItemTapped_Group">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:GroupViewModel(ViewModels:ItemViewModel))}">
+                            <ViewCell>
+                                <VerticalStackLayout>
+                                    <HorizontalStackLayout>
+                                        <CheckBox IsChecked="{Binding IsChecked}"/>
+                                        <Label Text="{Binding Name}"/>
+                                    </HorizontalStackLayout>
+                                    <StackLayout IsVisible="{Binding IsExpanded}">
+                                        <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_GroupItem">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:ItemViewModel)}">
+                                                    <ViewCell>
+                                                        <VerticalStackLayout>
+                                                            <HorizontalStackLayout Padding="32,0,0,0">
+                                                                <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                <Label Text="{Binding Name}"/>
+                                                            </HorizontalStackLayout>
+                                                            <StackLayout IsVisible="{Binding IsExpanded}">
+                                                                <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_Item">
+                                                                    <ListView.ItemTemplate>
+                                                                        <DataTemplate x:DataType="{x:Type ViewModels:ItemViewModel}">
+                                                                            <ViewCell>
+                                                                                <VerticalStackLayout Padding="64,0,0,0">
+                                                                                    <HorizontalStackLayout>
+                                                                                        <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                                        <Label Text="{Binding Name}"/>
+                                                                                    </HorizontalStackLayout>
+                                                                                </VerticalStackLayout>
+                                                                            </ViewCell>
+                                                                        </DataTemplate>
+                                                                    </ListView.ItemTemplate>
+                                                                </ListView>
+                                                            </StackLayout>
+                                                        </VerticalStackLayout>
+                                                    </ViewCell>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackLayout>
+                                </VerticalStackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </VerticalStackLayout>
+        </ScrollView>
+        <HorizontalStackLayout Grid.Row="1">
+            <Button Text="検索" Clicked="OnClicked"/>
+            <Button Text="条件追加"/>
+        </HorizontalStackLayout>
+    </Grid>
+
+</ContentPage>

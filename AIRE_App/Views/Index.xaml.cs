@@ -1,6 +1,4 @@
-﻿using AIRE_App.Services;
-
-namespace AIRE_App.Views;
+﻿namespace AIRE_App.Views;
 
 public partial class IndexView : ContentPage
 {
@@ -11,10 +9,10 @@ public partial class IndexView : ContentPage
         InitializeComponent();
     }
 
-    private async void OnCounterClicked(Object sender, EventArgs eventArgs)
+    private async void OnClicked(Object sender, EventArgs eventArgs)
     {
         await DisplayAlert("Device Unique ID", app.Session.Id, "OK");
 
-        await Shell.Current.GoToAsync("Search/1st");
+        await Shell.Current.GoToAsync("Search");
     }
 }

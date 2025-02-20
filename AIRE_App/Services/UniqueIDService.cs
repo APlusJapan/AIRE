@@ -6,7 +6,7 @@ public static class UniqueIDService
 
     public static String GetDeviceID()
     {
-        if(Preferences.ContainsKey(deviceIdKey))
+        if (Preferences.ContainsKey(deviceIdKey))
         {
             return Preferences.Get(deviceIdKey, String.Empty);
         }

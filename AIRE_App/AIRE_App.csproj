@@ -63,8 +63,19 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- ASP.NET Core -->
+        <!-- https://dotnet.microsoft.com/platform/support/policy/aspnet/2.3-packages -->
         <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Community Toolkits -->
+        <!-- https://learn.microsoft.com/dotnet/communitytoolkit -->
+        <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
     </ItemGroup>
 
     <ItemGroup>

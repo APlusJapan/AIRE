@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace AIRE_App.ViewModels;
 
-public class Search1stViewModel : BaseViewModel
+public class SearchViewModel : BaseViewModel
 {
     public ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> Groups
     {

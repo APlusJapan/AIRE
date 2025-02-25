@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Models="clr-namespace:AIRE_DB.Models"
+             xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
+             x:DataType="ViewModels:RentalListViewModel"
+             x:Class="AIRE_App.Views.RentalListView">
+
+    <Button Text="Test" Clicked="OnClicked"/>
+
+</ContentPage>

@@ -41,4 +41,9 @@ public class ItemViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    public override String ToString()
+    {
+        return Name;
+    }
 }

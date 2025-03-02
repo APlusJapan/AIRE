@@ -6,6 +6,69 @@
              x:DataType="ViewModels:RentalListViewModel"
              x:Class="AIRE_App.Views.RentalListView">
 
-    <Button Text="Test" Clicked="OnClicked"/>
+    <Grid RowDefinitions="Auto,*">
+        <HorizontalStackLayout Grid.Row="0">
+            <Button Text="Test" Clicked="OnClicked"/>
+            <Button Text="検索条件変更" Clicked="OnClicked_Back"/>
+        </HorizontalStackLayout>
+        <ScrollView Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Groups}" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="ViewModels:RentalListGroupViewModel">
+                        <Grid Padding="16">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="96"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="128"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Text="{Binding Manmei}" FontSize="Subtitle" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan ="2"/>
+                            <Image Source="sample1.png" Grid.Row="1" Grid.Column="0" VerticalOptions="Start" BackgroundColor="Azure"/>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                                <Label Text="{Binding StationInfo}"/>
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding ChikuInfo}"/>
+                                    <Label Text="/"/>
+                                    <Label Text="{Binding KaisouInfo}"/>
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding ChimeiInfo}"/>
+                            </VerticalStackLayout>
+                            <CollectionView ItemsSource="{Binding Items}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan ="2">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="ViewModels:RentalListItemViewModel">
+                                        <Grid RowDefinitions="64" ColumnDefinitions="96,*,Auto" Padding="8">
+                                            <Image Source="sample2.jpg" Grid.Column="0" VerticalOptions="Start" BackgroundColor="Azure"/>
+                                            <VerticalStackLayout Grid.Column="1">
+                                                <HorizontalStackLayout>
+                                                    <Label Text="{Binding YachinInfo}"/>
+                                                    <Label Text="{Binding KanrihiInfo}"/>
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout>
+                                                    <Label Text="{Binding ShikikinInfo}"/>
+                                                    <Label Text="/"/>
+                                                    <Label Text="{Binding ReikinInfo}"/>
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout>
+                                                    <Label Text="{Binding MadoriInfo}"/>
+                                                    <Label Text="/"/>
+                                                    <Label Text="{Binding TatemenInfo}"/>
+                                                    <Label Text="/"/>
+                                                    <Label Text="{Binding SyokaiInfo}"/>
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+                                            <Button Grid.Column="2" Text=">" Clicked="OnClicked_Details" CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

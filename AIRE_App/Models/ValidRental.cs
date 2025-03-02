@@ -721,7 +721,7 @@ public partial class ValidRental
     /// <summary>
     /// 目安光熱費
     /// </summary>
-    public decimal Kounetuhi { get; set; }
+    public decimal? Kounetuhi { get; set; }
 
     /// <summary>
     /// 水道

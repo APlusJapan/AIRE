@@ -1091,7 +1091,7 @@ public partial class AireDbContext : DbContext
                 .HasColumnName("all_syuunou");
             entity.Property(e => e.AreaId)
                 .IsRequired()
-                .HasMaxLength(6)
+                .HasMaxLength(5)
                 .IsFixedLength()
                 .HasComment("エリアID")
                 .HasColumnName("area_id");
@@ -1191,6 +1191,7 @@ public partial class AireDbContext : DbContext
                 .HasComment("築年月（年）")
                 .HasColumnName("chikunen");
             entity.Property(e => e.Chikutsuki)
+                .HasDefaultValue((short)0)
                 .HasComment("築年月（月）")
                 .HasColumnName("chikutsuki");
             entity.Property(e => e.Chimei)
@@ -1311,17 +1312,17 @@ public partial class AireDbContext : DbContext
                 .HasComment("台（エアコン）")
                 .HasColumnName("eakondaisu");
             entity.Property(e => e.Ekiid1)
-                .HasMaxLength(5)
+                .HasMaxLength(6)
                 .IsFixedLength()
                 .HasComment("駅1のID")
                 .HasColumnName("ekiid1");
             entity.Property(e => e.Ekiid2)
-                .HasMaxLength(5)
+                .HasMaxLength(6)
                 .IsFixedLength()
                 .HasComment("駅2のID")
                 .HasColumnName("ekiid2");
             entity.Property(e => e.Ekiid3)
-                .HasMaxLength(5)
+                .HasMaxLength(6)
                 .IsFixedLength()
                 .HasComment("駅3のID")
                 .HasColumnName("ekiid3");
@@ -1438,6 +1439,7 @@ public partial class AireDbContext : DbContext
                 .HasComment("期日指定時（旬）")
                 .HasColumnName("hikijun");
             entity.Property(e => e.Hikitsuki)
+                .HasDefaultValue((short)0)
                 .HasComment("期日指定時（月）")
                 .HasColumnName("hikitsuki");
             entity.Property(e => e.Hikiziki)
@@ -1882,6 +1884,7 @@ public partial class AireDbContext : DbContext
                 .HasComment("リフォーム実施年")
                 .HasColumnName("re_nen");
             entity.Property(e => e.ReTsuki)
+                .HasDefaultValue((short)0)
                 .HasComment("リフォーム実施月")
                 .HasColumnName("re_tsuki");
             entity.Property(e => e.Reformbikou)
@@ -1892,6 +1895,7 @@ public partial class AireDbContext : DbContext
                 .HasComment("実施年（リノベーション）")
                 .HasColumnName("reno_nen");
             entity.Property(e => e.RenoTsuki)
+                .HasDefaultValue((short)0)
                 .HasComment("実施月（リノベーション）")
                 .HasColumnName("reno_tsuki");
             entity.Property(e => e.Renova)
@@ -1903,7 +1907,6 @@ public partial class AireDbContext : DbContext
                 .HasComment("内容（リノベーション）")
                 .HasColumnName("renovabikou");
             entity.Property(e => e.RentalCommonId)
-                .IsRequired()
                 .HasMaxLength(40)
                 .HasComment("賃貸物件共通ID")
                 .HasColumnName("rental_common_id");

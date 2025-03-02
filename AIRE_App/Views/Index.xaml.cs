@@ -13,6 +13,6 @@ public partial class IndexView : ContentPage
     {
         await DisplayAlert("Device Unique ID", app.Session.Id, "OK");
 
-        await Shell.Current.GoToAsync("Rental/Search");
+        await Shell.Current.GoToAsync("/Rental/Search");
     }
 }

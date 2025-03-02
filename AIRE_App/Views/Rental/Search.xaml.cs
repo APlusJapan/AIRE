@@ -220,7 +220,7 @@ public partial class RentalSearchView : ContentPage
         item.IsChecked = !item.IsChecked;
     }
 
-    private async void OnClicked_Submit(Object sender, EventArgs e)
+    private async void OnClicked_Submit(Object sender, EventArgs eventArgs)
     {
         List<ItemViewModel> queryItem = [];
 
@@ -265,7 +265,7 @@ public partial class RentalSearchView : ContentPage
             }
         }
 
-        await Shell.Current.GoToAsync("Rental/List", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("/Rental/List", new Dictionary<String, Object>
         {
             { "queryItem", queryItem },
             { "yachinMin", viewModel.YachinMin[viewModel.YachinMinIndex] },

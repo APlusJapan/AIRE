@@ -1,10 +1,11 @@
+using System.Collections.ObjectModel;
 using AIRE_App.Data;
 
 namespace AIRE_App.ViewModels;
 
 public class RentalListViewModel : BaseViewModel, IQueryAttributable
 {
-    public event Action LoadRentalData;
+    public event Action LoadRentalList;
 
     public RentalSearchConditions SearchConditions;
 
@@ -53,6 +54,16 @@ public class RentalListViewModel : BaseViewModel, IQueryAttributable
             NoTeisyaku = (bool)query["noTeisyaku"]
         };
 
-        LoadRentalData();
+        LoadRentalList();
+    }
+
+    public ObservableCollection<RentalListGroupViewModel> Groups
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 }

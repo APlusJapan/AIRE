@@ -8,6 +8,10 @@ public static class Constants
 
     public const String Chikunen = "築{0}年";
 
+    public const String Chikutsuki = "築{0}月";
+
+    public const String ChikunenChikutsuki = "築{0}年{1}月";
+
     public const String Chika = "地下";
 
     public const String Chijou = "地上";

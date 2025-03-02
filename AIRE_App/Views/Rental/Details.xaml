@@ -6,4 +6,56 @@
              x:DataType="ViewModels:RentalDetailsViewModel"
              x:Class="AIRE_App.Views.RentalDetailsView">
 
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <Grid ColumnDefinitions="*,*"  Padding="16">
+                <Grid.RowDefinitions>
+                    <!-- Row="0" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="1" -->
+                    <RowDefinition Height="192"/>
+                    <!-- Row="2" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="3" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="4" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="5" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="6" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="7" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="8" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Row="9" -->
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Text="{Binding Manmei}" FontSize="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan ="2"/>
+                <Image Source="sample1.png" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan ="2" VerticalOptions="Start" BackgroundColor="Azure"/>
+                <Label Text="{Binding YachinInfo}" Grid.Row="2" Grid.Column="0"/>
+                <Label Text="{Binding KanrihiInfo}" Grid.Row="2" Grid.Column="1"/>
+                <Label Text="{Binding ShikikinInfo}" Grid.Row="3" Grid.Column="0"/>
+                <Label Text="{Binding ReikinInfo}" Grid.Row="3" Grid.Column="1"/>
+                <Label Text="{Binding MadoriInfo}" Grid.Row="4" Grid.Column="0"/>
+                <Label Text="{Binding TatemenInfo}" Grid.Row="4" Grid.Column="1"/>
+                <Label Text="{Binding KaidateInfo}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan ="2"/>
+                <Label Text="{Binding ChikuInfo}" Grid.Row="6" Grid.Column="0"/>
+                <Label Text="{Binding BukkmokuInfo}" Grid.Row="6" Grid.Column="1"/>
+                <Label Text="{Binding ChimeiSyozaiInfo}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan ="2"/>
+                <HorizontalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan ="2">
+                    <Label Text="交通："/>
+                    <VerticalStackLayout>
+                        <Label Text="{Binding Eki1Info}" IsVisible="{Binding hasEki1}"/>
+                        <Label Text="{Binding Eki2Info}" IsVisible="{Binding hasEki2}"/>
+                        <Label Text="{Binding Eki3Info}" IsVisible="{Binding hasEki3}"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+                <Label Text="{Binding CompanyNameInfo}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan ="2"/>
+            </Grid>
+        </ScrollView>
+        <HorizontalStackLayout Grid.Row="1">
+            <Button Text="Test" Clicked="OnClicked"/>
+        </HorizontalStackLayout>
+    </Grid>
 </ContentPage>

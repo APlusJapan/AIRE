@@ -25,7 +25,7 @@ public partial class RentalListView : ContentPage
 
     private void LoadRentalList()
     {
-        IQueryable<ValidRental> queryable = DatabaseService.GetAireDbContext(str => Trace.WriteLine(str)).ValidRentals;
+        IQueryable<ValidRental> queryable = DatabaseService.GetAireDbContext().ValidRentals;
 
         bool hasSearchType = Enum.TryParse(app.Session.GetString(nameof(SearchType)), out SearchType searchType);
 

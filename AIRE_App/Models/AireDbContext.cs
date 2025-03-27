@@ -43,6 +43,8 @@ public partial class AireDbContext : DbContext
 
     public virtual DbSet<RentalStatistic> RentalStatistics { get; set; }
 
+    public virtual DbSet<RentalSummary> RentalSummaries { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Station> Stations { get; set; }
@@ -1005,6 +1007,144 @@ public partial class AireDbContext : DbContext
                 .HasColumnName("update_time");
         });
 
+        modelBuilder.Entity<RentalSummary>(entity =>
+        {
+            entity.HasKey(e => e.RentalId).HasName("rental_summary_pkey");
+
+            entity.ToTable("rental_summary", tb => tb.HasComment("賃貸物件概要"));
+
+            entity.Property(e => e.RentalId)
+                .HasMaxLength(40)
+                .HasComment("賃貸物件ID")
+                .HasColumnName("rental_id");
+            entity.Property(e => e.AboveGroundFloors)
+                .HasComment("階層（地上）")
+                .HasColumnName("above_ground_floors");
+            entity.Property(e => e.AddressNumberPart)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("所在地（何番から）")
+                .HasColumnName("address_number_part");
+            entity.Property(e => e.AddressStreetPart)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("所在地（何丁目まで）")
+                .HasColumnName("address_street_part");
+            entity.Property(e => e.AreaName)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasComment("エリア名")
+                .HasColumnName("area_name");
+            entity.Property(e => e.BelowGroundFloors)
+                .HasComment("階層（地下）")
+                .HasColumnName("below_ground_floors");
+            entity.Property(e => e.BuildingName)
+                .HasMaxLength(40)
+                .HasComment("建物名")
+                .HasColumnName("building_name");
+            entity.Property(e => e.ConstructionDate)
+                .HasComment("築年月")
+                .HasColumnName("construction_date");
+            entity.Property(e => e.CurrentFloor)
+                .HasComment("所在階")
+                .HasColumnName("current_floor");
+            entity.Property(e => e.ExclusiveArea)
+                .HasPrecision(5, 2)
+                .HasComment("専有面積")
+                .HasColumnName("exclusive_area");
+            entity.Property(e => e.ExteriorPhoto)
+                .HasMaxLength(255)
+                .HasComment("建物外観画像（URL）")
+                .HasColumnName("exterior_photo");
+            entity.Property(e => e.FloorPlanImage)
+                .HasMaxLength(255)
+                .HasComment("間取り図面（URL）")
+                .HasColumnName("floor_plan_image");
+            entity.Property(e => e.FloorPlanType)
+                .HasMaxLength(32)
+                .HasComment("間取り")
+                .HasColumnName("floor_plan_type");
+            entity.Property(e => e.KeyMoney)
+                .HasPrecision(10, 2)
+                .HasComment("礼金")
+                .HasColumnName("key_money");
+            entity.Property(e => e.ManagementFee)
+                .HasPrecision(10, 2)
+                .HasDefaultValueSql("0")
+                .HasComment("管理費")
+                .HasColumnName("management_fee");
+            entity.Property(e => e.PrefectureName)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasComment("都道府県名")
+                .HasColumnName("prefecture_name");
+            entity.Property(e => e.Price)
+                .HasPrecision(15, 2)
+                .HasComment("家賃、価格")
+                .HasColumnName("price");
+            entity.Property(e => e.PropertyCategory)
+                .HasMaxLength(32)
+                .HasComment("物件種目")
+                .HasColumnName("property_category");
+            entity.Property(e => e.PropertyType)
+                .IsRequired()
+                .HasMaxLength(32)
+                .HasComment("物件タイプ")
+                .HasColumnName("property_type");
+            entity.Property(e => e.Recommend)
+                .HasDefaultValue(false)
+                .HasComment("推薦物件")
+                .HasColumnName("recommend");
+            entity.Property(e => e.SecurityDeposit)
+                .HasPrecision(10, 2)
+                .HasComment("敷金")
+                .HasColumnName("security_deposit");
+            entity.Property(e => e.Station1BusMin)
+                .HasComment("駅1までの所要時間（バス）")
+                .HasColumnName("station1_bus_min");
+            entity.Property(e => e.Station1CarTime)
+                .HasComment("駅1までの所要時間（車）")
+                .HasColumnName("station1_car_time");
+            entity.Property(e => e.Station1Name)
+                .HasMaxLength(40)
+                .HasComment("駅1の名前")
+                .HasColumnName("station1_name");
+            entity.Property(e => e.Station1WalkMin)
+                .HasComment("駅1までの所要時間（徒歩）")
+                .HasColumnName("station1_walk_min");
+            entity.Property(e => e.Station2BusMin)
+                .HasComment("駅2までの所要時間（バス）")
+                .HasColumnName("station2_bus_min");
+            entity.Property(e => e.Station2CarTime)
+                .HasComment("駅2までの所要時間（車）")
+                .HasColumnName("station2_car_time");
+            entity.Property(e => e.Station2Name)
+                .HasMaxLength(40)
+                .HasComment("駅2の名前")
+                .HasColumnName("station2_name");
+            entity.Property(e => e.Station2WalkMin)
+                .HasComment("駅2までの所要時間（徒歩）")
+                .HasColumnName("station2_walk_min");
+            entity.Property(e => e.Station3BusMin)
+                .HasComment("駅3までの所要時間（バス）")
+                .HasColumnName("station3_bus_min");
+            entity.Property(e => e.Station3CarTime)
+                .HasComment("駅3までの所要時間（車）")
+                .HasColumnName("station3_car_time");
+            entity.Property(e => e.Station3Name)
+                .HasMaxLength(40)
+                .HasComment("駅3の名前")
+                .HasColumnName("station3_name");
+            entity.Property(e => e.Station3WalkMin)
+                .HasComment("駅3までの所要時間（徒歩）")
+                .HasColumnName("station3_walk_min");
+            entity.Property(e => e.StructureMaterial)
+                .HasMaxLength(32)
+                .HasDefaultValueSql("'不明'::character varying")
+                .HasComment("構造・材質")
+                .HasColumnName("structure_material");
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(e => new { e.UserId, e.RoleId }).HasName("role_pkey");
@@ -1414,6 +1554,18 @@ public partial class AireDbContext : DbContext
                 .HasDefaultValue(false)
                 .HasComment("敷地内ゴミ置場")
                 .HasColumnName("gomiokiba");
+            entity.Property(e => e.Gporder1)
+                .HasMaxLength(255)
+                .HasComment("優先画像1")
+                .HasColumnName("gporder1");
+            entity.Property(e => e.Gporder2)
+                .HasMaxLength(255)
+                .HasComment("優先画像2")
+                .HasColumnName("gporder2");
+            entity.Property(e => e.Gporder3)
+                .HasMaxLength(255)
+                .HasComment("優先画像3")
+                .HasColumnName("gporder3");
             entity.Property(e => e.Gyosyamemo)
                 .HasMaxLength(255)
                 .HasComment("業者向けコメント")

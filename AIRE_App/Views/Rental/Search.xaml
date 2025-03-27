@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -7,272 +7,302 @@
              x:DataType="ViewModels:RentalSearchViewModel"
              x:Class="AIRE_App.Views.RentalSearchView">
 
-    <Grid RowDefinitions="*,Auto">
-        <ScrollView Grid.Row="0"> 
-            <VerticalStackLayout>
-                <HorizontalStackLayout>
-                    <Button Text="沿線から検索" Clicked="StationSearch"/>
-                    <Button Text="エリアから検索" Clicked="AreaSearch"/>
-                </HorizontalStackLayout>
-                <toolkit:Expander IsExpanded="{Binding IsGroupsExpanded}">
-                    <toolkit:Expander.Header>
-                        <Label Text="駅・エリア" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <ListView ItemsSource="{Binding Groups}" ItemTapped="OnItemTapped_Group">
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:GroupViewModel(ViewModels:ItemViewModel))}">
-                                    <ViewCell>
-                                        <VerticalStackLayout>
-                                            <HorizontalStackLayout Padding="16,0,0,0">
-                                                <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                <Label Text="{Binding Name}"/>
-                                            </HorizontalStackLayout>
-                                            <StackLayout IsVisible="{Binding IsExpanded}">
-                                                <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_GroupItem">
-                                                    <ListView.ItemTemplate>
-                                                        <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:ItemViewModel)}">
-                                                            <ViewCell>
-                                                                <VerticalStackLayout>
-                                                                    <HorizontalStackLayout Padding="48,0,0,0">
-                                                                        <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                                        <Label Text="{Binding Name}"/>
-                                                                    </HorizontalStackLayout>
-                                                                    <StackLayout IsVisible="{Binding IsExpanded}">
-                                                                        <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_Item">
-                                                                            <ListView.ItemTemplate>
-                                                                                <DataTemplate x:DataType="{x:Type ViewModels:ItemViewModel}">
-                                                                                    <ViewCell>
-                                                                                        <VerticalStackLayout Padding="80,0,0,0">
-                                                                                            <HorizontalStackLayout>
-                                                                                                <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                                                                <Label Text="{Binding Name}"/>
-                                                                                            </HorizontalStackLayout>
-                                                                                        </VerticalStackLayout>
-                                                                                    </ViewCell>
-                                                                                </DataTemplate>
-                                                                            </ListView.ItemTemplate>
-                                                                        </ListView>
-                                                                    </StackLayout>
-                                                                </VerticalStackLayout>
-                                                            </ViewCell>
-                                                        </DataTemplate>
-                                                    </ListView.ItemTemplate>
-                                                </ListView>
-                                            </StackLayout>
-                                        </VerticalStackLayout>
-                                    </ViewCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="賃料" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <VerticalStackLayout Padding="16,0,0,0">
-                            <HorizontalStackLayout>
-                                <Picker Title="賃料下限" ItemsSource="{Binding YachinMin}" SelectedIndex="{Binding YachinMinIndex}"/>
-                                <Picker Title="賃料上限" ItemsSource="{Binding YachinMax}" SelectedIndex="{Binding YachinMaxIndex}"/>
-                            </HorizontalStackLayout>
-                            <FlexLayout Direction="Row" Wrap="Wrap">
+    <AbsoluteLayout>
+        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" RowDefinitions="Auto,*,Auto">
+            <toolkit:Expander Grid.Row="0" IsExpanded="{Binding MessageIsExpanded}">
+                <toolkit:Expander.Content>
+                    <VerticalStackLayout>
+                        <ScrollView HeightRequest="256">
+                            <ListView ItemsSource="{Binding MessageHistory}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <ViewCell>
+                                            <Label Text="{Binding .}" Padding="16,0,0,0"/>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </ScrollView>
+                        <Editor Text="{Binding Message}" Placeholder="アバターに聞きたいこと" HeightRequest="48"/>
+                        <Button Text="発信" IsEnabled="{Binding MessageReceived}" Clicked="OnClicked_PostMessage"/>
+                    </VerticalStackLayout>
+                </toolkit:Expander.Content>
+            </toolkit:Expander>
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout HorizontalOptions="Center" Padding="16" Spacing="16">
+                        <Button Text="沿線から検索" Clicked="StationSearch"/>
+                        <Button Text="エリアから検索" Clicked="AreaSearch"/>
+                    </HorizontalStackLayout>
+                    <toolkit:Expander IsExpanded="{Binding IsGroupsExpanded}">
+                        <toolkit:Expander.Header>
+                            <Label Text="駅・エリア" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <ListView ItemsSource="{Binding Groups}" ItemTapped="OnItemTapped_Group">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:GroupViewModel(ViewModels:ItemViewModel))}">
+                                        <ViewCell>
+                                            <VerticalStackLayout>
+                                                <HorizontalStackLayout Padding="16,0,0,0">
+                                                    <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                    <Label Text="{Binding Name}"/>
+                                                </HorizontalStackLayout>
+                                                <StackLayout IsVisible="{Binding IsExpanded}">
+                                                    <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_GroupItem">
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:ItemViewModel)}">
+                                                                <ViewCell>
+                                                                    <VerticalStackLayout>
+                                                                        <HorizontalStackLayout Padding="48,0,0,0">
+                                                                            <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                            <Label Text="{Binding Name}"/>
+                                                                        </HorizontalStackLayout>
+                                                                        <StackLayout IsVisible="{Binding IsExpanded}">
+                                                                            <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_Item">
+                                                                                <ListView.ItemTemplate>
+                                                                                    <DataTemplate x:DataType="{x:Type ViewModels:ItemViewModel}">
+                                                                                        <ViewCell>
+                                                                                            <VerticalStackLayout Padding="80,0,0,0">
+                                                                                                <HorizontalStackLayout>
+                                                                                                    <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                                                    <Label Text="{Binding Name}"/>
+                                                                                                </HorizontalStackLayout>
+                                                                                            </VerticalStackLayout>
+                                                                                        </ViewCell>
+                                                                                    </DataTemplate>
+                                                                                </ListView.ItemTemplate>
+                                                                            </ListView>
+                                                                        </StackLayout>
+                                                                    </VerticalStackLayout>
+                                                                </ViewCell>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+                                                </StackLayout>
+                                            </VerticalStackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="賃料" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <VerticalStackLayout Padding="16,0,0,0">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Picker Title="賃料下限" ItemsSource="{Binding YachinMin}" SelectedIndex="{Binding YachinMinIndex}" WidthRequest="128"/>
+                                    <Picker Title="賃料上限" ItemsSource="{Binding YachinMax}" SelectedIndex="{Binding YachinMaxIndex}" WidthRequest="128"/>
+                                </HorizontalStackLayout>
+                                <FlexLayout Direction="Row" Wrap="Wrap">
+                                    <HorizontalStackLayout>
+                                        <CheckBox IsChecked="{Binding NoKanrihi}"/>
+                                        <Label Text="管理費・共益費込み" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout>
+                                        <CheckBox IsChecked="{Binding NoReikin}"/>
+                                        <Label Text="礼金なし" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout>
+                                        <CheckBox IsChecked="{Binding NoShikikin}"/>
+                                        <Label Text="敷金・保証金なし" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                    </HorizontalStackLayout>
+                                </FlexLayout>
+                             </VerticalStackLayout>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="間取りタイプ" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
                                 <HorizontalStackLayout>
-                                    <CheckBox IsChecked="{Binding NoKanrihi}"/>
-                                    <Label Text="管理費・共益費込み"/>
+                                    <CheckBox IsChecked="{Binding Oneroom}"/>
+                                    <Label Text="ワンルーム" VerticalTextAlignment="Center" WidthRequest="64"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout>
-                                    <CheckBox IsChecked="{Binding NoReikin}"/>
-                                    <Label Text="礼金なし"/>
+                                    <CheckBox IsChecked="{Binding Room1k}"/>
+                                    <Label Text="1K" VerticalTextAlignment="Center" WidthRequest="64"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout>
-                                    <CheckBox IsChecked="{Binding NoShikikin}"/>
-                                    <Label Text="敷金・保証金なし"/>
+                                    <CheckBox IsChecked="{Binding Room1dk}"/>
+                                    <Label Text="1DK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room1ldk}"/>
+                                    <Label Text="1LDK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room2k}"/>
+                                    <Label Text="2K" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room2dk}"/>
+                                    <Label Text="2DK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room2ldk}"/>
+                                    <Label Text="2LDK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room3k}"/>
+                                    <Label Text="3K" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room3dk}"/>
+                                    <Label Text="3DK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room3ldk}"/>
+                                    <Label Text="3LDK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room4k}"/>
+                                    <Label Text="4K" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room4dk}"/>
+                                    <Label Text="4DK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room4ldk}"/>
+                                    <Label Text="4LDK" VerticalTextAlignment="Center" WidthRequest="64"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Room5k}"/>
+                                    <Label Text="5K以上" VerticalTextAlignment="Center" WidthRequest="64"/>
                                 </HorizontalStackLayout>
                             </FlexLayout>
-                         </VerticalStackLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="間取りタイプ" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Oneroom}"/>
-                                <Label Text="ワンルーム" WidthRequest="64"/>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="建物種別" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Mansion}"/>
+                                    <Label Text="マンション" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Apartment}"/>
+                                    <Label Text="アパート" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding DetachedHouse}"/>
+                                    <Label Text="一戸建て・その他" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                            </FlexLayout>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="駅徒歩" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <HorizontalStackLayout Spacing="16" Padding="16,0,0,0">
+                                <Picker Title="駅徒歩" ItemsSource="{Binding Toho}" SelectedIndex="{Binding TohoIndex}" WidthRequest="128"/>
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room1k}"/>
-                                <Label Text="1K" WidthRequest="64"/>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="専有面積" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <HorizontalStackLayout Spacing="16" Padding="16,0,0,0">
+                                <Picker Title="面積下限" ItemsSource="{Binding MenMin}" SelectedIndex="{Binding MenMinIndex}" WidthRequest="128"/>
+                                <Picker Title="面積上限" ItemsSource="{Binding MenMax}" SelectedIndex="{Binding MenMaxIndex}" WidthRequest="128"/>
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room1dk}"/>
-                                <Label Text="1DK" WidthRequest="64"/>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="築後年数" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <HorizontalStackLayout Spacing="16" Padding="16,0,0,0">
+                                <Picker Title="築後年数" ItemsSource="{Binding Chikunensu}" SelectedIndex="{Binding ChikunensuIndex}" WidthRequest="128"/>
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room1ldk}"/>
-                                <Label Text="1LDK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room2k}"/>
-                                <Label Text="2K" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room2dk}"/>
-                                <Label Text="2DK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room2ldk}"/>
-                                <Label Text="2LDK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room3k}"/>
-                                <Label Text="3K" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room3dk}"/>
-                                <Label Text="3DK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room3ldk}"/>
-                                <Label Text="3LDK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room4k}"/>
-                                <Label Text="4K" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room4dk}"/>
-                                <Label Text="4DK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room4ldk}"/>
-                                <Label Text="4LDK" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Room5k}"/>
-                                <Label Text="5K以上" WidthRequest="64"/>
-                            </HorizontalStackLayout>
-                        </FlexLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="建物種別" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Mansion}"/>
-                                <Label Text="マンション"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Apartment}"/>
-                                <Label Text="アパート"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding DetachedHouse}"/>
-                                <Label Text="一戸建て・その他"/>
-                            </HorizontalStackLayout>
-                        </FlexLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="駅徒歩" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <HorizontalStackLayout Padding="16,0,0,0">
-                            <Picker Title="駅徒歩" ItemsSource="{Binding Toho}" SelectedIndex="{Binding TohoIndex}"/>
-                        </HorizontalStackLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="専有面積" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <HorizontalStackLayout Padding="16,0,0,0">
-                            <Picker Title="面積下限" ItemsSource="{Binding MenMin}" SelectedIndex="{Binding MenMinIndex}"/>
-                            <Picker Title="面積上限" ItemsSource="{Binding MenMax}" SelectedIndex="{Binding MenMaxIndex}"/>
-                        </HorizontalStackLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="築後年数" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <HorizontalStackLayout Padding="16,0,0,0">
-                            <Picker Title="築後年数" ItemsSource="{Binding Chikunensu}" SelectedIndex="{Binding ChikunensuIndex}"/>
-                        </HorizontalStackLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-                <toolkit:Expander IsExpanded="true">
-                    <toolkit:Expander.Header>
-                        <Label Text="こだわり条件" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
-                    </toolkit:Expander.Header>
-                    <toolkit:Expander.Content>
-                        <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Tyuurin}"/>
-                                <Label Text="駐車場あり"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Btbetu}"/>
-                                <Label Text="バス・トイレ別"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Petka}"/>
-                                <Label Text="ペット相談"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding SecondFloor}"/>
-                                <Label Text="2階以上住戸"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Situsentaku}"/>
-                                <Label Text="室内洗濯機置場"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Eakon}"/>
-                                <Label Text="エアコン付"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Outorok}"/>
-                                <Label Text="オートロック"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding Furoringu}"/>
-                                <Label Text="フローリング"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding WithFloorPlan}"/>
-                                <Label Text="間取り図付"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding WithVideo}"/>
-                                <Label Text="物件動画付き"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding WithPanorama}"/>
-                                <Label Text="パノラマ付き"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout>
-                                <CheckBox IsChecked="{Binding NoTeisyaku}"/>
-                                <Label Text="定期借家を含まない"/>
-                            </HorizontalStackLayout>
-                        </FlexLayout>
-                    </toolkit:Expander.Content>
-                </toolkit:Expander>
-            </VerticalStackLayout>
-        </ScrollView>
-        <HorizontalStackLayout Grid.Row="1">
-            <Button Text="検索" Clicked="OnClicked_Submit"/>
-        </HorizontalStackLayout>
-    </Grid>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                    <toolkit:Expander IsExpanded="true">
+                        <toolkit:Expander.Header>
+                            <Label Text="こだわり条件" FontAttributes="Bold" FontSize="Medium" Padding="16,0,0,0"/>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <FlexLayout Direction="Row" Wrap="Wrap" Padding="16,0,0,0">
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Tyuurin}"/>
+                                    <Label Text="駐車場あり" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Btbetu}"/>
+                                    <Label Text="バス・トイレ別" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Petka}"/>
+                                    <Label Text="ペット相談" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding SecondFloor}"/>
+                                    <Label Text="2階以上住戸" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Situsentaku}"/>
+                                    <Label Text="室内洗濯機置場" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Eakon}"/>
+                                    <Label Text="エアコン付" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Outorok}"/>
+                                    <Label Text="オートロック" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding Furoringu}"/>
+                                    <Label Text="フローリング" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding WithFloorPlan}"/>
+                                    <Label Text="間取り図付" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding WithVideo}"/>
+                                    <Label Text="物件動画付き" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding WithPanorama}"/>
+                                    <Label Text="パノラマ付き" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding NoTeisyaku}"/>
+                                    <Label Text="定期借家を含まない" VerticalTextAlignment="Center" WidthRequest="96"/>
+                                </HorizontalStackLayout>
+                            </FlexLayout>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                </VerticalStackLayout>
+            </ScrollView>
+            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Padding="16" Spacing="16">
+                <Button Text="検索" Clicked="OnClicked_Submit"/>
+            </HorizontalStackLayout>
+        </Grid>
+        <Button
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            AbsoluteLayout.LayoutBounds="1,0"
+            Margin="0"
+            WidthRequest="16"
+            HeightRequest="16"
+            CornerRadius="32"
+            ImageSource="{StaticResource IconAdd}"
+            Clicked="OnClicked_ExpandMessage"/>
+    </AbsoluteLayout>
 
 </ContentPage>

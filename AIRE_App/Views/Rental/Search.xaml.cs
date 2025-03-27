@@ -1,5 +1,6 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using AIRE_App.Data;
+using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
@@ -9,6 +10,8 @@ namespace AIRE_App.Views;
 
 public partial class RentalSearchView : ContentPage
 {
+    private readonly IAIService SqlAIService;
+
     private readonly RentalSearchViewModel viewModel;
 
     private readonly App app = Application.Current as App;
@@ -19,11 +22,21 @@ public partial class RentalSearchView : ContentPage
 
     private ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> stationGroups;
 
-    public RentalSearchView()
+    public RentalSearchView([FromKeyedServices("SqlAIService")] IAIService SqlAIService)
     {
         InitializeComponent();
 
         BindingContext = viewModel = new();
+
+        this.SqlAIService = SqlAIService;
+    }
+
+    private async Task GoToList(String rawSQL)
+    {
+        await Shell.Current.GoToAsync("/Rental/List?sqlModel=True", new Dictionary<String, Object>
+        {
+            { "rawSQL", rawSQL }
+        });
     }
 
     private void StationSearch(Object sender, EventArgs eventArgs)
@@ -265,7 +278,7 @@ public partial class RentalSearchView : ContentPage
             }
         }
 
-        await Shell.Current.GoToAsync("/Rental/List", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("/Rental/List?sqlModel=False", new Dictionary<String, Object>
         {
             { "queryItem", queryItem },
             { "yachinMin", viewModel.YachinMin[viewModel.YachinMinIndex] },
@@ -307,5 +320,36 @@ public partial class RentalSearchView : ContentPage
             { "withPanorama", viewModel.WithPanorama },
             { "noTeisyaku", viewModel.NoTeisyaku }
         });
+    }
+
+    private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
+    {
+        viewModel.MessageIsExpanded = !viewModel.MessageIsExpanded;
+    }
+
+    private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
+    {
+        if(String.IsNullOrWhiteSpace(viewModel.Message))
+        {
+            return;
+        }
+
+        var message = viewModel.Message;
+
+        viewModel.Message = String.Empty;
+
+        viewModel.MessageHistory.Add($"User: {message}");
+
+        viewModel.MessageReceived = false;
+
+        await SqlAIService.PostChatMessageAsync(message, response =>
+        {
+            viewModel.MessageHistory.Add(response);
+
+            viewModel.MessageReceived = true;
+
+            return Task.CompletedTask;
+
+        }, GoToList);
     }
 }

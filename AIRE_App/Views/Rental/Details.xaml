@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:Models="clr-namespace:AIRE_DB.Models"
@@ -8,7 +8,7 @@
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
-            <Grid ColumnDefinitions="*,*"  Padding="16">
+            <Grid ColumnDefinitions="*,*" Padding="16">
                 <Grid.RowDefinitions>
                     <!-- Row="0" -->
                     <RowDefinition Height="Auto"/>
@@ -32,7 +32,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Label Text="{Binding Manmei}" FontSize="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan ="2"/>
-                <Image Source="sample1.png" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan ="2" VerticalOptions="Start" BackgroundColor="Azure"/>
+                <Image Source="{Binding ImageUrl}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan ="2" VerticalOptions="Start" BackgroundColor="Azure"/>
                 <Label Text="{Binding YachinInfo}" Grid.Row="2" Grid.Column="0"/>
                 <Label Text="{Binding KanrihiInfo}" Grid.Row="2" Grid.Column="1"/>
                 <Label Text="{Binding ShikikinInfo}" Grid.Row="3" Grid.Column="0"/>
@@ -54,8 +54,8 @@
                 <Label Text="{Binding CompanyNameInfo}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan ="2"/>
             </Grid>
         </ScrollView>
-        <HorizontalStackLayout Grid.Row="1">
-            <Button Text="Test" Clicked="OnClicked"/>
+        <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Padding="16" Spacing="16">
+            <Button Text="電話する"/>
         </HorizontalStackLayout>
     </Grid>
 </ContentPage>

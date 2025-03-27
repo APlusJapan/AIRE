@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using AIRE_App.Data;
+using AIRE_App.Services;
 
 namespace AIRE_App.ViewModels;
 
@@ -406,6 +407,58 @@ public class RentalSearchViewModel : BaseViewModel
         set
         {
             field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool MessageReceived
+    {
+        get
+        {
+            return AIStatusService.MessageReceived;
+        }
+        set
+        {
+            AIStatusService.MessageReceived = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool MessageIsExpanded
+    {
+        get
+        {
+            return AIStatusService.MessageIsExpanded;
+        }
+        set
+        {
+            AIStatusService.MessageIsExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public String Message
+    {
+        get
+        {
+            return AIStatusService.Message;
+        }
+        set
+        {
+            AIStatusService.Message = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<String> MessageHistory
+    {
+        get
+        {
+            return AIStatusService.MessageHistory;
+        }
+        set
+        {
+            AIStatusService.MessageHistory = value;
             OnPropertyChanged();
         }
     }

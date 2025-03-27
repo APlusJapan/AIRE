@@ -33,7 +33,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         {
             bool succeed = Int16.TryParse(Ekisu, out short result);
 
-            // ekisu �� 0 �́u�w����w��v
+            // ekisu の 0 は「駅を一つ指定」
             return succeed && result >= 0;
         }
     }
@@ -44,7 +44,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         {
             bool succeed = Int16.TryParse(Ekisu, out short result);
 
-            // ekisu �� 1 �́u�w���w��v
+            // ekisu の 1 は「駅を二つ指定」
             return succeed && result >= 1;
         }
     }
@@ -55,7 +55,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         {
             bool succeed = Int16.TryParse(Ekisu, out short result);
 
-            // ekisu �� 2 �́u�w���O�w��v
+            // ekisu の 2 は「駅を三つ指定」
             return succeed && result >= 2;
         }
     }
@@ -201,6 +201,16 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
     }
 
     public String CompanyNameInfo
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public String ImageUrl
     {
         get;
         set

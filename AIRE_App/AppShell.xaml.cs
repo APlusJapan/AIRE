@@ -1,4 +1,4 @@
-﻿using AIRE_App.Views;
+using AIRE_App.Views;
 
 namespace AIRE_App;
 

@@ -309,6 +309,9 @@ CREATE TABLE valid_rental
     dougaurl2 varchar(255),
     douga_w2 smallint,
     douga_y2 smallint,
+    gporder1 varchar(255),
+    gporder2 varchar(255),
+    gporder3 varchar(255),
     kakutyouk1 boolean Not Null DEFAULT FALSE,
     kakutyouk2 boolean Not Null DEFAULT FALSE,
     kakutyouk3 boolean Not Null DEFAULT FALSE,
@@ -630,6 +633,9 @@ COMMENT ON COLUMN valid_rental.douga_y1 IS '動画1の表示サイズの縦';
 COMMENT ON COLUMN valid_rental.dougaurl2 IS '動画2の埋込用URL';
 COMMENT ON COLUMN valid_rental.douga_w2 IS '動画2の表示サイズの横';
 COMMENT ON COLUMN valid_rental.douga_y2 IS '動画2の表示サイズの縦';
+COMMENT ON COLUMN valid_rental.gporder1 IS '優先画像1';
+COMMENT ON COLUMN valid_rental.gporder2 IS '優先画像2';
+COMMENT ON COLUMN valid_rental.gporder3 IS '優先画像3';
 COMMENT ON COLUMN valid_rental.kakutyouk1 IS 'スグ借りバーゲン';
 COMMENT ON COLUMN valid_rental.kakutyouk2 IS 'ルームズくん';
 COMMENT ON COLUMN valid_rental.kakutyouk3 IS 'シャレ部屋';

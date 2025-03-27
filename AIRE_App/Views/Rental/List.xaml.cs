@@ -1,26 +1,88 @@
-﻿using System.Diagnostics;
 using System.Net;
 using AIRE_App.Data;
+using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace AIRE_App.Views;
 
 public partial class RentalListView : ContentPage
 {
+    private readonly IAIService SqlAIService;
+
+    private readonly IAIService ChatAIService;
+
     private readonly RentalListViewModel viewModel;
 
     private readonly App app = Application.Current as App;
 
-    public RentalListView()
+    public RentalListView([FromKeyedServices("SqlAIService")] IAIService SqlAIService,
+        [FromKeyedServices("ChatAIService")] IAIService ChatAIService)
     {
         InitializeComponent();
 
+        this.SqlAIService = SqlAIService;
+
+        this.ChatAIService = ChatAIService;
+
         BindingContext = viewModel = new();
 
+        viewModel.ExecuteSql += ExecuteSql;
+
         viewModel.LoadRentalList += LoadRentalList;
+    }
+
+    private async Task GoToList(String rawSQL)
+    {
+        await Shell.Current.GoToAsync("../List?sqlModel=True", new Dictionary<String, Object>
+        {
+            { "rawSQL", rawSQL }
+        });
+    }
+
+    private async Task ExecuteSql()
+    {
+        await DisplayAlert("Log", viewModel.RawSQL, "OK");
+
+        var rentalSummaries = DatabaseService.GetAireDbContext().RentalSummaries.FromSqlRaw(viewModel.RawSQL).ToArray();
+
+        viewModel.Groups = [.. rentalSummaries.GroupBy(rentalSummary => new { rentalSummary.AddressStreetPart, rentalSummary.AddressNumberPart })
+            .Select(rentalSummaryGroup => new RentalListGroupViewModel()
+            {
+                Manmei = rentalSummaryGroup.First().BuildingName,
+                StationInfo = GetStationInfo(rentalSummaryGroup.First()),
+                ChikuInfo = GetChikuInfo(rentalSummaryGroup.First()),
+                KaisouInfo = GetKaisouInfo(rentalSummaryGroup.First()),
+                ChimeiInfo = rentalSummaryGroup.Key.AddressStreetPart,
+                ImageUrl = rentalSummaryGroup.First().ExteriorPhoto,
+                Items = [.. rentalSummaryGroup.Select(rentalSummaryItem => new RentalListItemViewModel()
+                {
+                    RentalId = rentalSummaryItem.RentalId,
+                    YachinInfo = GetMoneyInfo(rentalSummaryItem.Price),
+                    KanrihiInfo = GetKanrihiInfo(rentalSummaryItem),
+                    ShikikinInfo = GetShikikinInfo(rentalSummaryItem),
+                    ReikinInfo = GetReikinInfo(rentalSummaryItem),
+                    MadoriInfo = rentalSummaryItem.FloorPlanType,
+                    TatemenInfo = $"{rentalSummaryItem.ExclusiveArea}m²",
+                    SyokaiInfo = GetSyokaiInfo(rentalSummaryItem),
+                    ImageUrl = rentalSummaryItem.FloorPlanImage
+                })]
+            })];
+
+        viewModel.MessageReceived = false;
+
+        await ChatAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
+        {
+            viewModel.MessageHistory.Add(response);
+
+            viewModel.MessageReceived = true;
+
+            return Task.CompletedTask;
+
+        });
     }
 
     private void LoadRentalList()
@@ -78,7 +140,10 @@ public partial class RentalListView : ContentPage
             Chikunen = validRental.Chikunen,
             Chikutsuki = validRental.Chikutsuki,
             Tatemen = validRental.Tatemen,
-            Manmei = validRental.Manmei
+            Manmei = validRental.Manmei,
+            Gporder1 = validRental.Gporder1,
+            Gporder2 = validRental.Gporder2,
+            Gporder3 = validRental.Gporder3
         }).ToArray();
 
         viewModel.Groups = [.. validRentals.GroupBy(validRental => new { validRental.Chimei, validRental.Syozai })
@@ -88,19 +153,36 @@ public partial class RentalListView : ContentPage
                 StationInfo = GetStationInfo(validRentalGroup.First()),
                 ChikuInfo = GetChikuInfo(validRentalGroup.First()),
                 KaisouInfo = GetKaisouInfo(validRentalGroup.First()),
-                ChimeiInfo = validRentalGroup.First().Chimei,
+                ChimeiInfo = validRentalGroup.Key.Chimei,
+                ImageUrl = validRentalGroup.First().Gporder1,
                 Items = [.. validRentalGroup.Select(validRentalItem => new RentalListItemViewModel
-                    {
-                        RentalId = validRentalItem.RentalId,
-                        YachinInfo = GetMoneyInfo(validRentalItem.Yachin),
-                        KanrihiInfo = GetKanrihiInfo(validRentalItem),
-                        ShikikinInfo = GetShikikinInfo(validRentalItem),
-                        ReikinInfo = GetReikinInfo(validRentalItem),
-                        MadoriInfo = GetMadoriInfo(validRentalItem),
-                        TatemenInfo = $"{validRentalItem.Tatemen}m²",
-                        SyokaiInfo = GetSyokaiInfo(validRentalItem)
-                    })]
+                {
+                    RentalId = validRentalItem.RentalId,
+                    YachinInfo = GetMoneyInfo(validRentalItem.Yachin),
+                    KanrihiInfo = GetKanrihiInfo(validRentalItem),
+                    ShikikinInfo = GetShikikinInfo(validRentalItem),
+                    ReikinInfo = GetReikinInfo(validRentalItem),
+                    MadoriInfo = GetMadoriInfo(validRentalItem),
+                    TatemenInfo = $"{validRentalItem.Tatemen}m²",
+                    SyokaiInfo = GetSyokaiInfo(validRentalItem),
+                    ImageUrl = validRentalItem.Gporder2
+                })]
             })];
+    }
+
+    private static String GetStationInfo(RentalSummary rentalSummary)
+    {
+        (String, short)[] StationInfo = [
+            (rentalSummary.Station1Name, rentalSummary.Station1WalkMin ?? Int16.MaxValue),
+            (rentalSummary.Station2Name, rentalSummary.Station2WalkMin ?? Int16.MaxValue),
+            (rentalSummary.Station3Name, rentalSummary.Station3WalkMin ?? Int16.MaxValue)
+        ];
+
+        var stationInfo = StationInfo.MinBy(stationInfo => stationInfo.Item2);
+
+        return stationInfo.Item2 == Int16.MaxValue ?
+            $"{stationInfo.Item1}" :
+            $"{stationInfo.Item1} {String.Format(Constants.Toho, stationInfo.Item2)}";
     }
 
     private static String GetStationInfo(ValidRental validRental)
@@ -129,6 +211,17 @@ public partial class RentalListView : ContentPage
         return $"{station.RailwayCompany}{station.RailwayName}/{station.StationName}";
     }
 
+    private static String GetChikuInfo(RentalSummary rentalSummary)
+    {
+        int year = DateTime.Now.Year - rentalSummary.ConstructionDate.Year;
+
+        if (DateTime.Now.Month < rentalSummary.ConstructionDate.Month) year--;
+
+        return year > 0 ?
+            String.Format(Constants.Chikunen, year) :
+            Constants.Shinchiku;
+    }
+
     private static String GetChikuInfo(ValidRental validRental)
     {
         if (validRental.Chikunen == null)
@@ -146,6 +239,26 @@ public partial class RentalListView : ContentPage
         return year > 0 ?
             String.Format(Constants.Chikunen, year) :
             Constants.Shinchiku;
+    }
+
+    private static String GetKaisouInfo(RentalSummary rentalSummary)
+    {
+        if (rentalSummary.AboveGroundFloors > 0 && rentalSummary.BelowGroundFloors > 0)
+        {
+            return String.Format(Constants.ChijouChikaKaisou, rentalSummary.AboveGroundFloors, rentalSummary.BelowGroundFloors);
+        }
+
+        if (rentalSummary.BelowGroundFloors > 0)
+        {
+            return String.Format(Constants.ChikaKaisou, rentalSummary.BelowGroundFloors);
+        }
+
+        if (rentalSummary.AboveGroundFloors > 0)
+        {
+            return String.Format(Constants.ChijouKaisou, rentalSummary.AboveGroundFloors);
+        }
+
+        return String.Empty;
     }
 
     private static String GetKaisouInfo(ValidRental validRental)
@@ -195,11 +308,25 @@ public partial class RentalListView : ContentPage
         return String.Format(Constants.Yen, @string);
     }
 
+    private static String GetKanrihiInfo(RentalSummary rentalSummary)
+    {
+        return rentalSummary.ManagementFee > 0 ?
+            $"（管理費 {GetMoneyInfo(rentalSummary.ManagementFee.Value)}）" :
+            $"（管理費 -）";
+    }
+
     private static String GetKanrihiInfo(ValidRental validRental)
     {
         return validRental.Kanrihi > 0 ?
             $"（管理費 {GetMoneyInfo(validRental.Kanrihi.Value)}）" :
             $"（管理費 -）";
+    }
+
+    private static String GetShikikinInfo(RentalSummary rentalSummary)
+    {
+        return rentalSummary.SecurityDeposit > 0 ?
+            $"敷金 {GetMoneyInfo(rentalSummary.SecurityDeposit)}" :
+            $"敷金 -";
     }
 
     private static String GetShikikinInfo(ValidRental validRental)
@@ -251,6 +378,13 @@ public partial class RentalListView : ContentPage
         return shikikin > 0 ?
             $"敷金 {GetMoneyInfo(shikikin)}" :
             $"敷金 -";
+    }
+
+    private static String GetReikinInfo(RentalSummary rentalSummary)
+    {
+        return rentalSummary.KeyMoney > 0 ?
+            $"礼金 {GetMoneyInfo(rentalSummary.KeyMoney)}" :
+            $"礼金 -";
     }
 
     private static String GetReikinInfo(ValidRental validRental)
@@ -315,6 +449,22 @@ public partial class RentalListView : ContentPage
             $"{validRental.Madoheya}{madotaipu.OptionName}";
     }
 
+    private static String GetSyokaiInfo(RentalSummary rentalSummary)
+    {
+        if (rentalSummary.CurrentFloor < 0)
+        {
+            // 所在は地下
+            return String.Format(Constants.ChikaSyokai, -rentalSummary.CurrentFloor);
+        }
+        else
+        {
+            // 所在は地上
+            return rentalSummary.CurrentFloor > 0 ?
+                String.Format(Constants.ChijouSyokai, rentalSummary.CurrentFloor) :
+                Constants.Chijou;
+        }
+    }
+
     private static String GetSyokaiInfo(ValidRental validRental)
     {
         if (validRental.SyokaiChika)
@@ -333,6 +483,37 @@ public partial class RentalListView : ContentPage
         }
     }
 
+    private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
+    {
+        viewModel.MessageIsExpanded = !viewModel.MessageIsExpanded;
+    }
+
+    private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
+    {
+        if (String.IsNullOrWhiteSpace(viewModel.Message))
+        {
+            return;
+        }
+
+        var message = viewModel.Message;
+
+        viewModel.Message = String.Empty;
+
+        viewModel.MessageHistory.Add($"User: {message}");
+
+        viewModel.MessageReceived = false;
+
+        await SqlAIService.PostChatMessageAsync(message, response =>
+        {
+            viewModel.MessageHistory.Add(response);
+
+            viewModel.MessageReceived = true;
+
+            return Task.CompletedTask;
+
+        }, GoToList);
+    }
+
     private async void OnClicked_Back(Object sender, EventArgs eventArgs)
     {
         await Shell.Current.GoToAsync("..");
@@ -346,10 +527,5 @@ public partial class RentalListView : ContentPage
             var rentalId = WebUtility.UrlEncode(rentalListItemViewModel.RentalId);
             await Shell.Current.GoToAsync($"/Rental/Details?rentalId={rentalId}");
         }
-    }
-
-    private async void OnClicked(Object sender, EventArgs eventArgs)
-    {
-        await DisplayAlert("Log", String.Join(",", viewModel.SearchConditions.QueryItem), "OK");
     }
 }

@@ -54,6 +54,16 @@ public class RentalListGroupViewModel : BaseViewModel
         }
     }
 
+Å@Å@public String ImageUrl
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public ObservableCollection<RentalListItemViewModel> Items
     {
         get;

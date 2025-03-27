@@ -73,4 +73,14 @@ public class RentalListItemViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    public String ImageUrl
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
 }

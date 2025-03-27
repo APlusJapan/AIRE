@@ -1,1 +1,1 @@
-﻿System.Console.WriteLine("Hello, AIRE_DB!");
+System.Console.WriteLine("Hello, AIRE_DB!");

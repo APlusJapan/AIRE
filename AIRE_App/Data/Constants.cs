@@ -24,7 +24,7 @@ public static class Constants
 
     public const String ChikaKaisou = "地下{0}階建";
 
-    public const String ChijouChikaKaisou = "地上{0}地下{0}階建";
+    public const String ChijouChikaKaisou = "地上{0}地下{1}階建";
 
     public const String Yen = "{0}円";
 

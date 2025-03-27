@@ -9,7 +9,7 @@
 
     <ShellContent
         Route="Index"
-        Title="Welcome"
+        Title="AI 不動産"
         ContentTemplate="{DataTemplate local:IndexView}"/>
 
 </Shell>

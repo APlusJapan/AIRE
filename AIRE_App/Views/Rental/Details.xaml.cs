@@ -1,4 +1,4 @@
-﻿using AIRE_App.Data;
+using AIRE_App.Data;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
@@ -43,6 +43,7 @@ public partial class RentalDetailsView : ContentPage
         viewModel.Eki2Info = GetEkiInfo(validRental.Ekiid2, validRental.Toho2);
         viewModel.Eki3Info = GetEkiInfo(validRental.Ekiid3, validRental.Toho3);
         viewModel.CompanyNameInfo = $"不動産会社 {companyGroup.CompanyName}";
+        viewModel.ImageUrl = validRental.Gporder1;
     }
 
     private static String GetMoneyInfo(decimal money)
@@ -298,10 +299,5 @@ public partial class RentalDetailsView : ContentPage
         return toho > 0?
             $"{station.RailwayCompany}{station.RailwayName}/{station.StationName} {String.Format(Constants.Toho, toho)}":
             $"{station.RailwayCompany}{station.RailwayName}/{station.StationName}";
-    }
-
-    private async void OnClicked(Object sender, EventArgs eventArgs)
-    {
-        await DisplayAlert("Log", String.Join(",", validRental.RentalId), "OK");
     }
 }

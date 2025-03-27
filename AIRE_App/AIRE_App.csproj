@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -89,6 +89,12 @@
         <!-- PostgreSQL -->
         <!-- https://learn.microsoft.com/ef/core/providers -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Official OpenAI Library -->
+        <!-- https://platform.openai.com/docs/libraries -->
+        <PackageReference Include="OpenAI" Version="2.1.0" />
     </ItemGroup>
 
 </Project>

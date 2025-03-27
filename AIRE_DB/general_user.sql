@@ -1,4 +1,4 @@
-﻿CREATE TABLE general_user
+CREATE TABLE general_user
 (
     user_id varchar (20) Not Null,
     user_name varchar (40),

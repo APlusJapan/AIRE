@@ -1,8 +1,9 @@
 {
-  "profiles": {
-    "Windows Machine": {
-      "commandName": "Project",
-      "nativeDebugging": false
+    "$schema": "https://json.schemastore.org/launchsettings.json",
+    "profiles": {
+        "Windows": {
+            "commandName": "Project",
+            "nativeDebugging": false
+        }
     }
-  }
 }

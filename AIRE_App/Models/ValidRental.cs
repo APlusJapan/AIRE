@@ -1554,6 +1554,21 @@ public partial class ValidRental
     public short? DougaY2 { get; set; }
 
     /// <summary>
+    /// 優先画像1
+    /// </summary>
+    public string Gporder1 { get; set; }
+
+    /// <summary>
+    /// 優先画像2
+    /// </summary>
+    public string Gporder2 { get; set; }
+
+    /// <summary>
+    /// 優先画像3
+    /// </summary>
+    public string Gporder3 { get; set; }
+
+    /// <summary>
     /// スグ借りバーゲン
     /// </summary>
     public bool Kakutyouk1 { get; set; }

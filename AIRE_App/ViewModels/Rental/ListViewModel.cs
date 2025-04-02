@@ -28,6 +28,7 @@ public class RentalListViewModel : BaseViewModel, IQueryAttributable
         {
             SearchConditions = new()
             {
+                MySearchType = (SearchType)query["searchType"],
                 QueryItem = query["queryItem"] as List<ItemViewModel>,
                 YachinMin = query["yachinMin"] as ItemViewModel,
                 YachinMax = query["yachinMax"] as ItemViewModel,

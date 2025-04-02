@@ -4,7 +4,6 @@ using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AIRE_App.Views;
@@ -89,27 +88,22 @@ public partial class RentalListView : ContentPage
     {
         IQueryable<ValidRental> queryable = DatabaseService.GetAireDbContext().ValidRentals;
 
-        bool hasSearchType = Enum.TryParse(app.Session.GetString(nameof(SearchType)), out SearchType searchType);
+        List<String> queryItemList = [.. viewModel.SearchConditions.QueryItem.Select(item => item.ID)];
 
-        if (hasSearchType)
+        switch (viewModel.SearchConditions.MySearchType)
         {
-            List<String> queryItemList = [.. viewModel.SearchConditions.QueryItem.Select(item => item.ID)];
-
-            switch (searchType)
-            {
-                case SearchType.Station:
-                    {
-                        queryable = queryable.Where(validRental => queryItemList.Contains(validRental.Ekiid1)
-                            || queryItemList.Contains(validRental.Ekiid2)
-                            || queryItemList.Contains(validRental.Ekiid3));
-                        break;
-                    }
-                case SearchType.Area:
-                    {
-                        queryable = queryable.Where(validRental => queryItemList.Contains(validRental.AreaId));
-                        break;
-                    }
-            }
+            case SearchType.Station:
+                {
+                    queryable = queryable.Where(validRental => queryItemList.Contains(validRental.Ekiid1)
+                        || queryItemList.Contains(validRental.Ekiid2)
+                        || queryItemList.Contains(validRental.Ekiid3));
+                    break;
+                }
+            case SearchType.Area:
+                {
+                    queryable = queryable.Where(validRental => queryItemList.Contains(validRental.AreaId));
+                    break;
+                }
         }
 
         var validRentals = queryable.Select(validRental => new ValidRental()

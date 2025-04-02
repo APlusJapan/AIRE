@@ -7,11 +7,11 @@ namespace AIRE_App.Views;
 
 public partial class RentalDetailsView : ContentPage
 {
-    private readonly RentalDetailsViewModel viewModel;
-
     private ValidRental validRental;
 
     private CompanyGroup companyGroup;
+
+    private readonly RentalDetailsViewModel viewModel;
 
     public RentalDetailsView()
     {

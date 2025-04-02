@@ -4,22 +4,22 @@ namespace AIRE_App.Data;
 
 public static class Options
 {
-    public static IReadOnlyList<ItemViewModel> No =
+    public static readonly IReadOnlyList<ItemViewModel> No =
     [
         new() { ID = "-1", Name = "指定なし" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> NoMin =
+    public static readonly IReadOnlyList<ItemViewModel> NoMin =
     [
         new() { ID = "-1", Name = "下限なし" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> NoMax =
+    public static readonly IReadOnlyList<ItemViewModel> NoMax =
     [
         new() { ID = "-1", Name = "上限なし" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> Yachin =
+    public static readonly IReadOnlyList<ItemViewModel> Yachin =
     [
         new() { ID = "30000", Name = "3万円" },
         new() { ID = "35000", Name = "3.5万円" },
@@ -72,7 +72,7 @@ public static class Options
         new() { ID = "1000000", Name = "100万円" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> Toho =
+    public static readonly IReadOnlyList<ItemViewModel> Toho =
     [
         new() { ID = "1", Name = "1分以内" },
         new() { ID = "5", Name = "5分以内" },
@@ -82,7 +82,7 @@ public static class Options
         new() { ID = "20", Name = "20分以内" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> Men =
+    public static readonly IReadOnlyList<ItemViewModel> Men =
     [
         new() { ID = "20", Name = "20m²" },
         new() { ID = "25", Name = "25m²" },
@@ -100,7 +100,7 @@ public static class Options
         new() { ID = "100", Name = "100m²" }
     ];
 
-    public static IReadOnlyList<ItemViewModel> Chikunensu =
+    public static readonly IReadOnlyList<ItemViewModel> Chikunensu =
     [
         new() { ID = "0", Name = "新築" },
         new() { ID = "1", Name = "1年以内" },

@@ -10,13 +10,15 @@ namespace AIRE_App.Views;
 
 public partial class RentalSearchView : ContentPage
 {
-    private readonly IAIService SqlAIService;
+    private readonly String prefectureID;
+
+    private readonly IAIService sqlAIService;
+
+    private SearchType searchType = SearchType.None;
 
     private readonly RentalSearchViewModel viewModel;
 
     private readonly App app = Application.Current as App;
-
-    private readonly ObservableCollection<ItemViewModel> emptyCollection = [];
 
     private ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> areaGroups;
 
@@ -28,7 +30,9 @@ public partial class RentalSearchView : ContentPage
 
         BindingContext = viewModel = new();
 
-        this.SqlAIService = SqlAIService;
+        sqlAIService = SqlAIService;
+
+        prefectureID = app.Session.GetString(nameof(Prefecture));
     }
 
     private async Task GoToList(String rawSQL)
@@ -41,71 +45,42 @@ public partial class RentalSearchView : ContentPage
 
     private void StationSearch(Object sender, EventArgs eventArgs)
     {
-        if (!app.Items.TryGetValue(nameof(Station.RailwayName), out Object value)
-            || value is not Station[])
+        if (!app.Items.TryGetValue(nameof(RailwayInfo), out Object value)
+            || value is not RailwayInfo[])
         {
-            value = app.Items[nameof(Station.RailwayName)] = DatabaseService.GetAireDbContext().Stations
-                .Select(railway => new Station()
-                {
-                    RailwayName = railway.RailwayName,
-                    RailwayCompany = railway.RailwayCompany
-                }).Distinct()
-                .OrderBy(railway => railway.RailwayCompany).ThenBy(railway => railway.RailwayName).ToArray();
+            value = app.Items[nameof(RailwayInfo)] = DatabaseService.GetAireDbContext().RailwayInfos.ToArray();
         }
 
-        var railways = value as Station[];
+        var railwayInfos = value as RailwayInfo[];
 
-        if (app.Session.GetString(nameof(SearchType)) != SearchType.Station.ToString())
+        if (searchType != SearchType.Station)
         {
             if (stationGroups == null)
             {
-                stationGroups = [.. railways.Select(railway => new GroupViewModel<GroupViewModel<ItemViewModel>>()
-                {
-                    ID = railway.RailwayName,
-                    Name = $"[{railway.RailwayCompany}] {railway.RailwayName}",
-                    LoadItems = LoadStation
-                })];
+                stationGroups = [.. railwayInfos.Where(railwayInfo => railwayInfo.PrefectureId == prefectureID)
+                    .GroupBy(railwayInfo => railwayInfo.RailwayCompany)
+                    .Select(railwayInfoGroup =>
+                    {
+                        var currentGroup = new GroupViewModel<GroupViewModel<ItemViewModel>>()
+                        {
+                            Name = railwayInfoGroup.Key
+                        };
+
+                        currentGroup.Items = [.. railwayInfoGroup.Select(railwayInfoItem => new GroupViewModel<ItemViewModel>()
+                        {
+                            ID = railwayInfoGroup.Key,
+                            Name = railwayInfoItem.RailwayName,
+                            ParentItemCheck = currentGroup.SubItemCheck,
+                            LoadItems = LoadStation
+                        })];
+
+                        return currentGroup;
+                    })];
             }
 
             viewModel.Groups = stationGroups;
 
-            app.Session.SetString(nameof(SearchType), SearchType.Station.ToString());
-        }
-
-        foreach (var group in viewModel.Groups)
-        {
-            group.IsChecked = false;
-            group.IsExpanded = false;
-        }
-
-        viewModel.IsGroupsExpanded = true;
-    }
-
-    private void AreaSearch(Object sender, EventArgs eventArgs)
-    {
-        if (!app.Items.TryGetValue(nameof(Prefecture), out Object value)
-            || value is not Prefecture[])
-        {
-            value = app.Items[nameof(Prefecture)] = DatabaseService.GetAireDbContext().Prefectures.ToArray();
-        }
-
-        var prefectures = value as Prefecture[];
-
-        if (app.Session.GetString(nameof(SearchType)) != SearchType.Area.ToString())
-        {
-            if (areaGroups == null)
-            {
-                areaGroups = [.. prefectures.Select(prefecture => new GroupViewModel<GroupViewModel<ItemViewModel>>()
-                {
-                    ID = prefecture.PrefectureId,
-                    Name = prefecture.PrefectureName,
-                    LoadItems = LoadAeras
-                })];
-            }
-
-            viewModel.Groups = areaGroups;
-
-            app.Session.SetString(nameof(SearchType), SearchType.Area.ToString());
+            searchType = SearchType.Station;
         }
 
         foreach (var group in viewModel.Groups)
@@ -125,69 +100,87 @@ public partial class RentalSearchView : ContentPage
         viewModel.IsGroupsExpanded = true;
     }
 
-    private void LoadStation(GroupViewModel<GroupViewModel<ItemViewModel>> prefecture)
+    private void AreaSearch(Object sender, EventArgs eventArgs)
     {
-        if (prefecture.Items == null)
+        if (!app.Items.TryGetValue(prefectureID, out Object value)
+                || value is not Area[])
         {
-            if (!app.Items.TryGetValue(prefecture.ID, out Object value)
+            value = app.Items[prefectureID] = DatabaseService.GetAireDbContext().Areas
+                .Where(area => area.PrefectureId == prefectureID).ToArray();
+        }
+
+        var areas = value as Area[];
+
+        if (searchType != SearchType.Area)
+        {
+            if (areaGroups == null)
+            {
+                areaGroups = [.. areas
+                    .Where(area => String.IsNullOrWhiteSpace(area.RevisedAreaId) &&
+                        (String.IsNullOrWhiteSpace(area.ParentAreaId) || area.ParentAreaId == area.AreaId))
+                    .Select(area =>
+                    {
+                        var currentGroup = new GroupViewModel<GroupViewModel<ItemViewModel>>()
+                        {
+                            ID = area.AreaId,
+                            Name = area.AreaName,
+                        };
+
+                        if(area.ParentAreaId == area.AreaId)
+                        {
+                            currentGroup.Items = [.. areas
+                                .Where(area => String.IsNullOrWhiteSpace(area.RevisedAreaId) &&
+                                    area.ParentAreaId == currentGroup.ID &&
+                                    area.ParentAreaId != area.AreaId)
+                                .Select(subitem => new GroupViewModel<ItemViewModel>()
+                                {
+                                    ID = subitem.AreaId,
+                                    Name = subitem.AreaName,
+                                    ParentItemCheck = currentGroup.SubItemCheck
+                                })];
+                        }
+
+                        return currentGroup;
+                    })];
+            }
+
+            viewModel.Groups = areaGroups;
+
+            searchType = SearchType.Area;
+        }
+
+        foreach (var group in viewModel.Groups)
+        {
+            group.IsChecked = false;
+            group.IsExpanded = false;
+        }
+
+        viewModel.IsGroupsExpanded = true;
+    }
+
+    private void LoadStation(GroupViewModel<ItemViewModel> railwayInfoItem)
+    {
+        if (railwayInfoItem.Items == null)
+        {
+            var stationRailwayInfo = $"{railwayInfoItem.ID},{railwayInfoItem.Name}";
+
+            if (!app.Items.TryGetValue(stationRailwayInfo, out Object value)
                 || value is not Station[])
             {
-                value = app.Items[prefecture.ID] = DatabaseService.GetAireDbContext().Stations
-                    .Where(station => station.RailwayName == prefecture.ID).ToArray();
+                value = app.Items[stationRailwayInfo] = DatabaseService.GetAireDbContext().Stations
+                    .Where(station => station.RailwayCompany == railwayInfoItem.ID &&
+                        station.RailwayName == railwayInfoItem.Name).ToArray();
             }
 
             var stations = value as Station[];
 
-            prefecture.Items = [.. stations
+            railwayInfoItem.Items = [.. stations
                 .Select(station => new GroupViewModel<ItemViewModel>()
                 {
                     ID = station.StationId,
                     Name = station.StationName,
-                    ParentItemCheck = prefecture.SubItemCheck
+                    ParentItemCheck = railwayInfoItem.SubItemCheck
                 })];
-        }
-    }
-
-    private void LoadAeras(GroupViewModel<GroupViewModel<ItemViewModel>> prefecture)
-    {
-        if (prefecture.Items == null)
-        {
-            if (!app.Items.TryGetValue(prefecture.ID, out Object value)
-                || value is not Area[])
-            {
-                value = app.Items[prefecture.ID] = DatabaseService.GetAireDbContext().Areas
-                    .Where(area => area.PrefectureId == prefecture.ID).ToArray();
-            }
-
-            var areas = value as Area[];
-
-            prefecture.Items = [.. areas
-                .Where(area => String.IsNullOrWhiteSpace(area.RevisedAreaId) &&
-                    (String.IsNullOrWhiteSpace(area.ParentAreaId) || area.ParentAreaId == area.AreaId))
-                .Select(area => new GroupViewModel<ItemViewModel>()
-                {
-                    ID = area.AreaId,
-                    Name = area.AreaName,
-                    ParentItemCheck = prefecture.SubItemCheck,
-                    Items = String.IsNullOrWhiteSpace(area.ParentAreaId) ? null : emptyCollection
-                })];
-
-            foreach (var groupItem in prefecture.Items)
-            {
-                if (groupItem.Items == emptyCollection)
-                {
-                    groupItem.Items = [.. areas
-                        .Where(area => String.IsNullOrWhiteSpace(area.RevisedAreaId) &&
-                            area.ParentAreaId == groupItem.ID &&
-                            area.ParentAreaId != area.AreaId)
-                        .Select(subitem => new ItemViewModel()
-                        {
-                            ID = subitem.AreaId,
-                            Name = subitem.AreaName,
-                            ParentItemCheck = groupItem.SubItemCheck
-                        })];
-                }
-            }
         }
     }
 
@@ -195,26 +188,24 @@ public partial class RentalSearchView : ContentPage
     {
         var item = eventArgs.Item as GroupViewModel<GroupViewModel<ItemViewModel>>;
 
-        switch (Enum.Parse<SearchType>(app.Session.GetString(nameof(SearchType))))
+        if (item.Items != null)
         {
-            case SearchType.Station:
-                {
-                    LoadStation(item);
-                    break;
-                }
-            case SearchType.Area:
-                {
-                    LoadAeras(item);
-                    break;
-                }
+            item.IsExpanded = !item.IsExpanded;
         }
-
-        item.IsExpanded = !item.IsExpanded;
+        else
+        {
+            item.IsChecked = !item.IsChecked;
+        }
     }
 
     private void OnItemTapped_GroupItem(Object sender, ItemTappedEventArgs eventArgs)
     {
         var item = eventArgs.Item as GroupViewModel<ItemViewModel>;
+
+        if (searchType == SearchType.Station)
+        {
+            LoadStation(item);
+        }
 
         if (item.Items != null)
         {
@@ -237,49 +228,71 @@ public partial class RentalSearchView : ContentPage
     {
         List<ItemViewModel> queryItem = [];
 
-        if(viewModel.Groups != null)
+        switch (searchType)
         {
-            foreach (var group in viewModel.Groups)
-            {
-                if (group.IsChecked)
+            case SearchType.Station:
                 {
-                    foreach (var groupItem in group.Items)
+                    foreach (var group in viewModel.Groups)
                     {
-                        if (groupItem.IsChecked)
+                        if (group.IsChecked)
                         {
-                            if (groupItem.Items == null)
+                            foreach (var groupItem in group.Items)
                             {
-                                queryItem.Add(groupItem);
-                            }
-                            else
-                            {
-                                bool groupItemSelected = true;
-
-                                foreach (var item in groupItem.Items)
+                                if (groupItem.IsChecked)
                                 {
-                                    if (item.IsChecked)
+                                    foreach (var item in groupItem.Items)
                                     {
-                                        queryItem.Add(item);
+                                        if (item.IsChecked)
+                                        {
+                                            queryItem.Add(item);
+                                        }
                                     }
-                                    else
-                                    {
-                                        groupItemSelected = false;
-                                    }
-                                }
-
-                                if (groupItemSelected)
-                                {
-                                    queryItem.Add(groupItem);
                                 }
                             }
                         }
                     }
+                    break;
                 }
-            }
+            case SearchType.Area:
+                {
+                    foreach (var group in viewModel.Groups)
+                    {
+                        if (group.IsChecked)
+                        {
+                            if (group.Items == null)
+                            {
+                                queryItem.Add(group);
+                            }
+                            else
+                            {
+                                bool groupSelected = true;
+
+                                foreach (var groupItem in group.Items)
+                                {
+                                    if (groupItem.IsChecked)
+                                    {
+                                        queryItem.Add(groupItem);
+                                    }
+                                    else
+                                    {
+                                        groupSelected = false;
+                                    }
+                                }
+
+                                if (groupSelected)
+                                {
+                                    queryItem.Add(group);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
         }
 
         await Shell.Current.GoToAsync("/Rental/List?sqlModel=False", new Dictionary<String, Object>
         {
+            { "searchType", searchType },
             { "queryItem", queryItem },
             { "yachinMin", viewModel.YachinMin[viewModel.YachinMinIndex] },
             { "yachinMax", viewModel.YachinMax[viewModel.YachinMaxIndex] },
@@ -329,7 +342,7 @@ public partial class RentalSearchView : ContentPage
 
     private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
     {
-        if(String.IsNullOrWhiteSpace(viewModel.Message))
+        if (String.IsNullOrWhiteSpace(viewModel.Message))
         {
             return;
         }
@@ -342,7 +355,7 @@ public partial class RentalSearchView : ContentPage
 
         viewModel.MessageReceived = false;
 
-        await SqlAIService.PostChatMessageAsync(message, response =>
+        await sqlAIService.PostChatMessageAsync(message, response =>
         {
             viewModel.MessageHistory.Add(response);
 

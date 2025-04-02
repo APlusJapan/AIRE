@@ -4,6 +4,8 @@ namespace AIRE_App.Data;
 
 public class RentalSearchConditions
 {
+    public SearchType MySearchType { get; init; }
+
     public List<ItemViewModel> QueryItem { get; init; }
 
     public ItemViewModel YachinMin { get; init; }

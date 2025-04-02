@@ -37,6 +37,8 @@ public partial class AireDbContext : DbContext
 
     public virtual DbSet<PropertyVideo> PropertyVideos { get; set; }
 
+    public virtual DbSet<RailwayInfo> RailwayInfos { get; set; }
+
     public virtual DbSet<RentalBrowsingHistory> RentalBrowsingHistories { get; set; }
 
     public virtual DbSet<RentalSearchHistory> RentalSearchHistories { get; set; }
@@ -433,6 +435,27 @@ public partial class AireDbContext : DbContext
                 .HasMaxLength(255)
                 .HasComment("動画URI")
                 .HasColumnName("video_uri");
+        });
+
+        modelBuilder.Entity<RailwayInfo>(entity =>
+        {
+            entity.HasKey(e => new { e.RailwayName, e.RailwayCompany, e.PrefectureId }).HasName("railway_info_pkey");
+
+            entity.ToTable("railway_info", tb => tb.HasComment("鉄道情報"));
+
+            entity.Property(e => e.RailwayName)
+                .HasMaxLength(20)
+                .HasComment("路線名")
+                .HasColumnName("railway_name");
+            entity.Property(e => e.RailwayCompany)
+                .HasMaxLength(20)
+                .HasComment("運営会社")
+                .HasColumnName("railway_company");
+            entity.Property(e => e.PrefectureId)
+                .HasMaxLength(5)
+                .IsFixedLength()
+                .HasComment("都道府県ID")
+                .HasColumnName("prefecture_id");
         });
 
         modelBuilder.Entity<RentalBrowsingHistory>(entity =>

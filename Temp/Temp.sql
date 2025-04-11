@@ -2486,6 +2486,13 @@ INSERT INTO company_group(company_id, company_name) VALUES
     ('0000000000000000000000000000000000000002', 'Ｂ株式会社'),
     ('0000000000000000000000000000000000000003', 'Ｃ株式会社');
 
+INSERT INTO company_member(company_id, staff_id, line_id, route_id, is_business) VALUES
+    ('0000000000000000000000000000000000000001', '00000000000000000001', '938styyl', '4AqqKqo', TRUE),
+    ('0000000000000000000000000000000000000001', '00000000000000000002', '938styyl', '4AqqKqo', TRUE),
+    ('0000000000000000000000000000000000000002', '00000000000000000001', '745jmues', '', TRUE),
+    ('0000000000000000000000000000000000000002', '00000000000000000002', '745jmues', '', TRUE),
+    ('0000000000000000000000000000000000000003', '00000000000000000001', '', '', FALSE);
+
 INSERT INTO valid_rental(rental_id, company_id, staff_id, area_id, yachin, syohizei, kanrihi, chimei, syozai, ekisu, ekiid1, toho1, ekiid2, toho2, ekiid3, toho3, kinkum1, kinkagetu1, kinku1, kinkum2, kinkagetu2, kinku2, tyuutekin, tyutetani, bukkmoku, madoheya, madotaipu, chijou, chika, syokai_chika, syokai, chikunen, chikutsuki, tatemen, manmei, gporder1, gporder2) VALUES
     ('0000000000000000000000000000000000000001', '0000000000000000000000000000000000000001', '00000000000000000001', '14152', 49000.00, '0', 0.00, '神奈川県相模原市中央区相模原1', '1-1', 2, '004284', 1, '004304', 3, '004253', 5, 1, 1, 1, 3, 10000.00, 0, 0, 0, 1, 1, 1, 15, 2, FALSE, 2, 2015, 0, 30, 'FirstBuild', 'https://chintai.r6.ur-net.go.jp/chintai/img_photo/50/50_273/50_273_photo.jpg', 'https://sumai.r6.ur-net.go.jp/chintai/recruit/ArrNormal/10/50273/0000003/Nskm/RA/Image/50_273_0-00-0003_Nskm_RA_01_00008.gif'),
     ('0000000000000000000000000000000000000002', '0000000000000000000000000000000000000001', '00000000000000000001', '14152', 50000.00, '0', 0.00, '神奈川県相模原市中央区相模原1', '1-1', 2, '004284', 1, '004304', 3, '004253', 5, 1, 10000.00, 0, 3, 1, 1, 0, 1, 1, 2, 2, 15, 2, FALSE, 1, 2015, 0, 45, 'FirstBuild', 'https://chintai.r6.ur-net.go.jp/chintai/img_photo/50/50_273/50_273_photo.jpg', 'https://chintai.r6.ur-net.go.jp/chintai/img_madori/50/50_273/50_273_0-00-0004_H9f_RA_01_00006.gif'),

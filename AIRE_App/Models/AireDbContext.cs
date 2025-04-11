@@ -140,7 +140,7 @@ public partial class AireDbContext : DbContext
 
         modelBuilder.Entity<CompanyMember>(entity =>
         {
-            entity.HasKey(e => e.CompanyId).HasName("company_member_pkey");
+            entity.HasKey(e => new { e.CompanyId, e.StaffId }).HasName("company_member_pkey");
 
             entity.ToTable("company_member", tb => tb.HasComment("会社メンバー"));
 
@@ -148,20 +148,31 @@ public partial class AireDbContext : DbContext
                 .HasMaxLength(40)
                 .HasComment("会社ID")
                 .HasColumnName("company_id");
+            entity.Property(e => e.StaffId)
+                .HasMaxLength(20)
+                .HasComment("社員ID")
+                .HasColumnName("staff_id");
             entity.Property(e => e.Email)
                 .HasMaxLength(40)
                 .HasComment("Eメール")
                 .HasColumnName("email");
-            entity.Property(e => e.PhoneNumber)
+            entity.Property(e => e.IsBusiness)
+                .HasDefaultValue(true)
+                .HasComment("ビジネスアカウント")
+                .HasColumnName("is_business");
+            entity.Property(e => e.LineId)
                 .IsRequired()
+                .HasMaxLength(20)
+                .HasComment("Line ID")
+                .HasColumnName("line_id");
+            entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .HasComment("電話番号")
                 .HasColumnName("phone_number");
-            entity.Property(e => e.StaffId)
-                .IsRequired()
+            entity.Property(e => e.RouteId)
                 .HasMaxLength(20)
-                .HasComment("社員ID")
-                .HasColumnName("staff_id");
+                .HasComment("追加経路ID")
+                .HasColumnName("route_id");
             entity.Property(e => e.StaffName)
                 .HasMaxLength(40)
                 .HasComment("社員名")

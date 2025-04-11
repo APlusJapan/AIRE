@@ -55,7 +55,7 @@
             </Grid>
         </ScrollView>
         <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Padding="16" Spacing="16">
-            <Button Text="電話する"/>
+            <Button Text="Line" Clicked="OnClicked_Line"/>
         </HorizontalStackLayout>
     </Grid>
 </ContentPage>

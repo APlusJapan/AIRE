@@ -300,4 +300,13 @@ public partial class RentalDetailsView : ContentPage
             $"{station.RailwayCompany}{station.RailwayName}/{station.StationName} {String.Format(Constants.Toho, toho)}":
             $"{station.RailwayCompany}{station.RailwayName}/{station.StationName}";
     }
+
+    private async void OnClicked_Line(Object sender, EventArgs eventArgs)
+    {
+        await Shell.Current.GoToAsync($"/Line", new Dictionary<String, Object>
+        {
+            { "companyGroup", companyGroup },
+            { "staffId", validRental.StaffId }
+        });
+    }
 }

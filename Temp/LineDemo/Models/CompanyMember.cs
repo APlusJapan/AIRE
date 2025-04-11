@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AIRE_DB.Models;
+﻿namespace AIRE_DB.Models;
 
 /// <summary>
 /// 会社メンバー
@@ -17,21 +14,6 @@ public partial class CompanyMember
     /// 社員ID
     /// </summary>
     public string StaffId { get; set; }
-
-    /// <summary>
-    /// 社員名
-    /// </summary>
-    public string StaffName { get; set; }
-
-    /// <summary>
-    /// 電話番号
-    /// </summary>
-    public string PhoneNumber { get; set; }
-
-    /// <summary>
-    /// Eメール
-    /// </summary>
-    public string Email { get; set; }
 
     /// <summary>
     /// Line ID

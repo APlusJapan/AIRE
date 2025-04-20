@@ -14,6 +14,21 @@ public class RentalListViewModel : BaseViewModel, IQueryAttributable
 
     public RentalSearchConditions SearchConditions;
 
+    public AIStatusViewModel MyAIStatusViewModel
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RentalListViewModel(AIStatusViewModel aiStatusViewModel)
+    {
+        MyAIStatusViewModel = aiStatusViewModel;
+    }
+
     public void ApplyQueryAttributes(IDictionary<String, Object> query)
     {
         bool sqlModel = Boolean.Parse(query["sqlModel"] as String);
@@ -71,58 +86,6 @@ public class RentalListViewModel : BaseViewModel, IQueryAttributable
             };
 
             LoadRentalList();
-        }
-    }
-
-    public bool MessageReceived
-    {
-        get
-        {
-            return AIStatusService.MessageReceived;
-        }
-        set
-        {
-            AIStatusService.MessageReceived = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool MessageIsExpanded
-    {
-        get
-        {
-            return AIStatusService.MessageIsExpanded;
-        }
-        set
-        {
-            AIStatusService.MessageIsExpanded = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public String Message
-    {
-        get
-        {
-            return AIStatusService.Message;
-        }
-        set
-        {
-            AIStatusService.Message = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ObservableCollection<String> MessageHistory
-    {
-        get
-        {
-            return AIStatusService.MessageHistory;
-        }
-        set
-        {
-            AIStatusService.MessageHistory = value;
-            OnPropertyChanged();
         }
     }
 

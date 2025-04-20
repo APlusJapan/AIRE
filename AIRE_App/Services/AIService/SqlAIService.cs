@@ -1,16 +1,24 @@
 using AIRE_App.Interfaces;
-using OpenAI.Chat;
+using AIRE_App.ViewModels;
+using OpenAI.Responses;
 
 namespace AIRE_App.Services.AIServices;
 
 public class SqlAIService : IAIService
 {
-    private const String modelaName = "gpt-4o-search-preview";
+    private const String modelaName = "gpt-4o";
+
+    private const String idKey = "SqlAIService";
 
     private const String markdownSuffix = "```";
 
     private const String markdownPrefix = "```sql";
-    public List<ChatMessage> ChatMessageList { get; } = [];
+
+    private readonly OpenAIResponseClient openAIResponseClient;
+
+    private readonly MessageResponseItem systemMessageResponseItem;
+
+    private readonly ResponseCreationOptions responseCreationOptions;
 
     private const String apiKey = "sk-2UWxCOHGalGf9Whr5TGqxPF0ff673kkSxx6grYqErTT3BlbkFJ1EZi0KeYvH4FGC0JjVBNvRno4E-tmSB7PjFDlvttYA";
 
@@ -112,49 +120,62 @@ public class SqlAIService : IAIService
         COMMENT ON COLUMN rental_summary.recommend IS '推薦物件';
         """;
 
-        ChatMessageList.Add(ChatMessage.CreateSystemMessage(systemPrompt));
+        openAIResponseClient = new OpenAIResponseClient(modelaName, apiKey);
+
+        responseCreationOptions = new ResponseCreationOptions();
+
+        responseCreationOptions.Tools.Add(ResponseTool.CreateWebSearchTool());
+
+        systemMessageResponseItem = ResponseItem.CreateSystemMessageItem(systemPrompt);
     }
 
-    public Task ProcessRecommendAsync(List<String> recommendList, Func<String, Task> messageProcessor)
+    public void SetID(String id)
+    {
+        responseCreationOptions.PreviousResponseId = id;
+    }
+
+    public Task ProcessRecommendAsync(List<String> recommendList, Func<MessageViewModel, Task> messageProcessor)
     {
         throw new NotImplementedException();
     }
 
-    public async Task PostChatMessageAsync(String message, Func<String, Task> messageProcessor, Func<String, Task> shellMover)
+    public async Task PostChatMessageAsync(String message, Func<MessageViewModel, Task> messageProcessor, Func<String, Task> shellMover)
     {
-        var client = new ChatClient(modelaName, apiKey);
+        OpenAIResponse openAIResponse;
 
-        ChatMessageList.Add(message);
+        var userMessageResponseItem = ResponseItem.CreateUserMessageItem(message);
 
-        var clientResult = await client.CompleteChatAsync(ChatMessageList);
-
-        if (clientResult.Value == null)
+        if (String.IsNullOrWhiteSpace(responseCreationOptions.PreviousResponseId))
         {
-            return;
+            openAIResponse = await openAIResponseClient.CreateResponseAsync([systemMessageResponseItem, userMessageResponseItem], responseCreationOptions);
+        }
+        else
+        {
+            openAIResponse = await openAIResponseClient.CreateResponseAsync([userMessageResponseItem], responseCreationOptions);
         }
 
-        ChatCompletion chatCompletion = clientResult;
+        Preferences.Set(idKey, openAIResponse.Id);
 
-        String responseMessage = String.Join(String.Empty, chatCompletion.Content
-            .Select(chatMessageContentPart => chatMessageContentPart.Text)).Trim();
+        responseCreationOptions.PreviousResponseId = openAIResponse.Id;
 
-        if (chatCompletion.Role == ChatMessageRole.Assistant)
-        {
-            ChatMessageList.Add(ChatMessage.CreateAssistantMessage(responseMessage));
-        }
+        var output = openAIResponse.GetOutputText();
 
-        if (responseMessage.StartsWith(markdownPrefix) && responseMessage.EndsWith(markdownSuffix))
+        if (output.StartsWith(markdownPrefix) && output.EndsWith(markdownSuffix))
         {
             int startIndex = markdownPrefix.Length;
-            int sqlLength = responseMessage.Length - markdownPrefix.Length - markdownSuffix.Length;
+            int sqlLength = output.Length - markdownPrefix.Length - markdownSuffix.Length;
 
-            var rawSQL = responseMessage.Substring(startIndex, sqlLength);
+            var rawSQL = output.Substring(startIndex, sqlLength);
 
             await shellMover?.Invoke(rawSQL);
 
             return;
         }
 
-        await messageProcessor?.Invoke($"{chatCompletion.Role}: {responseMessage}");
+        await messageProcessor?.Invoke(new()
+        {
+            Role = "assistant",
+            Text = output
+        });
     }
 }

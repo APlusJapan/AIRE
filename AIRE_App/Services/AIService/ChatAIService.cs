@@ -1,16 +1,23 @@
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using AIRE_App.Interfaces;
-using OpenAI.Chat;
+using AIRE_App.ViewModels;
+using OpenAI.Responses;
 
 namespace AIRE_App.Services.AIServices;
 
 public class ChatAIService : IAIService
 {
-    private const String modelaName = "gpt-4o-search-preview";
-    public List<ChatMessage> ChatMessageList { get; } = [];
+    private const String modelaName = "gpt-4o";
 
-    private Regex urlLinkRegex = new(@"#* *\(?\[.*?\]\(.*?\)\)?");
+    private const String idKey = "ChatAIService";
+
+    private readonly OpenAIResponseClient openAIResponseClient;
+
+    private readonly MessageResponseItem systemMessageResponseItem;
+
+    private readonly ResponseCreationOptions responseCreationOptions;
+
+    private readonly Regex urlLinkRegex = new(@"#* *\(?\[.*?\]\(.*?\)\)?");
 
     private const String apiKey = "sk-2UWxCOHGalGf9Whr5TGqxPF0ff673kkSxx6grYqErTT3BlbkFJ1EZi0KeYvH4FGC0JjVBNvRno4E-tmSB7PjFDlvttYA";
 
@@ -36,42 +43,53 @@ public class ChatAIService : IAIService
         ・​パレスホテル東京内の5LDK賃貸物件です。​二重橋前駅から徒歩3分、東京駅へも徒歩圏内でアクセス良好。​皇居外苑の緑を望むロケーションで、都心でありながら自然を感じる生活が可能です。​周辺には高級ブランドショップや多彩なレストランが集まる丸の内仲通りがあり、ショッピングやグルメも楽しめます。​内見のご希望がございましたら、お気軽にお問い合わせください。
         """;
 
-        ChatMessageList.Add(ChatMessage.CreateSystemMessage(systemPrompt));
+        openAIResponseClient = new OpenAIResponseClient(modelaName, apiKey);
+
+        responseCreationOptions = new ResponseCreationOptions();
+
+        responseCreationOptions.Tools.Add(ResponseTool.CreateWebSearchTool());
+
+        systemMessageResponseItem = ResponseItem.CreateSystemMessageItem(systemPrompt);
     }
 
-    public async Task ProcessRecommendAsync(List<String> recommendList, Func<String, Task> messageProcessor)
+    public void SetID(String id)
+    {
+        responseCreationOptions.PreviousResponseId = id;
+    }
+
+    public async Task ProcessRecommendAsync(List<String> recommendList, Func<MessageViewModel, Task> messageProcessor)
     {
         String[] promptArray = [recommendPrompt, .. recommendList];
 
         var message = String.Join("\n", promptArray);
 
-        var client = new ChatClient(modelaName, apiKey);
+        OpenAIResponse openAIResponse;
 
-        ChatMessageList.Add(message);
+        var userMessageResponseItem = ResponseItem.CreateUserMessageItem(message);
 
-        var clientResult = await client.CompleteChatAsync(ChatMessageList);
-
-        if (clientResult.Value == null)
+        if (String.IsNullOrWhiteSpace(responseCreationOptions.PreviousResponseId))
         {
-            return;
+            openAIResponse = await openAIResponseClient.CreateResponseAsync([systemMessageResponseItem, userMessageResponseItem], responseCreationOptions);
+        }
+        else
+        {
+            openAIResponse = await openAIResponseClient.CreateResponseAsync([userMessageResponseItem], responseCreationOptions);
         }
 
-        ChatCompletion chatCompletion = clientResult;
+        Preferences.Set(idKey, openAIResponse.Id);
 
-        String responseMessage = String.Join(String.Empty, chatCompletion.Content
-            .Select(chatMessageContentPart => chatMessageContentPart.Text));
+        responseCreationOptions.PreviousResponseId = openAIResponse.Id;
 
-        if (chatCompletion.Role == ChatMessageRole.Assistant)
+        var output = openAIResponse.GetOutputText();
+
+        await messageProcessor?.Invoke(new()
         {
-            ChatMessageList.Add(ChatMessage.CreateAssistantMessage(responseMessage));
-        }
-
-        Trace.WriteLine(responseMessage);
-
-        await messageProcessor?.Invoke($"{chatCompletion.Role}: {urlLinkRegex.Replace(responseMessage, String.Empty).Trim()}");
+            Role = "assistant",
+            Text = urlLinkRegex.Replace(output, String.Empty).Trim()
+        });
     }
 
-    public Task PostChatMessageAsync(String message, Func<String, Task> messageProcessor, Func<String, Task> shellMover)
+    public Task PostChatMessageAsync(String message, Func<MessageViewModel, Task> messageProcessor, Func<String, Task> shellMover)
     {
         throw new NotImplementedException();
     }

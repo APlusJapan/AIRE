@@ -18,19 +18,24 @@ public partial class RentalSearchView : ContentPage
 
     private readonly RentalSearchViewModel viewModel;
 
+    private readonly AIStatusViewModel aiStatusViewModel;
+
     private readonly App app = Application.Current as App;
 
     private ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> areaGroups;
 
     private ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> stationGroups;
 
-    public RentalSearchView([FromKeyedServices("SqlAIService")] IAIService SqlAIService)
+    public RentalSearchView(AIStatusViewModel aiStatusViewModel,
+        [FromKeyedServices("SqlAIService")] IAIService SqlAIService)
     {
         InitializeComponent();
 
-        BindingContext = viewModel = new();
-
         sqlAIService = SqlAIService;
+
+        this.aiStatusViewModel = aiStatusViewModel;
+
+        BindingContext = viewModel = new(aiStatusViewModel);
 
         prefectureID = app.Session.GetString(nameof(Prefecture));
     }
@@ -337,29 +342,39 @@ public partial class RentalSearchView : ContentPage
 
     private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
     {
-        viewModel.MessageIsExpanded = !viewModel.MessageIsExpanded;
+        aiStatusViewModel.MessageIsExpanded = !aiStatusViewModel.MessageIsExpanded;
     }
 
     private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
     {
-        if (String.IsNullOrWhiteSpace(viewModel.Message))
+        if (String.IsNullOrWhiteSpace(aiStatusViewModel.Message))
         {
             return;
         }
 
-        var message = viewModel.Message;
+        var message = aiStatusViewModel.Message;
 
-        viewModel.Message = String.Empty;
+        aiStatusViewModel.Message = String.Empty;
 
-        viewModel.MessageHistory.Add($"User: {message}");
+        var messageViewModel = new MessageViewModel()
+        {
+            Role = "user",
+            Text = message
+        };
 
-        viewModel.MessageReceived = false;
+        aiStatusViewModel.MessageHistory.Add(messageViewModel);
+
+        JSONService.AppendMessage(messageViewModel);
+
+        aiStatusViewModel.MessageReceived = false;
 
         await sqlAIService.PostChatMessageAsync(message, response =>
         {
-            viewModel.MessageHistory.Add(response);
+            aiStatusViewModel.MessageHistory.Add(response);
 
-            viewModel.MessageReceived = true;
+            JSONService.AppendMessage(response);
+
+            aiStatusViewModel.MessageReceived = true;
 
             return Task.CompletedTask;
 

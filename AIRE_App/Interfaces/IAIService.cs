@@ -1,8 +1,12 @@
+using AIRE_App.ViewModels;
+
 namespace AIRE_App.Interfaces;
 
 public interface IAIService
 {
-    public Task ProcessRecommendAsync(List<String> recommendList, Func<String, Task> messageProcessor);
+    public void SetID(String id);
 
-    public Task PostChatMessageAsync(String message, Func<String, Task> messageProcessor, Func<String, Task> shellMover);
+    public Task ProcessRecommendAsync(List<String> recommendList, Func<MessageViewModel, Task> messageProcessor);
+
+    public Task PostChatMessageAsync(String message, Func<MessageViewModel, Task> messageProcessor, Func<String, Task> shellMover);
 }

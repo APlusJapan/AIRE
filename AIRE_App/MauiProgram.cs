@@ -1,5 +1,6 @@
 using AIRE_App.Interfaces;
 using AIRE_App.Services.AIServices;
+using AIRE_App.ViewModels;
 using CommunityToolkit.Maui;
 using Fonts;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,8 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+
+        builder.Services.AddSingleton<AIStatusViewModel>();
 
         builder.Services.AddKeyedSingleton<IAIService, SqlAIService>("SqlAIService");
         builder.Services.AddKeyedSingleton<IAIService, ChatAIService>("ChatAIService");

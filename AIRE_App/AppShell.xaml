@@ -7,9 +7,15 @@
     Shell.FlyoutBehavior="Flyout"
     Title="AIRE_App">
 
-    <ShellContent
-        Route="Index"
-        Title="AI 不動産"
-        ContentTemplate="{DataTemplate local:IndexView}"/>
+    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent
+            Route="Index"
+            Title="AI 不動産"
+            ContentTemplate="{DataTemplate local:IndexView}"/>
+        <ShellContent
+            Route="AIChat"
+            Title="AIチャット"
+            ContentTemplate="{DataTemplate local:AIChatView}" />
+    </FlyoutItem>
 
 </Shell>

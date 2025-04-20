@@ -10,24 +10,27 @@ namespace AIRE_App.Views;
 
 public partial class RentalListView : ContentPage
 {
-    private readonly IAIService SqlAIService;
+    private readonly IAIService sqlAIService;
 
-    private readonly IAIService ChatAIService;
+    private readonly IAIService chatAIService;
 
     private readonly RentalListViewModel viewModel;
 
-    private readonly App app = Application.Current as App;
+    private readonly AIStatusViewModel aiStatusViewModel;
 
-    public RentalListView([FromKeyedServices("SqlAIService")] IAIService SqlAIService,
-        [FromKeyedServices("ChatAIService")] IAIService ChatAIService)
+    public RentalListView(AIStatusViewModel aiStatusViewModel,
+        [FromKeyedServices("SqlAIService")] IAIService sqlAIService,
+        [FromKeyedServices("ChatAIService")] IAIService chatAIService)
     {
         InitializeComponent();
 
-        this.SqlAIService = SqlAIService;
+        this.sqlAIService = sqlAIService;
 
-        this.ChatAIService = ChatAIService;
+        this.chatAIService = chatAIService;
 
-        BindingContext = viewModel = new();
+        this.aiStatusViewModel = aiStatusViewModel;
+
+        BindingContext = viewModel = new(aiStatusViewModel);
 
         viewModel.ExecuteSql += ExecuteSql;
 
@@ -71,13 +74,15 @@ public partial class RentalListView : ContentPage
                 })]
             })];
 
-        viewModel.MessageReceived = false;
+        aiStatusViewModel.MessageReceived = false;
 
-        await ChatAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
+        await chatAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
         {
-            viewModel.MessageHistory.Add(response);
+            aiStatusViewModel.MessageHistory.Add(response);
 
-            viewModel.MessageReceived = true;
+            JSONService.AppendMessage(response);
+
+            aiStatusViewModel.MessageReceived = true;
 
             return Task.CompletedTask;
 
@@ -479,29 +484,39 @@ public partial class RentalListView : ContentPage
 
     private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
     {
-        viewModel.MessageIsExpanded = !viewModel.MessageIsExpanded;
+        aiStatusViewModel.MessageIsExpanded = !aiStatusViewModel.MessageIsExpanded;
     }
 
     private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
     {
-        if (String.IsNullOrWhiteSpace(viewModel.Message))
+        if (String.IsNullOrWhiteSpace(aiStatusViewModel.Message))
         {
             return;
         }
 
-        var message = viewModel.Message;
+        var message = aiStatusViewModel.Message;
 
-        viewModel.Message = String.Empty;
+        aiStatusViewModel.Message = String.Empty;
 
-        viewModel.MessageHistory.Add($"User: {message}");
-
-        viewModel.MessageReceived = false;
-
-        await SqlAIService.PostChatMessageAsync(message, response =>
+        var messageViewModel = new MessageViewModel()
         {
-            viewModel.MessageHistory.Add(response);
+            Role = "user",
+            Text = message
+        };
 
-            viewModel.MessageReceived = true;
+        aiStatusViewModel.MessageHistory.Add(messageViewModel);
+
+        JSONService.AppendMessage(messageViewModel);
+
+        aiStatusViewModel.MessageReceived = false;
+
+        await sqlAIService.PostChatMessageAsync(message, response =>
+        {
+            aiStatusViewModel.MessageHistory.Add(response);
+
+            JSONService.AppendMessage(response);
+
+            aiStatusViewModel.MessageReceived = true;
 
             return Task.CompletedTask;
 

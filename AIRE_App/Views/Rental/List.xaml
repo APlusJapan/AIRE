@@ -9,22 +9,25 @@
 
     <AbsoluteLayout>
         <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" RowDefinitions="Auto,Auto,*">
-            <toolkit:Expander Grid.Row="0" IsExpanded="{Binding MessageIsExpanded}">
+            <toolkit:Expander Grid.Row="0" IsExpanded="{Binding MyAIStatusViewModel.MessageIsExpanded}">
                 <toolkit:Expander.Content>
                     <VerticalStackLayout>
                         <ScrollView HeightRequest="256">
-                            <ListView ItemsSource="{Binding MessageHistory}">
+                            <ListView ItemsSource="{Binding MyAIStatusViewModel.MessageHistory}">
                                 <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="x:String">
+                                    <DataTemplate x:DataType="{x:Type ViewModels:MessageViewModel}">
                                         <ViewCell>
-                                            <Label Text="{Binding .}" Padding="16,0,0,0"/>
+                                            <HorizontalStackLayout>
+                                                <Label Text="{Binding Role}" Padding="16,0,0,0"/>
+                                                <Label Text="{Binding Text}" Padding="16,0,0,0"/>
+                                            </HorizontalStackLayout>
                                         </ViewCell>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
                         </ScrollView>
-                        <Editor Text="{Binding Message}" Placeholder="アバターに聞きたいこと" HeightRequest="48"/>
-                        <Button Text="発信" IsEnabled="{Binding MessageReceived}" Clicked="OnClicked_PostMessage"/>
+                        <Editor Text="{Binding MyAIStatusViewModel.Message}" Placeholder="アバターに聞きたいこと" HeightRequest="48"/>
+                        <Button Text="発信" IsEnabled="{Binding MyAIStatusViewModel.MessageReceived}" Clicked="OnClicked_PostMessage"/>
                     </VerticalStackLayout>
                 </toolkit:Expander.Content>
             </toolkit:Expander>

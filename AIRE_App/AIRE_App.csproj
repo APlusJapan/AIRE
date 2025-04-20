@@ -65,6 +65,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- System -->
+        <PackageReference Include="System.Text.Json" Version="9.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- ASP.NET Core -->
         <!-- https://dotnet.microsoft.com/platform/support/policy/aspnet/2.3-packages -->
         <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.3.0" />
@@ -93,7 +98,7 @@
     <ItemGroup>
         <!-- Official OpenAI Library -->
         <!-- https://platform.openai.com/docs/libraries -->
-        <PackageReference Include="OpenAI" Version="2.1.0" />
+        <PackageReference Include="OpenAI" Version="2.2.0-beta.4" />
     </ItemGroup>
 
 </Project>

@@ -39,7 +39,7 @@ public partial class RentalListView : ContentPage
 
     private async Task GoToList(String rawSQL)
     {
-        await Shell.Current.GoToAsync("../List?sqlModel=True", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("../Rental/List?sqlModel=True", new Dictionary<String, Object>
         {
             { "rawSQL", rawSQL }
         });
@@ -47,7 +47,7 @@ public partial class RentalListView : ContentPage
 
     private async Task ExecuteSql()
     {
-        await DisplayAlert("Log", viewModel.RawSQL, "OK");
+        // await DisplayAlert("Log", viewModel.RawSQL, "OK");
 
         var rentalSummaries = DatabaseService.GetAireDbContext().RentalSummaries.FromSqlRaw(viewModel.RawSQL).ToArray();
 
@@ -78,6 +78,8 @@ public partial class RentalListView : ContentPage
 
         await chatAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
         {
+            aiStatusViewModel.AssistantMessage = response.Text;
+
             aiStatusViewModel.MessageHistory.Add(response);
 
             JSONService.AppendMessage(response);
@@ -489,14 +491,14 @@ public partial class RentalListView : ContentPage
 
     private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
     {
-        if (String.IsNullOrWhiteSpace(aiStatusViewModel.Message))
+        if (String.IsNullOrWhiteSpace(aiStatusViewModel.UserMessage))
         {
             return;
         }
 
-        var message = aiStatusViewModel.Message;
+        var message = aiStatusViewModel.UserMessage;
 
-        aiStatusViewModel.Message = String.Empty;
+        aiStatusViewModel.UserMessage = String.Empty;
 
         var messageViewModel = new MessageViewModel()
         {
@@ -512,6 +514,8 @@ public partial class RentalListView : ContentPage
 
         await sqlAIService.PostChatMessageAsync(message, response =>
         {
+            aiStatusViewModel.AssistantMessage = response.Text;
+
             aiStatusViewModel.MessageHistory.Add(response);
 
             JSONService.AppendMessage(response);
@@ -523,18 +527,13 @@ public partial class RentalListView : ContentPage
         }, GoToList);
     }
 
-    private async void OnClicked_Back(Object sender, EventArgs eventArgs)
-    {
-        await Shell.Current.GoToAsync("..");
-    }
-
     private async void OnClicked_Details(Object sender, EventArgs eventArgs)
     {
         if (sender is Button button
             && button.CommandParameter is RentalListItemViewModel rentalListItemViewModel)
         {
             var rentalId = WebUtility.UrlEncode(rentalListItemViewModel.RentalId);
-            await Shell.Current.GoToAsync($"/Rental/Details?rentalId={rentalId}");
+            await Shell.Current.GoToAsync($"Rental/Details?rentalId={rentalId}");
         }
     }
 }

@@ -1,24 +1,16 @@
 using System.Collections.ObjectModel;
 using AIRE_App.Data;
-using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace AIRE_App.Views;
 
 public partial class RentalSearchView : ContentPage
 {
-    private readonly String prefectureID;
-
-    private readonly IAIService sqlAIService;
-
     private SearchType searchType = SearchType.None;
 
     private readonly RentalSearchViewModel viewModel;
-
-    private readonly AIStatusViewModel aiStatusViewModel;
 
     private readonly App app = Application.Current as App;
 
@@ -26,26 +18,28 @@ public partial class RentalSearchView : ContentPage
 
     private ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> stationGroups;
 
-    public RentalSearchView(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices("SqlAIService")] IAIService SqlAIService)
+    public RentalSearchView()
     {
         InitializeComponent();
 
-        sqlAIService = SqlAIService;
-
-        this.aiStatusViewModel = aiStatusViewModel;
-
-        BindingContext = viewModel = new(aiStatusViewModel);
-
-        prefectureID = app.Session.GetString(nameof(Prefecture));
+        BindingContext = viewModel = new(LoadPrefectures());
     }
 
-    private async Task GoToList(String rawSQL)
+    private List<ItemViewModel> LoadPrefectures()
     {
-        await Shell.Current.GoToAsync("/Rental/List?sqlModel=True", new Dictionary<String, Object>
+        if (!app.Items.TryGetValue(nameof(Prefecture), out Object value)
+            || value is not Prefecture[])
         {
-            { "rawSQL", rawSQL }
-        });
+            value = app.Items[nameof(Prefecture)] = DatabaseService.GetAireDbContext().Prefectures.ToArray();
+        }
+
+        var prefectures = value as Prefecture[];
+
+        return [.. prefectures.Select(prefecture => new ItemViewModel()
+        {
+            ID = prefecture.PrefectureId,
+            Name = prefecture.PrefectureName
+        })];
     }
 
     private void StationSearch(Object sender, EventArgs eventArgs)
@@ -62,6 +56,8 @@ public partial class RentalSearchView : ContentPage
         {
             if (stationGroups == null)
             {
+                var prefectureID = viewModel.Prefectures[viewModel.PrefectureIndex].ID;
+
                 stationGroups = [.. railwayInfos.Where(railwayInfo => railwayInfo.PrefectureId == prefectureID)
                     .GroupBy(railwayInfo => railwayInfo.RailwayCompany)
                     .Select(railwayInfoGroup =>
@@ -102,11 +98,13 @@ public partial class RentalSearchView : ContentPage
             }
         }
 
-        viewModel.IsGroupsExpanded = true;
+        viewModel.IsGroupReady = true;
     }
 
     private void AreaSearch(Object sender, EventArgs eventArgs)
     {
+        var prefectureID = viewModel.Prefectures[viewModel.PrefectureIndex].ID;
+
         if (!app.Items.TryGetValue(prefectureID, out Object value)
                 || value is not Area[])
         {
@@ -160,7 +158,7 @@ public partial class RentalSearchView : ContentPage
             group.IsExpanded = false;
         }
 
-        viewModel.IsGroupsExpanded = true;
+        viewModel.IsGroupReady = true;
     }
 
     private void LoadStation(GroupViewModel<ItemViewModel> railwayInfoItem)
@@ -229,6 +227,34 @@ public partial class RentalSearchView : ContentPage
         item.IsChecked = !item.IsChecked;
     }
 
+    private void OnSelectedIndexChanged_Load(Object sender, EventArgs eventArgs)
+    {
+        areaGroups = null;
+        stationGroups = null;
+        viewModel.Groups = null;
+        searchType = SearchType.None;
+        viewModel.SearchType = "None";
+        viewModel.IsGroupReady = false;
+        OnCheckedChanged_Load(sender, eventArgs);
+    }
+
+    private void OnCheckedChanged_Load(Object sender, EventArgs eventArgs)
+    {
+        switch (viewModel.SearchType)
+        {
+            case "Station":
+                {
+                    StationSearch(sender, eventArgs);
+                    break;
+                }
+            case "Area":
+                {
+                    AreaSearch(sender, eventArgs);
+                    break;
+                }
+        }
+    }
+
     private async void OnClicked_Submit(Object sender, EventArgs eventArgs)
     {
         List<ItemViewModel> queryItem = [];
@@ -295,89 +321,55 @@ public partial class RentalSearchView : ContentPage
                 }
         }
 
-        await Shell.Current.GoToAsync("/Rental/List?sqlModel=False", new Dictionary<String, Object>
+        if(queryItem.Count() == 0)
         {
-            { "searchType", searchType },
-            { "queryItem", queryItem },
-            { "yachinMin", viewModel.YachinMin[viewModel.YachinMinIndex] },
-            { "yachinMax", viewModel.YachinMax[viewModel.YachinMaxIndex] },
-            { "noKanrihi", viewModel.NoKanrihi },
-            { "noReikin", viewModel.NoReikin },
-            { "noShikikin", viewModel.NoShikikin },
-            { "oneroom", viewModel.Oneroom },
-            { "room1k", viewModel.Room1k },
-            { "room1dk", viewModel.Room1dk },
-            { "room1ldk", viewModel.Room1ldk },
-            { "room2k", viewModel.Room2k },
-            { "room2dk", viewModel.Room2dk },
-            { "room2ldk", viewModel.Room2ldk },
-            { "room3k", viewModel.Room3k },
-            { "room3dk", viewModel.Room3dk },
-            { "room3ldk", viewModel.Room3ldk },
-            { "room4k", viewModel.Room4k },
-            { "room4dk", viewModel.Room4dk },
-            { "room4ldk", viewModel.Room4ldk },
-            { "room5k", viewModel.Room5k },
-            { "mansion", viewModel.Mansion },
-            { "apartment", viewModel.Apartment },
-            { "detachedHouse", viewModel.DetachedHouse },
-            { "toho", viewModel.Toho[viewModel.TohoIndex] },
-            { "menMin", viewModel.MenMin[viewModel.MenMinIndex] },
-            { "menMax", viewModel.MenMax[viewModel.MenMaxIndex] },
-            { "chikunensu", viewModel.Chikunensu[viewModel.ChikunensuIndex] },
-            { "tyuurin", viewModel.Tyuurin },
-            { "btbetu", viewModel.Btbetu },
-            { "petka", viewModel.Petka },
-            { "secondFloor", viewModel.SecondFloor },
-            { "situsentaku", viewModel.Situsentaku },
-            { "eEakon", viewModel.Eakon },
-            { "outorok", viewModel.Outorok },
-            { "furoringu", viewModel.Furoringu },
-            { "withFloorPlan", viewModel.WithFloorPlan },
-            { "withVideo", viewModel.WithVideo },
-            { "withPanorama", viewModel.WithPanorama },
-            { "noTeisyaku", viewModel.NoTeisyaku }
-        });
-    }
-
-    private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
-    {
-        aiStatusViewModel.MessageIsExpanded = !aiStatusViewModel.MessageIsExpanded;
-    }
-
-    private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
-    {
-        if (String.IsNullOrWhiteSpace(aiStatusViewModel.Message))
-        {
-            return;
+            await DisplayAlert("駅・エリア", "駅・エリアを選択してください", "OK");
         }
-
-        var message = aiStatusViewModel.Message;
-
-        aiStatusViewModel.Message = String.Empty;
-
-        var messageViewModel = new MessageViewModel()
-        {
-            Role = "user",
-            Text = message
-        };
-
-        aiStatusViewModel.MessageHistory.Add(messageViewModel);
-
-        JSONService.AppendMessage(messageViewModel);
-
-        aiStatusViewModel.MessageReceived = false;
-
-        await sqlAIService.PostChatMessageAsync(message, response =>
-        {
-            aiStatusViewModel.MessageHistory.Add(response);
-
-            JSONService.AppendMessage(response);
-
-            aiStatusViewModel.MessageReceived = true;
-
-            return Task.CompletedTask;
-
-        }, GoToList);
+        else
+        { 
+            await Shell.Current.GoToAsync("Rental/List?sqlModel=False", new Dictionary<String, Object>
+            {
+                { "searchType", searchType },
+                { "queryItem", queryItem },
+                { "yachinMin", viewModel.YachinMin[viewModel.YachinMinIndex] },
+                { "yachinMax", viewModel.YachinMax[viewModel.YachinMaxIndex] },
+                { "noKanrihi", viewModel.NoKanrihi },
+                { "noReikin", viewModel.NoReikin },
+                { "noShikikin", viewModel.NoShikikin },
+                { "oneroom", viewModel.Oneroom },
+                { "room1k", viewModel.Room1k },
+                { "room1dk", viewModel.Room1dk },
+                { "room1ldk", viewModel.Room1ldk },
+                { "room2k", viewModel.Room2k },
+                { "room2dk", viewModel.Room2dk },
+                { "room2ldk", viewModel.Room2ldk },
+                { "room3k", viewModel.Room3k },
+                { "room3dk", viewModel.Room3dk },
+                { "room3ldk", viewModel.Room3ldk },
+                { "room4k", viewModel.Room4k },
+                { "room4dk", viewModel.Room4dk },
+                { "room4ldk", viewModel.Room4ldk },
+                { "room5k", viewModel.Room5k },
+                { "mansion", viewModel.Mansion },
+                { "apartment", viewModel.Apartment },
+                { "detachedHouse", viewModel.DetachedHouse },
+                { "toho", viewModel.Toho[viewModel.TohoIndex] },
+                { "menMin", viewModel.MenMin[viewModel.MenMinIndex] },
+                { "menMax", viewModel.MenMax[viewModel.MenMaxIndex] },
+                { "chikunensu", viewModel.Chikunensu[viewModel.ChikunensuIndex] },
+                { "tyuurin", viewModel.Tyuurin },
+                { "btbetu", viewModel.Btbetu },
+                { "petka", viewModel.Petka },
+                { "secondFloor", viewModel.SecondFloor },
+                { "situsentaku", viewModel.Situsentaku },
+                { "eEakon", viewModel.Eakon },
+                { "outorok", viewModel.Outorok },
+                { "furoringu", viewModel.Furoringu },
+                { "withFloorPlan", viewModel.WithFloorPlan },
+                { "withVideo", viewModel.WithVideo },
+                { "withPanorama", viewModel.WithPanorama },
+                { "noTeisyaku", viewModel.NoTeisyaku }
+            });
+        }
     }
 }

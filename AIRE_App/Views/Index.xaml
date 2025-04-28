@@ -4,31 +4,19 @@
              x:Class="AIRE_App.Views.IndexView">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30,0" Spacing="25">
+        <StackLayout Padding="30,0" Spacing="25">
             <Image
                 Source="japan.png"
                 HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine"/>
+                Aspect="AspectFit"/>
 
-            <Label
-                Text="AI 不動産"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1"/>
-
-            <Label
-                Text=""
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"/>
+            <Label Text="AI 不動産"/>
 
             <Button
-                x:Name="CounterBtn"
                 Text="体験開始"
-                SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnClicked"
                 HorizontalOptions="Fill"/>
-        </VerticalStackLayout>
+        </StackLayout>
     </ScrollView>
 
 </ContentPage>

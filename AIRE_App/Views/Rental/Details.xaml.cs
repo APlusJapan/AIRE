@@ -33,7 +33,7 @@ public partial class RentalDetailsView : ContentPage
         viewModel.ShikikinInfo = GetShikikinInfo(validRental);
         viewModel.ReikinInfo = GetReikinInfo(validRental);
         viewModel.MadoriInfo = GetMadoriInfo(validRental);
-        viewModel.TatemenInfo = $"広さ {validRental.Tatemen}m²";
+        viewModel.TatemenInfo = $"{validRental.Tatemen}m²";
         viewModel.KaidateInfo = GetKaidateInfo(validRental);
         viewModel.ChikuInfo = GetChikuInfo(validRental);
         viewModel.BukkmokuInfo = GetBukkmokuInfo(validRental);
@@ -42,8 +42,9 @@ public partial class RentalDetailsView : ContentPage
         viewModel.Eki1Info = GetEkiInfo(validRental.Ekiid1, validRental.Toho1);
         viewModel.Eki2Info = GetEkiInfo(validRental.Ekiid2, validRental.Toho2);
         viewModel.Eki3Info = GetEkiInfo(validRental.Ekiid3, validRental.Toho3);
-        viewModel.CompanyNameInfo = $"不動産会社 {companyGroup.CompanyName}";
-        viewModel.ImageUrl = validRental.Gporder1;
+        viewModel.CompanyNameInfo = companyGroup.CompanyName;
+
+        viewModel.Images = [new() { ImageUrl = validRental.Gporder1, ImageInfo = "建物外観" }, new() { ImageUrl = validRental.Gporder2, ImageInfo = "間取り" }];
     }
 
     private static String GetMoneyInfo(decimal money)
@@ -75,14 +76,14 @@ public partial class RentalDetailsView : ContentPage
 
     private static String GetYachinInfo(ValidRental validRental)
     {
-        return $"家賃 {GetMoneyInfo(validRental.Yachin)}";
+        return GetMoneyInfo(validRental.Yachin);
     }
 
     private static String GetKanrihiInfo(ValidRental validRental)
     {
         return validRental.Kanrihi > 0 ?
-            $"管理費 {GetMoneyInfo(validRental.Kanrihi.Value)}" :
-            $"管理費 -";
+            GetMoneyInfo(validRental.Kanrihi.Value) :
+            "-";
     }
 
     private static String GetShikikinInfo(ValidRental validRental)
@@ -132,8 +133,8 @@ public partial class RentalDetailsView : ContentPage
         }
 
         return shikikin > 0 ?
-            $"敷金 {GetMoneyInfo(shikikin)}" :
-            $"敷金 -";
+            GetMoneyInfo(shikikin):
+            "-";
     }
 
     private static String GetReikinInfo(ValidRental validRental)
@@ -183,8 +184,8 @@ public partial class RentalDetailsView : ContentPage
         }
 
         return reikin > 0 ?
-            $"礼金 {GetMoneyInfo(reikin)}" :
-            $"礼金 -";
+            GetMoneyInfo(reikin) :
+            "-";
     }
 
     private static String GetMadoriInfo(ValidRental validRental)
@@ -194,8 +195,8 @@ public partial class RentalDetailsView : ContentPage
         // madotaipu の 0 は空値
         // madotaipu の 1 は「ワンルーム」
         return validRental.Madotaipu == "0" || validRental.Madotaipu == "1" ?
-            $"間取り {madotaipu.OptionName}" :
-            $"間取り {validRental.Madoheya}{madotaipu.OptionName}";
+            madotaipu.OptionName:
+            $"{validRental.Madoheya}{madotaipu.OptionName}";
     }
 
     private static String GetKaidateInfo(ValidRental validRental)
@@ -240,14 +241,14 @@ public partial class RentalDetailsView : ContentPage
             kaidateList.Add(String.Format(Constants.ChijouKaisou, validRental.Chijou));
         }
 
-        return $"階建 {String.Join("/", kaidateList)}";
+        return String.Join("/", kaidateList);
     }
 
     private static String GetChikuInfo(ValidRental validRental)
     {
         if (validRental.Chikunen == null)
         {
-            return $"築年数 -";
+            return "-";
         }
 
         int year = DateTime.Now.Year - validRental.Chikunen.Value;
@@ -263,28 +264,28 @@ public partial class RentalDetailsView : ContentPage
             }
 
             return year > 0 ?
-                $"築年数 {String.Format(Constants.ChikunenChikutsuki, year, month)}":
-                $"築年数 {String.Format(Constants.Chikutsuki, month)}（新築）";
+                String.Format(Constants.ChikunenChikutsuki, year, month):
+                $"{String.Format(Constants.Chikutsuki, month)}（新築）";
         }
 
-        return $"築年数 {String.Format(Constants.Chikunen, year)}";
+        return String.Format(Constants.Chikunen, year);
     }
 
     private static String GetBukkmokuInfo(ValidRental validRental)
     {
         if(String.IsNullOrWhiteSpace(validRental.Bukkmoku))
         {
-            return "種別 -";
+            return "-";
         }
 
         CodeMaster bukkmoku = CodeMasterService.GetCodeMaster("bukkmoku_rental_residence", validRental.Bukkmoku);
 
-        return $"種別 {bukkmoku.OptionName}";
+        return bukkmoku.OptionName;
     }
 
     private static String GetChimeiSyozaiInfo(ValidRental validRental)
     {
-        return $"住所 {validRental.Chimei}-{validRental.Syozai}";
+        return $"{validRental.Chimei}-{validRental.Syozai}";
     }
 
     private static String GetEkiInfo(String ekiid, short? toho)
@@ -303,7 +304,7 @@ public partial class RentalDetailsView : ContentPage
 
     private async void OnClicked_Line(Object sender, EventArgs eventArgs)
     {
-        await Shell.Current.GoToAsync($"/Line", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync($"Line", new Dictionary<String, Object>
         {
             { "companyGroup", companyGroup },
             { "staffId", validRental.StaffId }

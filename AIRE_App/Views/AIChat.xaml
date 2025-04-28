@@ -2,33 +2,70 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
-             xmlns:TemplateSelector="clr-namespace:AIRE_App.Data.TemplateSelector"
+             xmlns:TemplateSelector="clr-namespace:AIRE_App.DataTemplates.TemplateSelector"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
              x:DataType="ViewModels:AIStatusViewModel"
-             x:Class="AIRE_App.Views.AIChatView">
+             x:Class="AIRE_App.Views.AIChatView"
+             Title="">
 
     <ContentPage.Resources>
-        <DataTemplate x:Key="UserTemplate" x:DataType="{x:Type ViewModels:MessageViewModel}">
-            <StackLayout>
-                <Label Text="{Binding Text}" Padding="16,0,16,0" HorizontalTextAlignment="End"/>
-            </StackLayout>
-        </DataTemplate>
-        <DataTemplate x:Key="AssistantTemplate" x:DataType="{x:Type ViewModels:MessageViewModel}">
-            <StackLayout>
-                <Label Text="{Binding Text}" Padding="16,0,16,0" HorizontalTextAlignment="Start"/>
-            </StackLayout>
-        </DataTemplate>
-
-        <TemplateSelector:MessageTemplateSelector
-            x:Key="MessageTemplateSelector"
-            UserTemplate="{StaticResource UserTemplate}"
-            AssistantTemplate="{StaticResource AssistantTemplate}" />
+        <ResourceDictionary>
+            <TemplateSelector:MessageTemplateSelector x:Key="MessageTemplateSelector"/>
+        </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <CollectionView
-            ItemsSource="{Binding MessageHistory}"
-            ItemTemplate="{StaticResource MessageTemplateSelector}">
-        </CollectionView>
-    </ScrollView>
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <CollectionView
+                BackgroundColor="Transparent"
+                ItemsSource="{Binding MessageHistory}"
+                ItemTemplate="{StaticResource MessageTemplateSelector}"
+                SelectionMode="Single"
+                VerticalOptions="Fill">
+            </CollectionView>
+        </ScrollView>
+        <Grid
+            Grid.Row="1"
+            Padding="16,8,16,24"
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="16"
+            RowDefinitions="*,Auto">
+
+            <!--  Rounded Border  -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryBackgroundLightColor}, Dark={StaticResource SecondaryBackgroundDarkColor}}"
+                Padding="5,0"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.RowSpan="2"
+                Stroke="#FFFFFF"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 25"
+                Style="{StaticResource ThemeBorderStyle}">
+
+                <Editor
+                    Margin="5,0"
+                    Style="{StaticResource BorderlessEditorStyle}"
+                    Text="{Binding UserMessage}"
+                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"/>
+
+            </Border>
+
+            <!--  Send Button  -->
+            <buttons:SfButton
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                Padding="0,2,2,0"
+                Background="{AppThemeBinding Light={StaticResource PrimaryLightColor}, Dark={StaticResource PrimaryDarkColor}}"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                Style="{StaticResource IconButtonStyle}"
+                Text="&#xe759;"
+                TextColor="White"
+                FontFamily="MauiSampleFontIcon"
+                Clicked="OnClicked_PostMessage"/>
+
+        </Grid>
+    </Grid>
 
 </ContentPage>

@@ -47,6 +47,6 @@ public partial class PrefectureView : ContentPage
 
         app.Session.SetString(nameof(Prefecture), item.ID);
 
-        await Shell.Current.GoToAsync("/Rental/Search");
+        await Shell.Current.GoToAsync("Rental/Search");
     }
 }

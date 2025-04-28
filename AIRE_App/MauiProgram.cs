@@ -4,6 +4,8 @@ using AIRE_App.ViewModels;
 using CommunityToolkit.Maui;
 using Fonts;
 using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Toolkit.Hosting;
+
 
 namespace AIRE_App;
 
@@ -14,11 +16,14 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .ConfigureSyncfusionToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
+                fonts.AddFont("MauiMaterialAssets.ttf", "MauiMaterialAssets");
+                fonts.AddFont("MauiSampleFontIcon.ttf", "MauiSampleFontIcon");
                 fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
             });
 
@@ -28,8 +33,8 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<AIStatusViewModel>();
 
-        builder.Services.AddKeyedSingleton<IAIService, SqlAIService>("SqlAIService");
-        builder.Services.AddKeyedSingleton<IAIService, ChatAIService>("ChatAIService");
+        builder.Services.AddKeyedSingleton<IAIService, SqlAIService>(App.sqlAIServiceKey);
+        builder.Services.AddKeyedSingleton<IAIService, ChatAIService>(App.chatAIServiceKey);
 
         return builder.Build();
     }

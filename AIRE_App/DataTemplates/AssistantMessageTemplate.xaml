@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
+             x:DataType="{x:Type ViewModels:MessageViewModel}"
+             x:Class="AIRE_App.DataTemplates.AssistantMessageTemplate"
+             Padding="10">
+
+    <Grid ColumnSpacing="16" ColumnDefinitions="Auto, *">
+
+        <Border
+            Grid.Column="0"
+            Stroke="#FFFFFF"
+            BackgroundColor="#EEEEEE"
+            Style="{StaticResource ProfileBorderStyle}">
+
+            <Image
+                HeightRequest="40"
+                WidthRequest="40"
+                Source="robot.png" />
+
+        </Border>
+
+        <Border
+            Padding="0"
+            Grid.Column="1"
+            BackgroundColor="{AppThemeBinding Light={StaticResource AssistantMessageBackgroundLightColor}, Dark={StaticResource AssistantMessageBackgroundDarkColor}}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 2"
+            HorizontalOptions="Start">
+
+            <StackLayout
+                Margin="8"
+                VerticalOptions="Fill">
+
+                <Label
+                    FontSize="14"
+                    HorizontalOptions="Start"
+                    LineHeight="1.25"
+                    Text="{Binding Text}"
+                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"
+                    VerticalOptions="Fill"/>
+
+                <!--
+                <Label
+                    FontSize="11"
+                    HorizontalOptions="Start"
+                    LineHeight="1.25"
+                    Text="{Binding Role}"
+                    TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLightColor}, Dark={StaticResource SecondaryTextDarkColor}}"
+                    VerticalOptions="Fill"/>
+                -->
+
+            </StackLayout>
+
+        </Border>
+
+    </Grid>
+
+</ContentView>

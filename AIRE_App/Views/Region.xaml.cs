@@ -16,7 +16,7 @@ public partial class RegionView : ContentPage
            && button.CommandParameter is RegionType regionType)
         {
             var regionName = WebUtility.UrlEncode(regionType.ToString());
-            await Shell.Current.GoToAsync($"/Prefecture?region={regionName}");
+            await Shell.Current.GoToAsync($"Prefecture?region={regionName}");
         }
     }
 }

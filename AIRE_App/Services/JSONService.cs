@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using AIRE_App.ViewModels;
 
@@ -14,7 +15,7 @@ public static class JSONService
         try
         {
             using var streamReader = File.OpenText(messageFilePath);
-
+            Trace.WriteLine(messageFilePath);
             for (String jsonString = streamReader.ReadLine();
                 jsonString != null;
                 jsonString = streamReader.ReadLine())

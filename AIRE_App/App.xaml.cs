@@ -1,22 +1,44 @@
 using System.Collections.Concurrent;
+using AIRE_App.Interfaces;
 using AIRE_App.Services;
+using AIRE_App.ViewModels;
 using Microsoft.AspNetCore.Http;
 
 namespace AIRE_App;
 
 public partial class App : Application
 {
+    public const String sqlAIServiceKey = "SqlAIService";
+
+    public const String chatAIServiceKey = "ChatAIService";
+
     public ISession Session { get; }
 
     public IDictionary<Object, Object> Items { get; }
 
-    public App()
+    public App(AIStatusViewModel aiStatusViewModel,
+        [FromKeyedServices(sqlAIServiceKey)] IAIService sqlAIService,
+        [FromKeyedServices(chatAIServiceKey)] IAIService chatAIService)
     {
         InitializeComponent();
 
         Session = new MySession();
 
         Items = new ConcurrentDictionary<Object, Object>();
+
+        if (Preferences.ContainsKey(sqlAIServiceKey))
+        {
+            var id = Preferences.Get(sqlAIServiceKey, String.Empty);
+            sqlAIService.SetID(id);
+        }
+
+        if (Preferences.ContainsKey(chatAIServiceKey))
+        {
+            var id = Preferences.Get(chatAIServiceKey, String.Empty);
+            chatAIService.SetID(id);
+        }
+
+        JSONService.InitMessage(aiStatusViewModel);
     }
 
     protected override Window CreateWindow(IActivationState activationState)

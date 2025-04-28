@@ -26,7 +26,7 @@ public partial class LineView : ContentPage
                 && companyMember.StaffId == staffId)
             .Single();
 
-        viewModel.CompanyInfo = companyGroup.CompanyId;
+        viewModel.CompanyInfo = companyGroup.CompanyName;
 
         if (DeviceInfo.Current.Idiom == DeviceIdiom.Desktop)
         {

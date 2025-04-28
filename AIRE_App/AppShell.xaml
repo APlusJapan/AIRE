@@ -5,17 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:AIRE_App.Views"
     Shell.FlyoutBehavior="Flyout"
-    Title="AIRE_App">
+    Title="AI 不動産">
 
     <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
+        <!--
         <ShellContent
             Route="Index"
             Title="AI 不動産"
             ContentTemplate="{DataTemplate local:IndexView}"/>
+        -->
         <ShellContent
             Route="AIChat"
-            Title="AIチャット"
+            Title="AI チャット"
+            Icon="roboticon.png"
             ContentTemplate="{DataTemplate local:AIChatView}" />
+        <ShellContent
+            Route="RentalSearch"
+            Title="条件検索"
+            Icon="houseicon.png"
+            ContentTemplate="{DataTemplate local:RentalSearchView}" />
     </FlyoutItem>
 
 </Shell>

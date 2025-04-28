@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using AIRE_App.Data;
-using AIRE_App.Services;
 
 namespace AIRE_App.ViewModels;
 

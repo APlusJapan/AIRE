@@ -1,21 +1,10 @@
 using System.Collections.ObjectModel;
 using AIRE_App.Data;
-using AIRE_App.Services;
 
 namespace AIRE_App.ViewModels;
 
 public class RentalSearchViewModel : BaseViewModel
 {
-    public AIStatusViewModel MyAIStatusViewModel
-    {
-        get;
-        set
-        {
-            field = value;
-            OnPropertyChanged();
-        }
-    }
-
     public List<ItemViewModel> YachinMin { get; }
 
     public List<ItemViewModel> YachinMax { get; }
@@ -28,9 +17,11 @@ public class RentalSearchViewModel : BaseViewModel
 
     public List<ItemViewModel> Chikunensu { get; }
 
-    public RentalSearchViewModel(AIStatusViewModel aiStatusViewModel)
+    public List<ItemViewModel> Prefectures { get; }
+
+    public RentalSearchViewModel(List<ItemViewModel> prefectures)
     {
-        MyAIStatusViewModel = aiStatusViewModel;
+        Prefectures = prefectures;
 
         YachinMin = [.. Options.NoMin, .. Options.Yachin];
         YachinMax = [.. Options.NoMax, .. Options.Yachin];
@@ -41,6 +32,16 @@ public class RentalSearchViewModel : BaseViewModel
         MenMax = [.. Options.NoMax, .. Options.Men];
 
         Chikunensu = [.. Options.No, .. Options.Chikunensu];
+    }
+
+    public int PrefectureIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public int YachinMinIndex
@@ -423,7 +424,7 @@ public class RentalSearchViewModel : BaseViewModel
         }
     }
 
-    public bool IsGroupsExpanded
+    public bool IsGroupReady
     {
         get;
         set
@@ -432,6 +433,26 @@ public class RentalSearchViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    public bool IsGroupsExpanded
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = true;
+
+    public String SearchType
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = "None";
 
     public ObservableCollection<GroupViewModel<GroupViewModel<ItemViewModel>>> Groups
     {

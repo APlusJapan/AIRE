@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Net;
 
 namespace AIRE_App.ViewModels;
@@ -210,7 +211,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
-    public String ImageUrl
+    public ObservableCollection<ImageViewModel> Images
     {
         get;
         set

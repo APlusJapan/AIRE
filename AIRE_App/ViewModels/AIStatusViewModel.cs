@@ -14,7 +14,17 @@ public class AIStatusViewModel : BaseViewModel
         }
     } = true;
 
-    public String Message
+    public String UserMessage
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = String.Empty;
+
+    public String AssistantMessage
     {
         get;
         set

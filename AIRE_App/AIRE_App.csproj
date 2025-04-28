@@ -96,6 +96,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Syncfusion Toolkit -->
+        <!-- https://www.syncfusion.com/net-maui-toolkit -->
+        <PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- Official OpenAI Library -->
         <!-- https://platform.openai.com/docs/libraries -->
         <PackageReference Include="OpenAI" Version="2.2.0-beta.4" />

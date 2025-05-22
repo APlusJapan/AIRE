@@ -7,7 +7,7 @@ namespace AIRE_App.Views;
 
 public partial class RentalDetailsView : ContentPage
 {
-    private ValidRental validRental;
+    private Rental rental;
 
     private CompanyGroup companyGroup;
 
@@ -24,27 +24,32 @@ public partial class RentalDetailsView : ContentPage
 
     private void LoadRentalDetails(String rentalId)
     {
-        validRental = DatabaseService.GetAireDbContext().ValidRentals.Where(validRental => validRental.RentalId == rentalId).Single();
-        companyGroup = DatabaseService.GetAireDbContext().CompanyGroups.Where(companyGroup => companyGroup.CompanyId == validRental.CompanyId).Single();
+        rental = DatabaseService.GetAireDbContext().Rentals.Where(rental => rental.RentalId == rentalId).Single();
+        companyGroup = DatabaseService.GetAireDbContext().CompanyGroups.Where(companyGroup => companyGroup.CompanyId == rental.CompanyId).Single();
 
-        viewModel.Manmei = validRental.Manmei;
-        viewModel.YachinInfo = GetYachinInfo(validRental);
-        viewModel.KanrihiInfo = GetKanrihiInfo(validRental);
-        viewModel.ShikikinInfo = GetShikikinInfo(validRental);
-        viewModel.ReikinInfo = GetReikinInfo(validRental);
-        viewModel.MadoriInfo = GetMadoriInfo(validRental);
-        viewModel.TatemenInfo = $"{validRental.Tatemen}m²";
-        viewModel.KaidateInfo = GetKaidateInfo(validRental);
-        viewModel.ChikuInfo = GetChikuInfo(validRental);
-        viewModel.BukkmokuInfo = GetBukkmokuInfo(validRental);
-        viewModel.ChimeiSyozaiInfo = GetChimeiSyozaiInfo(validRental);
-        viewModel.Ekisu = validRental.Ekisu;
-        viewModel.Eki1Info = GetEkiInfo(validRental.Ekiid1, validRental.Toho1);
-        viewModel.Eki2Info = GetEkiInfo(validRental.Ekiid2, validRental.Toho2);
-        viewModel.Eki3Info = GetEkiInfo(validRental.Ekiid3, validRental.Toho3);
+        viewModel.Manmei = rental.BuildingName;
+        viewModel.YachinInfo = GetYachinInfo(rental);
+        viewModel.KanrihiInfo = GetKanrihiInfo(rental);
+        viewModel.ShikikinInfo = rental.SecurityDeposit;
+        viewModel.ReikinInfo = rental.KeyMoney;
+        viewModel.MadoriInfo = GetMadoriInfo(rental);
+        viewModel.TatemenInfo = $"{rental.ExclusiveArea}m²";
+        viewModel.KaidateInfo = GetKaidateInfo(rental);
+        viewModel.ChikuInfo = GetChikuInfo(rental);
+        viewModel.BukkmokuInfo = rental.BuildingType;
+        viewModel.ChimeiSyozaiInfo = rental.Address;
+        viewModel.Eki1Info = GetEkiInfo(rental.Transportation1, rental.WalkingDistance1);
+        if(!String.IsNullOrWhiteSpace(rental.Transportation2))
+        {
+            viewModel.Eki2Info = GetEkiInfo(rental.Transportation2, rental.WalkingDistance2);
+        }
+        if (!String.IsNullOrWhiteSpace(rental.Transportation3))
+        {
+            viewModel.Eki3Info = GetEkiInfo(rental.Transportation3, rental.WalkingDistance3);
+        }
         viewModel.CompanyNameInfo = companyGroup.CompanyName;
 
-        viewModel.Images = [new() { ImageUrl = validRental.Gporder1, ImageInfo = "建物外観" }, new() { ImageUrl = validRental.Gporder2, ImageInfo = "間取り" }];
+        viewModel.Images = [new() { ImageUrl = rental.ExteriorPhoto, ImageInfo = "建物外観" }, new() { ImageUrl = rental.LayoutImage, ImageInfo = "間取り" }];
     }
 
     private static String GetMoneyInfo(decimal money)
@@ -74,232 +79,68 @@ public partial class RentalDetailsView : ContentPage
         return String.Format(Constants.Yen, @string);
     }
 
-    private static String GetYachinInfo(ValidRental validRental)
+    private static String GetYachinInfo(Rental rental)
     {
-        return GetMoneyInfo(validRental.Yachin);
+        return GetMoneyInfo(rental.Rent);
     }
 
-    private static String GetKanrihiInfo(ValidRental validRental)
+    private static String GetKanrihiInfo(Rental rental)
     {
-        return validRental.Kanrihi > 0 ?
-            GetMoneyInfo(validRental.Kanrihi.Value) :
+        return rental.ManagementFee > 0 ?
+            GetMoneyInfo(rental.ManagementFee):
             "-";
     }
-
-    private static String GetShikikinInfo(ValidRental validRental)
+    private static String GetMadoriInfo(Rental rental)
     {
-        decimal shikikin = 0;
+        CodeMaster madotaipu = CodeMasterService.GetCodeMaster("madotaipu", rental.LayoutType);
 
-        // kinkum1 の 1 は「保証金」
-        // kinkum1 の 7 は「敷金」
-        if (validRental.Kinkum1 == "1" || validRental.Kinkum1 == "7")
-        {
-            switch (validRental.Kinku1)
-            {
-                // kinku1 の 0 は「万円」
-                case "0":
-                    {
-                        shikikin += validRental.Kinkagetu1 ?? 0;
-                        break;
-                    }
-                // kinku1 の 1 は「ヶ月」
-                case "1":
-                    {
-                        shikikin += (validRental.Kinkagetu1 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        // kinkum2 の 1 は「保証金」
-        // kinkum2 の 7 は「敷金」
-        if (validRental.Kinkum2 == "1" || validRental.Kinkum2 == "7")
-        {
-            switch (validRental.Kinku2)
-            {
-                // kinku2 の 0 は「万円」
-                case "0":
-                    {
-                        shikikin += validRental.Kinkagetu2 ?? 0;
-                        break;
-                    }
-                // kinku2 の 1 は「ヶ月」
-                case "1":
-                    {
-                        shikikin += (validRental.Kinkagetu2 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        return shikikin > 0 ?
-            GetMoneyInfo(shikikin):
-            "-";
+        // madotaipu の 0 は「ワンルーム」
+        return rental.LayoutType == "0" ?
+            madotaipu.OptionName :
+            $"{rental.LayoutNumber}{madotaipu.OptionName}";
     }
 
-    private static String GetReikinInfo(ValidRental validRental)
+    private static String GetKaidateInfo(Rental rental)
     {
-        decimal reikin = 0;
-
-        // kinkum1 の 3 は「権利金」
-        // kinkum1 の 5 は「礼金」
-        if (validRental.Kinkum1 == "3" || validRental.Kinkum1 == "5")
-        {
-            switch (validRental.Kinku1)
-            {
-                // kinku1 の 0 は「万円」
-                case "0":
-                    {
-                        reikin += validRental.Kinkagetu1 ?? 0;
-                        break;
-                    }
-                // kinku1 の 1 は「ヶ月」
-                case "1":
-                    {
-                        reikin += (validRental.Kinkagetu1 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        // kinkum2 の 3 は「権利金」
-        // kinkum2 の 5 は「礼金」
-        if (validRental.Kinkum2 == "3" || validRental.Kinkum2 == "5")
-        {
-            switch (validRental.Kinku2)
-            {
-                // kinku2 の 0 は「万円」
-                case "0":
-                    {
-                        reikin += validRental.Kinkagetu2 ?? 0;
-                        break;
-                    }
-                // kinku2 の 1 は「ヶ月」
-                case "1":
-                    {
-                        reikin += (validRental.Kinkagetu2 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        return reikin > 0 ?
-            GetMoneyInfo(reikin) :
-            "-";
-    }
-
-    private static String GetMadoriInfo(ValidRental validRental)
-    {
-        CodeMaster madotaipu = CodeMasterService.GetCodeMaster("madotaipu", validRental.Madotaipu);
-
-        // madotaipu の 0 は空値
-        // madotaipu の 1 は「ワンルーム」
-        return validRental.Madotaipu == "0" || validRental.Madotaipu == "1" ?
-            madotaipu.OptionName:
-            $"{validRental.Madoheya}{madotaipu.OptionName}";
-    }
-
-    private static String GetKaidateInfo(ValidRental validRental)
-    {
-        List<String> kaidateList = [];
-
-        if (validRental.SyokaiChika)
-        {
-            // 所在は地下
-            if(validRental.Syokai > 0)
-            {
-                kaidateList.Add(String.Format(Constants.ChikaSyokai, validRental.Syokai));
-            }
-            else
-            {
-                kaidateList.Add(Constants.Chika);
-            }
-        }
-        else
-        {
-            // 所在は地上
-            if (validRental.Syokai > 0)
-            {
-                kaidateList.Add(String.Format(Constants.ChijouSyokai, validRental.Syokai));
-            }
-            else
-            {
-                kaidateList.Add(Constants.Chijou);
-            }
-        }
-
-        if (validRental.Chijou > 0 && validRental.Chika > 0)
-        {
-            kaidateList.Add(String.Format(Constants.ChijouChikaKaisou, validRental.Chijou, validRental.Chika));
-        }
-        else if (validRental.Chika > 0)
-        {
-            kaidateList.Add(String.Format(Constants.ChikaKaisou, validRental.Chika));
-        }
-        else if (validRental.Chijou > 0)
-        {
-            kaidateList.Add(String.Format(Constants.ChijouKaisou, validRental.Chijou));
-        }
+        List<String> kaidateList = [rental.FloorNumber, rental.TotalFloors];
 
         return String.Join("/", kaidateList);
     }
 
-    private static String GetChikuInfo(ValidRental validRental)
+    private static String GetChikuInfo(Rental rental)
     {
-        if (validRental.Chikunen == null)
+        String chikuInfo;
+
+        int year = DateTime.Now.Year - rental.BuiltYearMonth.Year;
+        int month = DateTime.Now.Month - rental.BuiltYearMonth.Month;
+
+        if (month < 0)
         {
-            return "-";
+            year--;
+            month += 12;
         }
 
-        int year = DateTime.Now.Year - validRental.Chikunen.Value;
-
-        if (validRental.Chikutsuki > 0)
+        if (rental.NewConstruction)
         {
-            int month = DateTime.Now.Month - validRental.Chikutsuki.Value;
-
-            if (month < 0)
-            {
-                year--;
-                month += 12;
-            }
-
-            return year > 0 ?
-                String.Format(Constants.ChikunenChikutsuki, year, month):
-                $"{String.Format(Constants.Chikutsuki, month)}（新築）";
+            chikuInfo = month == 0 ?
+                String.Format(Constants.Shinchikunen, year) :
+                String.Format(Constants.Shinchikunentsuki, year, month);
+        }
+        else
+        {
+            chikuInfo = month == 0 ?
+                String.Format(Constants.Chikunen, year) :
+                String.Format(Constants.Chikunentsuki, year, month);
         }
 
-        return String.Format(Constants.Chikunen, year);
+        return chikuInfo;
     }
 
-    private static String GetBukkmokuInfo(ValidRental validRental)
+    private static String GetEkiInfo(String transportation, short? walkingDistance)
     {
-        if(String.IsNullOrWhiteSpace(validRental.Bukkmoku))
-        {
-            return "-";
-        }
-
-        CodeMaster bukkmoku = CodeMasterService.GetCodeMaster("bukkmoku_rental_residence", validRental.Bukkmoku);
-
-        return bukkmoku.OptionName;
-    }
-
-    private static String GetChimeiSyozaiInfo(ValidRental validRental)
-    {
-        return $"{validRental.Chimei}-{validRental.Syozai}";
-    }
-
-    private static String GetEkiInfo(String ekiid, short? toho)
-    {
-        if (String.IsNullOrWhiteSpace(ekiid))
-        {
-            return String.Empty;
-        }
-
-        Station station = StationService.GetStation(ekiid);
-
-        return toho > 0?
-            $"{station.RailwayCompany}{station.RailwayName}/{station.StationName} {String.Format(Constants.Toho, toho)}":
-            $"{station.RailwayCompany}{station.RailwayName}/{station.StationName}";
+        return walkingDistance > 0?
+            $"{transportation} {String.Format(Constants.Toho, walkingDistance)}":
+            transportation;
     }
 
     private async void OnClicked_Line(Object sender, EventArgs eventArgs)
@@ -307,7 +148,7 @@ public partial class RentalDetailsView : ContentPage
         await Shell.Current.GoToAsync($"Line", new Dictionary<String, Object>
         {
             { "companyGroup", companyGroup },
-            { "staffId", validRental.StaffId }
+            { "staffId", rental.StaffId }
         });
     }
 }

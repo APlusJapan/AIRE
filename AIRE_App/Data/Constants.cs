@@ -4,23 +4,19 @@ public static class Constants
 {
     public const String Toho = "歩{0}分";
 
-    public const String Shinchiku = "新築";
-
     public const String Chikunen = "築{0}年";
 
-    public const String Chikutsuki = "築{0}月";
+    public const String Shinchikunen = "築{0}年 (新築)";
 
-    public const String ChikunenChikutsuki = "築{0}年{1}月";
+    public const String Chikunentsuki = "築{0}年{1}月";
 
-    public const String Chika = "地下";
-
-    public const String Chijou = "地上";
+    public const String Shinchikunentsuki = "築{0}年{1}月 (新築)";
 
     public const String ChijouSyokai = "{0}階";
 
-    public const String ChijouKaisou = "{0}階建";
-
     public const String ChikaSyokai = "地下{0}階";
+
+    public const String ChijouKaisou = "{0}階建";
 
     public const String ChikaKaisou = "地下{0}階建";
 

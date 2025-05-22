@@ -76,11 +76,11 @@ public class RentalSearchConditions
 
     public bool Furoringu { get; init; }
 
-    public bool WithFloorPlan { get; init; }
-
     public bool WithVideo { get; init; }
 
     public bool WithPanorama { get; init; }
+
+    public bool WithFloorPlan { get; init; }
 
     public bool NoTeisyaku { get; init; }
 }

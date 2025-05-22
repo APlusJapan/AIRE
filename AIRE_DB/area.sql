@@ -2,7 +2,7 @@ CREATE TABLE area
 (
     area_id char(5) Not Null,
     prefecture_id char(5) Not Null,
-    area_name varchar(10) Not Null,
+    area_name varchar(20) Not Null,
     parent_area_id char(5),
     revised_area_id char(5),
     PRIMARY KEY (area_id)

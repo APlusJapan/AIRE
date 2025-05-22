@@ -12,52 +12,33 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         LoadRentalDetails(WebUtility.UrlDecode(query["rentalId"] as String));
     }
 
-    public String Ekisu
-    {
-        private get;
-        set
-        {
-            if(Int16.TryParse(value, out _))
-            {
-                field = value;
-
-                OnPropertyChanged(nameof(hasEki1));
-                OnPropertyChanged(nameof(hasEki2));
-                OnPropertyChanged(nameof(hasEki3));
-            }
-        }
-    }
-
     public bool hasEki1
     {
-        get
+        get;
+        private set
         {
-            bool succeed = Int16.TryParse(Ekisu, out short result);
-
-            // ekisu の 0 は「駅を一つ指定」
-            return succeed && result >= 0;
+            field = value;
+            OnPropertyChanged();
         }
     }
 
     public bool hasEki2
     {
-        get
+        get;
+        private set
         {
-            bool succeed = Int16.TryParse(Ekisu, out short result);
-
-            // ekisu の 1 は「駅を二つ指定」
-            return succeed && result >= 1;
+            field = value;
+            OnPropertyChanged();
         }
     }
 
     public bool hasEki3
     {
-        get
+        get;
+        private set
         {
-            bool succeed = Int16.TryParse(Ekisu, out short result);
-
-            // ekisu の 2 は「駅を三つ指定」
-            return succeed && result >= 2;
+            field = value;
+            OnPropertyChanged();
         }
     }
 
@@ -177,6 +158,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         set
         {
             field = value;
+            hasEki1 = true;
             OnPropertyChanged();
         }
     }
@@ -187,6 +169,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         set
         {
             field = value;
+            hasEki2 = true;
             OnPropertyChanged();
         }
     }
@@ -197,6 +180,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
         set
         {
             field = value;
+            hasEki3 = true;
             OnPropertyChanged();
         }
     }

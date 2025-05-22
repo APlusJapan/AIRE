@@ -636,14 +636,8 @@
                                             <Label Text="フローリング" VerticalTextAlignment="Center"/>
                                         </HorizontalStackLayout>
                                     </FlexLayout>
+                                    <!--
                                     <FlexLayout Padding="16,0,0,0" Direction="Row" Wrap="Wrap">
-                                        <HorizontalStackLayout
-                                            FlexLayout.Grow="0.5"
-                                            FlexLayout.Shrink="0.5"
-                                            FlexLayout.Basis="0">
-                                            <CheckBox IsChecked="{Binding WithFloorPlan}"/>
-                                            <Label Text="間取り図付" VerticalTextAlignment="Center"/>
-                                        </HorizontalStackLayout>
                                         <HorizontalStackLayout
                                             FlexLayout.Grow="0.5"
                                             FlexLayout.Shrink="0.5"
@@ -651,14 +645,22 @@
                                             <CheckBox IsChecked="{Binding WithVideo}"/>
                                             <Label Text="物件動画付き" VerticalTextAlignment="Center"/>
                                         </HorizontalStackLayout>
-                                    </FlexLayout>
-                                    <FlexLayout Padding="16,0,0,0" Direction="Row" Wrap="Wrap">
                                         <HorizontalStackLayout
                                             FlexLayout.Grow="0.5"
                                             FlexLayout.Shrink="0.5"
                                             FlexLayout.Basis="0">
                                             <CheckBox IsChecked="{Binding WithPanorama}"/>
                                             <Label Text="パノラマ付き" VerticalTextAlignment="Center"/>
+                                        </HorizontalStackLayout>
+                                    </FlexLayout>
+                                    -->
+                                    <FlexLayout Padding="16,0,0,0" Direction="Row" Wrap="Wrap">
+                                        <HorizontalStackLayout
+                                            FlexLayout.Grow="0.5"
+                                            FlexLayout.Shrink="0.5"
+                                            FlexLayout.Basis="0">
+                                            <CheckBox IsChecked="{Binding WithFloorPlan}"/>
+                                            <Label Text="間取り図付" VerticalTextAlignment="Center"/>
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout
                                             FlexLayout.Grow="0.5"

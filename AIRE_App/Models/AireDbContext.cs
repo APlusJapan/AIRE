@@ -39,6 +39,8 @@ public partial class AireDbContext : DbContext
 
     public virtual DbSet<RailwayInfo> RailwayInfos { get; set; }
 
+    public virtual DbSet<Rental> Rentals { get; set; }
+
     public virtual DbSet<RentalBrowsingHistory> RentalBrowsingHistories { get; set; }
 
     public virtual DbSet<RentalSearchHistory> RentalSearchHistories { get; set; }
@@ -50,8 +52,6 @@ public partial class AireDbContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Station> Stations { get; set; }
-
-    public virtual DbSet<ValidRental> ValidRentals { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,7 +68,7 @@ public partial class AireDbContext : DbContext
                 .HasColumnName("area_id");
             entity.Property(e => e.AreaName)
                 .IsRequired()
-                .HasMaxLength(10)
+                .HasMaxLength(20)
                 .HasComment("エリア名")
                 .HasColumnName("area_name");
             entity.Property(e => e.ParentAreaId)
@@ -467,6 +467,257 @@ public partial class AireDbContext : DbContext
                 .IsFixedLength()
                 .HasComment("都道府県ID")
                 .HasColumnName("prefecture_id");
+        });
+
+        modelBuilder.Entity<Rental>(entity =>
+        {
+            entity.HasKey(e => e.RentalId).HasName("rental_pkey");
+
+            entity.ToTable("rental", tb => tb.HasComment("賃貸物件"));
+
+            entity.Property(e => e.RentalId)
+                .HasMaxLength(40)
+                .HasComment("賃貸物件ID")
+                .HasColumnName("rental_id");
+            entity.Property(e => e.Address)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("所在地")
+                .HasColumnName("address");
+            entity.Property(e => e.AvailableFrom)
+                .HasMaxLength(20)
+                .HasComment("入居可能時期")
+                .HasColumnName("available_from");
+            entity.Property(e => e.BalconyArea)
+                .HasPrecision(5)
+                .HasComment("バルコニー面積")
+                .HasColumnName("balcony_area");
+            entity.Property(e => e.BuildingName)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("建物名")
+                .HasColumnName("building_name");
+            entity.Property(e => e.BuildingStructure)
+                .HasMaxLength(40)
+                .HasComment("建物構造・工法")
+                .HasColumnName("building_structure");
+            entity.Property(e => e.BuildingType)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasComment("建物種類")
+                .HasColumnName("building_type");
+            entity.Property(e => e.BuiltYearMonth)
+                .HasComment("築年月")
+                .HasColumnName("built_year_month");
+            entity.Property(e => e.CompanyId)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("会社ID")
+                .HasColumnName("company_id");
+            entity.Property(e => e.ContractPeriod)
+                .HasMaxLength(20)
+                .HasComment("契約期間")
+                .HasColumnName("contract_period");
+            entity.Property(e => e.CurrentCondition)
+                .HasMaxLength(20)
+                .HasComment("現況")
+                .HasColumnName("current_condition");
+            entity.Property(e => e.DepositDeduction)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("'-'::character varying")
+                .HasComment("敷引・償却金")
+                .HasColumnName("deposit_deduction");
+            entity.Property(e => e.EnergyEfficiency)
+                .HasMaxLength(20)
+                .HasComment("エネルギー消費性能")
+                .HasColumnName("energy_efficiency");
+            entity.Property(e => e.EstimatedUtilityCost)
+                .HasMaxLength(20)
+                .HasComment("目安光熱費")
+                .HasColumnName("estimated_utility_cost");
+            entity.Property(e => e.ExclusiveArea)
+                .HasPrecision(5)
+                .HasComment("専有面積")
+                .HasColumnName("exclusive_area");
+            entity.Property(e => e.ExteriorPhoto)
+                .HasMaxLength(255)
+                .HasComment("建物外観画像")
+                .HasColumnName("exterior_photo");
+            entity.Property(e => e.FloorNumber)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasComment("所在階")
+                .HasColumnName("floor_number");
+            entity.Property(e => e.FreeKeyword)
+                .HasComment("フリーキーワード")
+                .HasColumnName("free_keyword");
+            entity.Property(e => e.GuaranteeMoney)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("'-'::character varying")
+                .HasComment("保証金")
+                .HasColumnName("guarantee_money");
+            entity.Property(e => e.GuarantorCompany)
+                .HasMaxLength(255)
+                .HasComment("保証会社")
+                .HasColumnName("guarantor_company");
+            entity.Property(e => e.InsulationPerformance)
+                .HasMaxLength(20)
+                .HasComment("断熱性能")
+                .HasColumnName("insulation_performance");
+            entity.Property(e => e.Insurance)
+                .HasMaxLength(40)
+                .HasComment("保険等")
+                .HasColumnName("insurance");
+            entity.Property(e => e.KeyMoney)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("'-'::character varying")
+                .HasComment("礼金")
+                .HasColumnName("key_money");
+            entity.Property(e => e.KeyType)
+                .HasMaxLength(20)
+                .HasComment("鍵タイプ")
+                .HasColumnName("key_type");
+            entity.Property(e => e.LayoutDetails)
+                .HasMaxLength(40)
+                .HasComment("間取り（詳細）")
+                .HasColumnName("layout_details");
+            entity.Property(e => e.LayoutImage)
+                .HasMaxLength(255)
+                .HasComment("間取り図面")
+                .HasColumnName("layout_image");
+            entity.Property(e => e.LayoutNumber)
+                .HasComment("間取り（番号）")
+                .HasColumnName("layout_number");
+            entity.Property(e => e.LayoutType)
+                .IsRequired()
+                .HasMaxLength(32)
+                .HasComment("間取り（タイプ）")
+                .HasColumnName("layout_type");
+            entity.Property(e => e.MainLightDirection)
+                .IsRequired()
+                .HasMaxLength(10)
+                .HasComment("主要採光面")
+                .HasColumnName("main_light_direction");
+            entity.Property(e => e.MaintenanceFee)
+                .HasPrecision(10)
+                .HasComment("維持費等")
+                .HasColumnName("maintenance_fee");
+            entity.Property(e => e.ManagementFee)
+                .HasPrecision(10)
+                .HasComment("管理費等")
+                .HasColumnName("management_fee");
+            entity.Property(e => e.ManagementSystemId)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("管理システム番号")
+                .HasColumnName("management_system_id");
+            entity.Property(e => e.NewConstruction)
+                .HasDefaultValue(false)
+                .HasComment("新築")
+                .HasColumnName("new_construction");
+            entity.Property(e => e.NextUpdateDate)
+                .HasMaxLength(20)
+                .HasComment("次回更新予定日")
+                .HasColumnName("next_update_date");
+            entity.Property(e => e.OtherAdditionalCosts)
+                .HasMaxLength(255)
+                .HasComment("その他諸費用")
+                .HasColumnName("other_additional_costs");
+            entity.Property(e => e.OtherInitialCosts)
+                .HasMaxLength(255)
+                .HasComment("その他初期費用")
+                .HasColumnName("other_initial_costs");
+            entity.Property(e => e.Parking)
+                .HasMaxLength(40)
+                .HasDefaultValueSql("'-'::character varying")
+                .HasComment("駐車場")
+                .HasColumnName("parking");
+            entity.Property(e => e.PropertyType)
+                .IsRequired()
+                .HasMaxLength(32)
+                .HasDefaultValueSql("1")
+                .HasComment("物件タイプ")
+                .HasColumnName("property_type");
+            entity.Property(e => e.PublishedDate)
+                .HasComment("情報公開日")
+                .HasColumnName("published_date");
+            entity.Property(e => e.Remarks)
+                .HasComment("備考")
+                .HasColumnName("remarks");
+            entity.Property(e => e.RenewalFee)
+                .HasMaxLength(40)
+                .HasComment("更新料")
+                .HasColumnName("renewal_fee");
+            entity.Property(e => e.Rent)
+                .HasPrecision(15)
+                .HasComment("賃料")
+                .HasColumnName("rent");
+            entity.Property(e => e.RentalCommonId)
+                .HasMaxLength(40)
+                .HasComment("賃貸物件共通ID")
+                .HasColumnName("rental_common_id");
+            entity.Property(e => e.RentalConditions)
+                .HasMaxLength(255)
+                .HasComment("条件等")
+                .HasColumnName("rental_conditions");
+            entity.Property(e => e.SecurityDeposit)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("'-'::character varying")
+                .HasComment("敷金")
+                .HasColumnName("security_deposit");
+            entity.Property(e => e.ShopCompanyId)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("店舗・会社番号")
+                .HasColumnName("shop_company_id");
+            entity.Property(e => e.ShopCompanyName)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("店舗・会社名")
+                .HasColumnName("shop_company_name");
+            entity.Property(e => e.StaffId)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasComment("担当社員ID")
+                .HasColumnName("staff_id");
+            entity.Property(e => e.TotalFloors)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasComment("階建")
+                .HasColumnName("total_floors");
+            entity.Property(e => e.TotalUnits)
+                .HasMaxLength(20)
+                .HasComment("総戸数")
+                .HasColumnName("total_units");
+            entity.Property(e => e.TransactionType)
+                .HasMaxLength(10)
+                .HasComment("取引態様")
+                .HasColumnName("transaction_type");
+            entity.Property(e => e.Transportation1)
+                .IsRequired()
+                .HasMaxLength(40)
+                .HasComment("交通1")
+                .HasColumnName("transportation1");
+            entity.Property(e => e.Transportation2)
+                .HasMaxLength(40)
+                .HasComment("交通2")
+                .HasColumnName("transportation2");
+            entity.Property(e => e.Transportation3)
+                .HasMaxLength(40)
+                .HasComment("交通3")
+                .HasColumnName("transportation3");
+            entity.Property(e => e.UpdatedDate)
+                .HasComment("情報更新日")
+                .HasColumnName("updated_date");
+            entity.Property(e => e.WalkingDistance1)
+                .HasComment("徒歩距離1")
+                .HasColumnName("walking_distance1");
+            entity.Property(e => e.WalkingDistance2)
+                .HasComment("徒歩距離2")
+                .HasColumnName("walking_distance2");
+            entity.Property(e => e.WalkingDistance3)
+                .HasComment("徒歩距離3")
+                .HasColumnName("walking_distance3");
         });
 
         modelBuilder.Entity<RentalBrowsingHistory>(entity =>
@@ -1227,1322 +1478,6 @@ public partial class AireDbContext : DbContext
                 .HasMaxLength(20)
                 .HasComment("駅名")
                 .HasColumnName("station_name");
-        });
-
-        modelBuilder.Entity<ValidRental>(entity =>
-        {
-            entity.HasKey(e => e.RentalId).HasName("valid_rental_pkey");
-
-            entity.ToTable("valid_rental", tb => tb.HasComment("掲載賃貸物件"));
-
-            entity.Property(e => e.RentalId)
-                .HasMaxLength(40)
-                .HasComment("賃貸物件ID")
-                .HasColumnName("rental_id");
-            entity.Property(e => e.All6jou)
-                .HasDefaultValue(false)
-                .HasComment("全居室６畳以上")
-                .HasColumnName("all_6jou");
-            entity.Property(e => e.AllEakon)
-                .HasDefaultValue(false)
-                .HasComment("全居室エアコン")
-                .HasColumnName("all_eakon");
-            entity.Property(e => e.AllFuroringu)
-                .HasDefaultValue(false)
-                .HasComment("全居室フローリング")
-                .HasColumnName("all_furoringu");
-            entity.Property(e => e.AllHukusougarasu)
-                .HasDefaultValue(false)
-                .HasComment("全居室複層ガラス")
-                .HasColumnName("all_hukusougarasu");
-            entity.Property(e => e.AllSaikoumen2)
-                .HasDefaultValue(false)
-                .HasComment("全室2面採光")
-                .HasColumnName("all_saikoumen2");
-            entity.Property(e => e.AllSyuunou)
-                .HasDefaultValue(false)
-                .HasComment("全居室収納")
-                .HasColumnName("all_syuunou");
-            entity.Property(e => e.AreaId)
-                .IsRequired()
-                .HasMaxLength(5)
-                .IsFixedLength()
-                .HasComment("エリアID")
-                .HasColumnName("area_id");
-            entity.Property(e => e.Baiku)
-                .HasDefaultValue(false)
-                .HasComment("バイク置き場")
-                .HasColumnName("baiku");
-            entity.Property(e => e.Baruhou)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("バルコニー（方向）")
-                .HasColumnName("baruhou");
-            entity.Property(e => e.Barukoni)
-                .HasDefaultValue(false)
-                .HasComment("バルコニー")
-                .HasColumnName("barukoni");
-            entity.Property(e => e.Bed)
-                .HasDefaultValue(false)
-                .HasComment("ベッド")
-                .HasColumnName("bed");
-            entity.Property(e => e.Beranda)
-                .HasDefaultValue(false)
-                .HasComment("ベランダ")
-                .HasColumnName("beranda");
-            entity.Property(e => e.Bfree)
-                .HasDefaultValue(false)
-                .HasComment("バリアフリー")
-                .HasColumnName("bfree");
-            entity.Property(e => e.Bikou)
-                .HasMaxLength(255)
-                .HasComment("備考")
-                .HasColumnName("bikou");
-            entity.Property(e => e.BouhanCamera)
-                .HasDefaultValue(false)
-                .HasComment("防犯カメラ")
-                .HasColumnName("bouhan_camera");
-            entity.Property(e => e.Bouon)
-                .HasDefaultValue(false)
-                .HasComment("防音室")
-                .HasColumnName("bouon");
-            entity.Property(e => e.Bs)
-                .HasDefaultValue(false)
-                .HasComment("ＢＳ受信可")
-                .HasColumnName("bs");
-            entity.Property(e => e.Btbetu)
-                .HasDefaultValue(false)
-                .HasComment("バストイレ別")
-                .HasColumnName("btbetu");
-            entity.Property(e => e.Bukkmoku)
-                .HasMaxLength(32)
-                .HasComment("物件種目")
-                .HasColumnName("bukkmoku");
-            entity.Property(e => e.Bunjou)
-                .HasDefaultValue(false)
-                .HasComment("分譲タイプ")
-                .HasColumnName("bunjou");
-            entity.Property(e => e.Busac1)
-                .HasComment("駅1までの所要時間（バス）")
-                .HasColumnName("busac1");
-            entity.Property(e => e.Busac2)
-                .HasComment("駅2までの所要時間（バス）")
-                .HasColumnName("busac2");
-            entity.Property(e => e.Busac3)
-                .HasComment("駅3までの所要時間（バス）")
-                .HasColumnName("busac3");
-            entity.Property(e => e.Bustei1)
-                .HasMaxLength(20)
-                .HasComment("駅1までのバス停名")
-                .HasColumnName("bustei1");
-            entity.Property(e => e.Bustei2)
-                .HasMaxLength(20)
-                .HasComment("駅2までのバス停名")
-                .HasColumnName("bustei2");
-            entity.Property(e => e.Bustei3)
-                .HasMaxLength(20)
-                .HasComment("駅3までのバス停名")
-                .HasColumnName("bustei3");
-            entity.Property(e => e.Cardkey)
-                .HasDefaultValue(false)
-                .HasComment("カードキー")
-                .HasColumnName("cardkey");
-            entity.Property(e => e.Catv)
-                .HasDefaultValue(false)
-                .HasComment("ＣＡＴＶ")
-                .HasColumnName("catv");
-            entity.Property(e => e.Chijou)
-                .HasComment("階層（地上）")
-                .HasColumnName("chijou");
-            entity.Property(e => e.Chika)
-                .HasComment("階層（地下）")
-                .HasColumnName("chika");
-            entity.Property(e => e.Chikashitsu)
-                .HasDefaultValue(false)
-                .HasComment("地下室")
-                .HasColumnName("chikashitsu");
-            entity.Property(e => e.Chikunen)
-                .HasComment("築年月（年）")
-                .HasColumnName("chikunen");
-            entity.Property(e => e.Chikutsuki)
-                .HasDefaultValue((short)0)
-                .HasComment("築年月（月）")
-                .HasColumnName("chikutsuki");
-            entity.Property(e => e.Chimei)
-                .IsRequired()
-                .HasMaxLength(40)
-                .HasComment("所在地（何丁目まで）")
-                .HasColumnName("chimei");
-            entity.Property(e => e.Chimoku)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("地目")
-                .HasColumnName("chimoku");
-            entity.Property(e => e.Chintaihosyou)
-                .HasPrecision(10, 2)
-                .HasComment("賃貸保証料（円）")
-                .HasColumnName("chintaihosyou");
-            entity.Property(e => e.Chintaihsbikou)
-                .HasMaxLength(80)
-                .HasComment("賃貸保証料詳細")
-                .HasColumnName("chintaihsbikou");
-            entity.Property(e => e.Chuugakku1)
-                .HasMaxLength(40)
-                .HasComment("中学校区１")
-                .HasColumnName("chuugakku1");
-            entity.Property(e => e.Chuugakku2)
-                .HasMaxLength(40)
-                .HasComment("中学校区２")
-                .HasColumnName("chuugakku2");
-            entity.Property(e => e.Ckittin)
-                .HasDefaultValue(false)
-                .HasComment("カウンターキッチン")
-                .HasColumnName("ckittin");
-            entity.Property(e => e.CompanyId)
-                .IsRequired()
-                .HasMaxLength(40)
-                .HasComment("会社ID")
-                .HasColumnName("company_id");
-            entity.Property(e => e.Crecard1)
-                .HasDefaultValue(false)
-                .HasComment("初期費用クレジット決済可")
-                .HasColumnName("crecard1");
-            entity.Property(e => e.Crecard2)
-                .HasDefaultValue(false)
-                .HasComment("賃料クレジット決済可")
-                .HasColumnName("crecard2");
-            entity.Property(e => e.Cs)
-                .HasDefaultValue(false)
-                .HasComment("ＣＳ受信可")
-                .HasColumnName("cs");
-            entity.Property(e => e.Customizeka)
-                .HasDefaultValue(false)
-                .HasComment("カスタマイズ可")
-                .HasColumnName("customizeka");
-            entity.Property(e => e.Danboubenza)
-                .HasDefaultValue(false)
-                .HasComment("暖房便座")
-                .HasColumnName("danboubenza");
-            entity.Property(e => e.Dannetu)
-                .HasComment("断熱性能")
-                .HasColumnName("dannetu");
-            entity.Property(e => e.Dansei)
-                .HasDefaultValue(false)
-                .HasComment("男性限定")
-                .HasColumnName("dansei");
-            entity.Property(e => e.Dendousyatta)
-                .HasDefaultValue(false)
-                .HasComment("電動シャッター")
-                .HasColumnName("dendousyatta");
-            entity.Property(e => e.Denka)
-                .HasDefaultValue(false)
-                .HasComment("オール電化")
-                .HasColumnName("denka");
-            entity.Property(e => e.Densikey)
-                .HasDefaultValue(false)
-                .HasComment("電子キー")
-                .HasColumnName("densikey");
-            entity.Property(e => e.Denwaba)
-                .HasMaxLength(20)
-                .HasComment("元付会社TEL")
-                .HasColumnName("denwaba");
-            entity.Property(e => e.Dezaina)
-                .HasDefaultValue(false)
-                .HasComment("デザイナーズ")
-                .HasColumnName("dezaina");
-            entity.Property(e => e.Dhisupoza)
-                .HasDefaultValue(false)
-                .HasComment("ディスポーザー")
-                .HasColumnName("dhisupoza");
-            entity.Property(e => e.Diyka)
-                .HasDefaultValue(false)
-                .HasComment("DIY可")
-                .HasColumnName("diyka");
-            entity.Property(e => e.DougaW1)
-                .HasComment("動画1の表示サイズの横")
-                .HasColumnName("douga_w1");
-            entity.Property(e => e.DougaW2)
-                .HasComment("動画2の表示サイズの横")
-                .HasColumnName("douga_w2");
-            entity.Property(e => e.DougaY1)
-                .HasComment("動画1の表示サイズの縦")
-                .HasColumnName("douga_y1");
-            entity.Property(e => e.DougaY2)
-                .HasComment("動画2の表示サイズの縦")
-                .HasColumnName("douga_y2");
-            entity.Property(e => e.Dougaurl1)
-                .HasMaxLength(255)
-                .HasComment("動画1の埋込用URL")
-                .HasColumnName("dougaurl1");
-            entity.Property(e => e.Dougaurl2)
-                .HasMaxLength(255)
-                .HasComment("動画2の埋込用URL")
-                .HasColumnName("dougaurl2");
-            entity.Property(e => e.Eakon)
-                .HasDefaultValue(false)
-                .HasComment("エアコン")
-                .HasColumnName("eakon");
-            entity.Property(e => e.Eakondaisu)
-                .HasComment("台（エアコン）")
-                .HasColumnName("eakondaisu");
-            entity.Property(e => e.Ekiid1)
-                .HasMaxLength(6)
-                .IsFixedLength()
-                .HasComment("駅1のID")
-                .HasColumnName("ekiid1");
-            entity.Property(e => e.Ekiid2)
-                .HasMaxLength(6)
-                .IsFixedLength()
-                .HasComment("駅2のID")
-                .HasColumnName("ekiid2");
-            entity.Property(e => e.Ekiid3)
-                .HasMaxLength(6)
-                .IsFixedLength()
-                .HasComment("駅3のID")
-                .HasColumnName("ekiid3");
-            entity.Property(e => e.Ekisu)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("駅数")
-                .HasColumnName("ekisu");
-            entity.Property(e => e.Eneseinou)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("エネルギー消費性能")
-                .HasColumnName("eneseinou");
-            entity.Property(e => e.Erebeta)
-                .HasDefaultValue(false)
-                .HasComment("エレベーター")
-                .HasColumnName("erebeta");
-            entity.Property(e => e.Fakusesu)
-                .HasDefaultValue(false)
-                .HasComment("フリーアクセス")
-                .HasColumnName("fakusesu");
-            entity.Property(e => e.Freerent)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("フリーレント")
-                .HasColumnName("freerent");
-            entity.Property(e => e.Fukinuke)
-                .HasDefaultValue(false)
-                .HasComment("吹抜け")
-                .HasColumnName("fukinuke");
-            entity.Property(e => e.Furo)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("風呂")
-                .HasColumnName("furo");
-            entity.Property(e => e.Furoringu)
-                .HasDefaultValue(false)
-                .HasComment("フローリング")
-                .HasColumnName("furoringu");
-            entity.Property(e => e.Gaikantairu)
-                .HasDefaultValue(false)
-                .HasComment("外観タイル張り")
-                .HasColumnName("gaikantairu");
-            entity.Property(e => e.GaisoReform01)
-                .HasDefaultValue(false)
-                .HasComment("外装（外装全面）")
-                .HasColumnName("gaiso_reform_01");
-            entity.Property(e => e.GaisoReform02)
-                .HasDefaultValue(false)
-                .HasComment("外装（屋根）")
-                .HasColumnName("gaiso_reform_02");
-            entity.Property(e => e.GaisoReform03)
-                .HasDefaultValue(false)
-                .HasComment("外装（外装その他）")
-                .HasColumnName("gaiso_reform_03");
-            entity.Property(e => e.Gakki)
-                .HasDefaultValue(false)
-                .HasComment("楽器相談")
-                .HasColumnName("gakki");
-            entity.Property(e => e.Gasdan)
-                .HasDefaultValue(false)
-                .HasComment("ガス暖房")
-                .HasColumnName("gasdan");
-            entity.Property(e => e.Gaskonro)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("コンロ")
-                .HasColumnName("gaskonro");
-            entity.Property(e => e.Gasu)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("ガス")
-                .HasColumnName("gasu");
-            entity.Property(e => e.Genkyou)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("現況")
-                .HasColumnName("genkyou");
-            entity.Property(e => e.Gesui)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("下水")
-                .HasColumnName("gesui");
-            entity.Property(e => e.Gomika24h)
-                .HasDefaultValue(false)
-                .HasComment("24時間ゴミ出し可")
-                .HasColumnName("gomika24h");
-            entity.Property(e => e.Gomiokiba)
-                .HasDefaultValue(false)
-                .HasComment("敷地内ゴミ置場")
-                .HasColumnName("gomiokiba");
-            entity.Property(e => e.Gporder1)
-                .HasMaxLength(255)
-                .HasComment("優先画像1")
-                .HasColumnName("gporder1");
-            entity.Property(e => e.Gporder2)
-                .HasMaxLength(255)
-                .HasComment("優先画像2")
-                .HasColumnName("gporder2");
-            entity.Property(e => e.Gporder3)
-                .HasMaxLength(255)
-                .HasComment("優先画像3")
-                .HasColumnName("gporder3");
-            entity.Property(e => e.Gyosyamemo)
-                .HasMaxLength(255)
-                .HasComment("業者向けコメント")
-                .HasColumnName("gyosyamemo");
-            entity.Property(e => e.Heitanchi)
-                .HasDefaultValue(false)
-                .HasComment("平坦地")
-                .HasColumnName("heitanchi");
-            entity.Property(e => e.Hiatariryoko)
-                .HasDefaultValue(false)
-                .HasComment("日当たり良好")
-                .HasColumnName("hiatariryoko");
-            entity.Property(e => e.Hikarif)
-                .HasDefaultValue(false)
-                .HasComment("光ファイバー")
-                .HasColumnName("hikarif");
-            entity.Property(e => e.Hiki)
-                .HasComment("期日指定時（年）")
-                .HasColumnName("hiki");
-            entity.Property(e => e.Hikijun)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("期日指定時（旬）")
-                .HasColumnName("hikijun");
-            entity.Property(e => e.Hikitsuki)
-                .HasDefaultValue((short)0)
-                .HasComment("期日指定時（月）")
-                .HasColumnName("hikitsuki");
-            entity.Property(e => e.Hikiziki)
-                .HasMaxLength(32)
-                .HasComment("入居時期")
-                .HasColumnName("hikiziki");
-            entity.Property(e => e.Hosyouhissu)
-                .HasDefaultValue(false)
-                .HasComment("賃貸保証料必須")
-                .HasColumnName("hosyouhissu");
-            entity.Property(e => e.Hosyounin)
-                .HasDefaultValue(false)
-                .HasComment("保証人不要/代行")
-                .HasColumnName("hosyounin");
-            entity.Property(e => e.Houjin)
-                .HasDefaultValue(false)
-                .HasComment("法人限定")
-                .HasColumnName("houjin");
-            entity.Property(e => e.Hukusougarasu)
-                .HasDefaultValue(false)
-                .HasComment("複層ガラス")
-                .HasColumnName("hukusougarasu");
-            entity.Property(e => e.Ih)
-                .HasDefaultValue(false)
-                .HasComment("ＩＨクッキングヒーター")
-                .HasColumnName("ih");
-            entity.Property(e => e.Ikittin)
-                .HasDefaultValue(false)
-                .HasComment("アイランドキッチン")
-                .HasColumnName("ikittin");
-            entity.Property(e => e.Inetmuryou)
-                .HasDefaultValue(false)
-                .HasComment("インターネット無料")
-                .HasColumnName("inetmuryou");
-            entity.Property(e => e.Intanet)
-                .HasDefaultValue(false)
-                .HasComment("インターネット接続可")
-                .HasColumnName("intanet");
-            entity.Property(e => e.ItibuFuroringu)
-                .HasDefaultValue(false)
-                .HasComment("一部フローリング")
-                .HasColumnName("itibu_furoringu");
-            entity.Property(e => e.Itjusetu)
-                .HasDefaultValue(false)
-                .HasComment("IT重説対応物件")
-                .HasColumnName("itjusetu");
-            entity.Property(e => e.Jimusyoriyou)
-                .HasDefaultValue(false)
-                .HasComment("事務所利用可")
-                .HasColumnName("jimusyoriyou");
-            entity.Property(e => e.Jinkansyoumei)
-                .HasDefaultValue(false)
-                .HasComment("人感センサー付照明")
-                .HasColumnName("jinkansyoumei");
-            entity.Property(e => e.Jusyokoukai)
-                .HasMaxLength(32)
-                .HasComment("所在地詳細公開")
-                .HasColumnName("jusyokoukai");
-            entity.Property(e => e.Jyosei)
-                .HasDefaultValue(false)
-                .HasComment("女性限定")
-                .HasColumnName("jyosei");
-            entity.Property(e => e.Jyousui)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("水道")
-                .HasColumnName("jyousui");
-            entity.Property(e => e.Jyousuiki)
-                .HasDefaultValue(false)
-                .HasComment("浄水器")
-                .HasColumnName("jyousuiki");
-            entity.Property(e => e.Kadentsuki)
-                .HasDefaultValue(false)
-                .HasComment("家電付き")
-                .HasColumnName("kadentsuki");
-            entity.Property(e => e.Kadobeya)
-                .HasDefaultValue(false)
-                .HasComment("角部屋")
-                .HasColumnName("kadobeya");
-            entity.Property(e => e.Kagi)
-                .HasMaxLength(32)
-                .HasComment("鍵保管場所")
-                .HasColumnName("kagi");
-            entity.Property(e => e.Kagibikou)
-                .HasMaxLength(255)
-                .HasComment("鍵備考")
-                .HasColumnName("kagibikou");
-            entity.Property(e => e.Kagiitaku)
-                .HasMaxLength(40)
-                .HasComment("預託先会社")
-                .HasColumnName("kagiitaku");
-            entity.Property(e => e.Kagutsuki)
-                .HasDefaultValue(false)
-                .HasComment("家具付き")
-                .HasColumnName("kagutsuki");
-            entity.Property(e => e.Kaiinmei)
-                .HasMaxLength(40)
-                .HasComment("元付会社名")
-                .HasColumnName("kaiinmei");
-            entity.Property(e => e.Kakutyouk1)
-                .HasDefaultValue(false)
-                .HasComment("スグ借りバーゲン")
-                .HasColumnName("kakutyouk1");
-            entity.Property(e => e.Kakutyouk2)
-                .HasDefaultValue(false)
-                .HasComment("ルームズくん")
-                .HasColumnName("kakutyouk2");
-            entity.Property(e => e.Kakutyouk3)
-                .HasDefaultValue(false)
-                .HasComment("シャレ部屋")
-                .HasColumnName("kakutyouk3");
-            entity.Property(e => e.Kakutyouk4)
-                .HasDefaultValue(false)
-                .HasComment("おしゃれな物件")
-                .HasColumnName("kakutyouk4");
-            entity.Property(e => e.Kakutyouk5)
-                .HasDefaultValue(false)
-                .HasComment("ハウスメーカー")
-                .HasColumnName("kakutyouk5");
-            entity.Property(e => e.Kakutyouk6)
-                .HasDefaultValue(false)
-                .HasComment("無職可")
-                .HasColumnName("kakutyouk6");
-            entity.Property(e => e.Kakutyouk7)
-                .HasDefaultValue(false)
-                .HasComment("トリプルゼロ")
-                .HasColumnName("kakutyouk7");
-            entity.Property(e => e.Kakutyouk8)
-                .HasDefaultValue(false)
-                .HasComment("保証人無し可")
-                .HasColumnName("kakutyouk8");
-            entity.Property(e => e.Kanki24h)
-                .HasDefaultValue(false)
-                .HasComment("24時間換気")
-                .HasColumnName("kanki24h");
-            entity.Property(e => e.Kanrihi)
-                .HasPrecision(10, 2)
-                .HasDefaultValueSql("0")
-                .HasComment("管理費")
-                .HasColumnName("kanrihi");
-            entity.Property(e => e.Kanrikai)
-                .HasMaxLength(40)
-                .HasComment("管理（会社）")
-                .HasColumnName("kanrikai");
-            entity.Property(e => e.Kanrike)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("管理（方式）")
-                .HasColumnName("kanrike");
-            entity.Property(e => e.Kanrinin)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("管理（形態）")
-                .HasColumnName("kanrinin");
-            entity.Property(e => e.Kansei)
-                .HasDefaultValue(false)
-                .HasComment("閑静な住宅街")
-                .HasColumnName("kansei");
-            entity.Property(e => e.Kasaihissu)
-                .HasDefaultValue(false)
-                .HasComment("火災保険必須")
-                .HasColumnName("kasaihissu");
-            entity.Property(e => e.Kasaihoken)
-                .HasPrecision(10, 2)
-                .HasComment("火災保険（円）")
-                .HasColumnName("kasaihoken");
-            entity.Property(e => e.Kasainen)
-                .HasDefaultValue((short)2)
-                .HasComment("火災保険（年）")
-                .HasColumnName("kasainen");
-            entity.Property(e => e.Kenpei)
-                .HasComment("建ペイ率")
-                .HasColumnName("kenpei");
-            entity.Property(e => e.Kinkagetu1)
-                .HasPrecision(10, 2)
-                .HasComment("料金")
-                .HasColumnName("kinkagetu1");
-            entity.Property(e => e.Kinkagetu2)
-                .HasPrecision(10, 2)
-                .HasComment("料金")
-                .HasColumnName("kinkagetu2");
-            entity.Property(e => e.Kinku1)
-                .HasMaxLength(32)
-                .HasComment("単位")
-                .HasColumnName("kinku1");
-            entity.Property(e => e.Kinku2)
-                .HasMaxLength(32)
-                .HasComment("単位")
-                .HasColumnName("kinku2");
-            entity.Property(e => e.Kinkum1)
-                .HasMaxLength(32)
-                .HasComment("名目")
-                .HasColumnName("kinkum1");
-            entity.Property(e => e.Kinkum2)
-                .HasMaxLength(32)
-                .HasComment("名目")
-                .HasColumnName("kinkum2");
-            entity.Property(e => e.Kofuka)
-                .HasDefaultValue(false)
-                .HasComment("子供不可")
-                .HasColumnName("kofuka");
-            entity.Property(e => e.Komitukodan)
-                .HasDefaultValue(false)
-                .HasComment("高気密高断熱住宅")
-                .HasColumnName("komitukodan");
-            entity.Property(e => e.Kotsu)
-                .HasMaxLength(40)
-                .HasComment("交通情報")
-                .HasColumnName("kotsu");
-            entity.Property(e => e.Koukoku)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("（元付会社の）広告転載")
-                .HasColumnName("koukoku");
-            entity.Property(e => e.Kounetuhi)
-                .HasPrecision(10, 2)
-                .HasComment("目安光熱費")
-                .HasColumnName("kounetuhi");
-            entity.Property(e => e.Koureisya)
-                .HasDefaultValue(false)
-                .HasComment("50歳以上可")
-                .HasColumnName("koureisya");
-            entity.Property(e => e.Kousinkbm)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("更新料単位")
-                .HasColumnName("kousinkbm");
-            entity.Property(e => e.Kousinkbn)
-                .HasMaxLength(32)
-                .HasComment("更新料種類")
-                .HasColumnName("kousinkbn");
-            entity.Property(e => e.Kousinryo)
-                .HasPrecision(10, 2)
-                .HasComment("更新料")
-                .HasColumnName("kousinryo");
-            entity.Property(e => e.Kousintkbn)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("更新手数料単位")
-                .HasColumnName("kousintkbn");
-            entity.Property(e => e.Kousintryo)
-                .HasPrecision(10, 2)
-                .HasComment("更新手数料")
-                .HasColumnName("kousintryo");
-            entity.Property(e => e.Koutenasi)
-                .HasDefaultValue(false)
-                .HasComment("更新手数料無し")
-                .HasColumnName("koutenasi");
-            entity.Property(e => e.Kouzai)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("構造・材質")
-                .HasColumnName("kouzai");
-            entity.Property(e => e.Kouzaisonota)
-                .HasMaxLength(20)
-                .HasComment("その他（構造・材質）")
-                .HasColumnName("kouzaisonota");
-            entity.Property(e => e.Kseinouhyouka)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("建設住宅性能評価付")
-                .HasColumnName("kseinouhyouka");
-            entity.Property(e => e.Kurozet)
-                .HasDefaultValue(false)
-                .HasComment("クローゼット")
-                .HasColumnName("kurozet");
-            entity.Property(e => e.Kuruma1)
-                .HasComment("駅1までの所要時間（車）")
-                .HasColumnName("kuruma1");
-            entity.Property(e => e.Kuruma2)
-                .HasComment("駅2までの所要時間（車）")
-                .HasColumnName("kuruma2");
-            entity.Property(e => e.Kuruma3)
-                .HasComment("駅3までの所要時間（車）")
-                .HasColumnName("kuruma3");
-            entity.Property(e => e.Kutsubako)
-                .HasDefaultValue(false)
-                .HasComment("シューズボックス")
-                .HasColumnName("kutsubako");
-            entity.Property(e => e.Kynen)
-                .HasDefaultValue((short)2)
-                .HasComment("契約期間（年）")
-                .HasColumnName("kynen");
-            entity.Property(e => e.Kytsuki)
-                .HasDefaultValue((short)0)
-                .HasComment("契約期間（月）")
-                .HasColumnName("kytsuki");
-            entity.Property(e => e.Kyuutou)
-                .HasDefaultValue(false)
-                .HasComment("給湯器")
-                .HasColumnName("kyuutou");
-            entity.Property(e => e.Lgbt)
-                .HasDefaultValue(false)
-                .HasComment("LGBTフレンドリー")
-                .HasColumnName("lgbt");
-            entity.Property(e => e.Madoheya)
-                .HasComment("部屋数（間取り）")
-                .HasColumnName("madoheya");
-            entity.Property(e => e.Madotaipu)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("タイプ（間取り）")
-                .HasColumnName("madotaipu");
-            entity.Property(e => e.Manmei)
-                .HasMaxLength(40)
-                .HasComment("建物名")
-                .HasColumnName("manmei");
-            entity.Property(e => e.Manmeikoukai)
-                .HasDefaultValue(false)
-                .HasComment("物件名を公開する")
-                .HasColumnName("manmeikoukai");
-            entity.Property(e => e.Menshin)
-                .HasDefaultValue(false)
-                .HasComment("免震構造")
-                .HasColumnName("menshin");
-            entity.Property(e => e.Mezofrom)
-                .HasComment("メゾネット階（から）")
-                .HasColumnName("mezofrom");
-            entity.Property(e => e.Mezonetto)
-                .HasDefaultValue(false)
-                .HasComment("メゾネット")
-                .HasColumnName("mezonetto");
-            entity.Property(e => e.Mezoto)
-                .HasComment("メゾネット階（まで）")
-                .HasColumnName("mezoto");
-            entity.Property(e => e.Midasi)
-                .HasMaxLength(255)
-                .HasComment("セールスポイント")
-                .HasColumnName("midasi");
-            entity.Property(e => e.Minamibaru)
-                .HasDefaultValue(false)
-                .HasComment("南面バルコニー")
-                .HasColumnName("minamibaru");
-            entity.Property(e => e.Minaminiwa)
-                .HasDefaultValue(false)
-                .HasComment("南庭")
-                .HasColumnName("minaminiwa");
-            entity.Property(e => e.Monooki)
-                .HasDefaultValue(false)
-                .HasComment("物置")
-                .HasColumnName("monooki");
-            entity.Property(e => e.Motomemo)
-                .HasMaxLength(255)
-                .HasComment("元付メモ")
-                .HasColumnName("motomemo");
-            entity.Property(e => e.NaisoReform01)
-                .HasDefaultValue(false)
-                .HasComment("内装（キッチン）")
-                .HasColumnName("naiso_reform_01");
-            entity.Property(e => e.NaisoReform02)
-                .HasDefaultValue(false)
-                .HasComment("内装（浴室）")
-                .HasColumnName("naiso_reform_02");
-            entity.Property(e => e.NaisoReform03)
-                .HasDefaultValue(false)
-                .HasComment("内装（トイレ）")
-                .HasColumnName("naiso_reform_03");
-            entity.Property(e => e.NaisoReform04)
-                .HasDefaultValue(false)
-                .HasComment("内装（クロス張替）")
-                .HasColumnName("naiso_reform_04");
-            entity.Property(e => e.NaisoReform05)
-                .HasDefaultValue(false)
-                .HasComment("内装（床）")
-                .HasColumnName("naiso_reform_05");
-            entity.Property(e => e.NaisoReform06)
-                .HasDefaultValue(false)
-                .HasComment("内装（内装全面）")
-                .HasColumnName("naiso_reform_06");
-            entity.Property(e => e.NaisoReform07)
-                .HasDefaultValue(false)
-                .HasComment("内装（洗面）")
-                .HasColumnName("naiso_reform_07");
-            entity.Property(e => e.NaisoReform09)
-                .HasDefaultValue(false)
-                .HasComment("内装（給湯器）")
-                .HasColumnName("naiso_reform_09");
-            entity.Property(e => e.NaisoReform10)
-                .HasDefaultValue(false)
-                .HasComment("内装（給排水管）")
-                .HasColumnName("naiso_reform_10");
-            entity.Property(e => e.NaisoReform11)
-                .HasDefaultValue(false)
-                .HasComment("内装（建具）")
-                .HasColumnName("naiso_reform_11");
-            entity.Property(e => e.NaisoReform12)
-                .HasDefaultValue(false)
-                .HasComment("内装（サッシ）")
-                .HasColumnName("naiso_reform_12");
-            entity.Property(e => e.Nando)
-                .HasDefaultValue(false)
-                .HasComment("納戸")
-                .HasColumnName("nando");
-            entity.Property(e => e.Nisetai)
-                .HasDefaultValue(false)
-                .HasComment("二世帯住宅")
-                .HasColumnName("nisetai");
-            entity.Property(e => e.Niwa)
-                .HasDefaultValue(false)
-                .HasComment("専用庭")
-                .HasColumnName("niwa");
-            entity.Property(e => e.Niwa10tubo)
-                .HasDefaultValue(false)
-                .HasComment("庭10坪以上")
-                .HasColumnName("niwa10tubo");
-            entity.Property(e => e.Nyukyoka)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("入居可能")
-                .HasColumnName("nyukyoka");
-            entity.Property(e => e.Oidaki)
-                .HasDefaultValue(false)
-                .HasComment("追焚き可")
-                .HasColumnName("oidaki");
-            entity.Property(e => e.Outobasu)
-                .HasDefaultValue(false)
-                .HasComment("オートバス")
-                .HasColumnName("outobasu");
-            entity.Property(e => e.Outorok)
-                .HasDefaultValue(false)
-                .HasComment("オートロック")
-                .HasColumnName("outorok");
-            entity.Property(e => e.Pantori)
-                .HasDefaultValue(false)
-                .HasComment("パントリー")
-                .HasColumnName("pantori");
-            entity.Property(e => e.Petka)
-                .HasDefaultValue(false)
-                .HasComment("ペット可")
-                .HasColumnName("petka");
-            entity.Property(e => e.PropertyType)
-                .IsRequired()
-                .HasMaxLength(32)
-                .HasDefaultValueSql("1")
-                .HasComment("物件タイプ")
-                .HasColumnName("property_type");
-            entity.Property(e => e.Rbarukoni)
-                .HasDefaultValue(false)
-                .HasComment("ルーフバルコニー")
-                .HasColumnName("rbarukoni");
-            entity.Property(e => e.ReNen)
-                .HasComment("リフォーム実施年")
-                .HasColumnName("re_nen");
-            entity.Property(e => e.ReTsuki)
-                .HasDefaultValue((short)0)
-                .HasComment("リフォーム実施月")
-                .HasColumnName("re_tsuki");
-            entity.Property(e => e.Reformbikou)
-                .HasMaxLength(255)
-                .HasComment("リフォーム備考")
-                .HasColumnName("reformbikou");
-            entity.Property(e => e.RenoNen)
-                .HasComment("実施年（リノベーション）")
-                .HasColumnName("reno_nen");
-            entity.Property(e => e.RenoTsuki)
-                .HasDefaultValue((short)0)
-                .HasComment("実施月（リノベーション）")
-                .HasColumnName("reno_tsuki");
-            entity.Property(e => e.Renova)
-                .HasDefaultValue(false)
-                .HasComment("リノベーション済み")
-                .HasColumnName("renova");
-            entity.Property(e => e.Renovabikou)
-                .HasMaxLength(255)
-                .HasComment("内容（リノベーション）")
-                .HasColumnName("renovabikou");
-            entity.Property(e => e.RentalCommonId)
-                .HasMaxLength(40)
-                .HasComment("賃貸物件共通ID")
-                .HasColumnName("rental_common_id");
-            entity.Property(e => e.Ribingukaidan)
-                .HasDefaultValue(false)
-                .HasComment("リビング階段")
-                .HasColumnName("ribingukaidan");
-            entity.Property(e => e.Rofuto)
-                .HasDefaultValue(false)
-                .HasComment("ロフト")
-                .HasColumnName("rofuto");
-            entity.Property(e => e.Roomno)
-                .HasMaxLength(20)
-                .HasComment("部屋番号")
-                .HasColumnName("roomno");
-            entity.Property(e => e.Roomshare)
-                .HasDefaultValue(false)
-                .HasComment("ルームシェア可")
-                .HasColumnName("roomshare");
-            entity.Property(e => e.Saiene)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("再エネ（省エネ性能）")
-                .HasColumnName("saiene");
-            entity.Property(e => e.Saikoumen)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("採光面")
-                .HasColumnName("saikoumen");
-            entity.Property(e => e.Seikeichi)
-                .HasDefaultValue(false)
-                .HasComment("整形地")
-                .HasColumnName("seikeichi");
-            entity.Property(e => e.Seishin)
-                .HasDefaultValue(false)
-                .HasComment("制震構造")
-                .HasColumnName("seishin");
-            entity.Property(e => e.Sekoukaisya)
-                .HasMaxLength(40)
-                .HasComment("施工会社")
-                .HasColumnName("sekoukaisya");
-            entity.Property(e => e.Sekyurithi)
-                .HasDefaultValue(false)
-                .HasComment("セキュリティーシステム")
-                .HasColumnName("sekyurithi");
-            entity.Property(e => e.Sekyurithikaisya)
-                .HasDefaultValue(false)
-                .HasComment("セキュリティ会社加入済")
-                .HasColumnName("sekyurithikaisya");
-            entity.Property(e => e.Senjoub)
-                .HasDefaultValue(false)
-                .HasComment("ウォッシュレット")
-                .HasColumnName("senjoub");
-            entity.Property(e => e.Senmennomi)
-                .HasDefaultValue(false)
-                .HasComment("洗面所独立")
-                .HasColumnName("senmennomi");
-            entity.Property(e => e.Sennmenn)
-                .HasDefaultValue(false)
-                .HasComment("洗面化粧台")
-                .HasColumnName("sennmenn");
-            entity.Property(e => e.Setuhaba1)
-                .HasPrecision(5, 2)
-                .HasComment("接道１（幅員）")
-                .HasColumnName("setuhaba1");
-            entity.Property(e => e.Setuhou1)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("接道１（方向）")
-                .HasColumnName("setuhou1");
-            entity.Property(e => e.Setusetu1)
-                .HasPrecision(5, 2)
-                .HasComment("接道１（接面）")
-                .HasColumnName("setusetu1");
-            entity.Property(e => e.Setusyu1)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("接道１（種類）")
-                .HasColumnName("setusyu1");
-            entity.Property(e => e.Shimen)
-                .HasPrecision(5, 2)
-                .HasComment("バルコニー（面積）")
-                .HasColumnName("shimen");
-            entity.Property(e => e.ShoesIc)
-                .HasDefaultValue(false)
-                .HasComment("シューズインクローク")
-                .HasColumnName("shoes_ic");
-            entity.Property(e => e.Shougakku1)
-                .HasMaxLength(40)
-                .HasComment("小学校区１")
-                .HasColumnName("shougakku1");
-            entity.Property(e => e.Shougakku2)
-                .HasMaxLength(40)
-                .HasComment("小学校区２")
-                .HasColumnName("shougakku2");
-            entity.Property(e => e.Sihatu)
-                .HasDefaultValue(false)
-                .HasComment("始発駅")
-                .HasColumnName("sihatu");
-            entity.Property(e => e.Sintiku)
-                .HasDefaultValue(false)
-                .HasComment("新築")
-                .HasColumnName("sintiku");
-            entity.Property(e => e.Sisukit)
-                .HasDefaultValue(false)
-                .HasComment("システムキッチン")
-                .HasColumnName("sisukit");
-            entity.Property(e => e.Situhiro1)
-                .HasPrecision(5, 2)
-                .HasComment("畳1（間取り）")
-                .HasColumnName("situhiro1");
-            entity.Property(e => e.Situhiro2)
-                .HasPrecision(5, 2)
-                .HasComment("畳2（間取り）")
-                .HasColumnName("situhiro2");
-            entity.Property(e => e.Situhiro3)
-                .HasPrecision(5, 2)
-                .HasComment("畳3（間取り）")
-                .HasColumnName("situhiro3");
-            entity.Property(e => e.Situhiro4)
-                .HasPrecision(5, 2)
-                .HasComment("畳4（間取り）")
-                .HasColumnName("situhiro4");
-            entity.Property(e => e.Situhiro5)
-                .HasPrecision(5, 2)
-                .HasComment("畳5（間取り）")
-                .HasColumnName("situhiro5");
-            entity.Property(e => e.Situhiro6)
-                .HasPrecision(5, 2)
-                .HasComment("畳6（間取り）")
-                .HasColumnName("situhiro6");
-            entity.Property(e => e.Situhiro7)
-                .HasPrecision(5, 2)
-                .HasComment("畳7（間取り）")
-                .HasColumnName("situhiro7");
-            entity.Property(e => e.Situmonohosi)
-                .HasDefaultValue(false)
-                .HasComment("室内物干し")
-                .HasColumnName("situmonohosi");
-            entity.Property(e => e.Situsentaku)
-                .HasDefaultValue(false)
-                .HasComment("室内洗濯機置場")
-                .HasColumnName("situsentaku");
-            entity.Property(e => e.Situtaipu1)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細1（間取り）")
-                .HasColumnName("situtaipu1");
-            entity.Property(e => e.Situtaipu2)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細2（間取り）")
-                .HasColumnName("situtaipu2");
-            entity.Property(e => e.Situtaipu3)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細3（間取り）")
-                .HasColumnName("situtaipu3");
-            entity.Property(e => e.Situtaipu4)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細4（間取り）")
-                .HasColumnName("situtaipu4");
-            entity.Property(e => e.Situtaipu5)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細5（間取り）")
-                .HasColumnName("situtaipu5");
-            entity.Property(e => e.Situtaipu6)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細6（間取り）")
-                .HasColumnName("situtaipu6");
-            entity.Property(e => e.Situtaipu7)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("詳細7（間取り）")
-                .HasColumnName("situtaipu7");
-            entity.Property(e => e.Situzai)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("最適用途（貸地用）")
-                .HasColumnName("situzai");
-            entity.Property(e => e.Sseinouhyouka)
-                .HasDefaultValue(false)
-                .HasComment("設計住宅性能評価付")
-                .HasColumnName("sseinouhyouka");
-            entity.Property(e => e.StaffId)
-                .IsRequired()
-                .HasMaxLength(20)
-                .HasComment("担当社員ID")
-                .HasColumnName("staff_id");
-            entity.Property(e => e.Syanpudore)
-                .HasDefaultValue(false)
-                .HasComment("シャンプードレッサー")
-                .HasColumnName("syanpudore");
-            entity.Property(e => e.Syawaaroom)
-                .HasDefaultValue(false)
-                .HasComment("シャワールーム")
-                .HasColumnName("syawaaroom");
-            entity.Property(e => e.Syohizei)
-                .IsRequired()
-                .HasMaxLength(32)
-                .HasComment("消費税")
-                .HasColumnName("syohizei");
-            entity.Property(e => e.Syokai)
-                .HasComment("所在階")
-                .HasColumnName("syokai");
-            entity.Property(e => e.SyokaiChika)
-                .HasDefaultValue(false)
-                .HasComment("所在地下")
-                .HasColumnName("syokai_chika");
-            entity.Property(e => e.Syokihiyo)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("初期費用")
-                .HasColumnName("syokihiyo");
-            entity.Property(e => e.Syokkiarai)
-                .HasDefaultValue(false)
-                .HasComment("食器洗浄機")
-                .HasColumnName("syokkiarai");
-            entity.Property(e => e.Syozai)
-                .IsRequired()
-                .HasMaxLength(40)
-                .HasComment("所在地（何番から）")
-                .HasColumnName("syozai");
-            entity.Property(e => e.Syuunou)
-                .HasDefaultValue(false)
-                .HasComment("収納")
-                .HasColumnName("syuunou");
-            entity.Property(e => e.Taishin)
-                .HasDefaultValue(false)
-                .HasComment("耐震構造")
-                .HasColumnName("taishin");
-            entity.Property(e => e.Taishinkijun)
-                .HasDefaultValue(false)
-                .HasComment("耐震基準適合証明書")
-                .HasColumnName("taishinkijun");
-            entity.Property(e => e.Taiyouhatuden)
-                .HasDefaultValue(false)
-                .HasComment("太陽光発電システム")
-                .HasColumnName("taiyouhatuden");
-            entity.Property(e => e.Takadai)
-                .HasDefaultValue(false)
-                .HasComment("高台に立地")
-                .HasColumnName("takadai");
-            entity.Property(e => e.Takuhaib)
-                .HasDefaultValue(false)
-                .HasComment("宅配ボックス")
-                .HasColumnName("takuhaib");
-            entity.Property(e => e.Tasya)
-                .HasMaxLength(32)
-                .HasComment("他社付け")
-                .HasColumnName("tasya");
-            entity.Property(e => e.Tatemen)
-                .HasPrecision(5, 2)
-                .HasComment("専有面積")
-                .HasColumnName("tatemen");
-            entity.Property(e => e.Teisyaku)
-                .HasDefaultValue(false)
-                .HasComment("定期借家")
-                .HasColumnName("teisyaku");
-            entity.Property(e => e.Tenjou25)
-                .HasDefaultValue(false)
-                .HasComment("天井高2.5m以上")
-                .HasColumnName("tenjou25");
-            entity.Property(e => e.Terasu)
-                .HasDefaultValue(false)
-                .HasComment("テラス")
-                .HasColumnName("terasu");
-            entity.Property(e => e.Tochimen)
-                .HasPrecision(10, 2)
-                .HasComment("土地面積")
-                .HasColumnName("tochimen");
-            entity.Property(e => e.Toho1)
-                .HasComment("駅1までの所要時間（徒歩）")
-                .HasColumnName("toho1");
-            entity.Property(e => e.Toho2)
-                .HasComment("駅2までの所要時間（徒歩）")
-                .HasColumnName("toho2");
-            entity.Property(e => e.Toho3)
-                .HasComment("駅3までの所要時間（徒歩）")
-                .HasColumnName("toho3");
-            entity.Property(e => e.Toire)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("トイレ")
-                .HasColumnName("toire");
-            entity.Property(e => e.Toire2kasyo)
-                .HasDefaultValue(false)
-                .HasComment("トイレ2ヶ所")
-                .HasColumnName("toire2kasyo");
-            entity.Property(e => e.Toitan)
-                .HasMaxLength(20)
-                .HasComment("元付担当者")
-                .HasColumnName("toitan");
-            entity.Property(e => e.Tokei)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("都市計画")
-                .HasColumnName("tokei");
-            entity.Property(e => e.Tokenri)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("借地権種類")
-                .HasColumnName("tokenri");
-            entity.Property(e => e.Tokuteiyuryou)
-                .HasDefaultValue(false)
-                .HasComment("特定優良賃貸住宅")
-                .HasColumnName("tokuteiyuryou");
-            entity.Property(e => e.Torankur)
-                .HasDefaultValue(false)
-                .HasComment("トランクルーム")
-                .HasColumnName("torankur");
-            entity.Property(e => e.Toritai)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("取引態様")
-                .HasColumnName("toritai");
-            entity.Property(e => e.Tousouko)
-                .HasComment("棟総戸数")
-                .HasColumnName("tousouko");
-            entity.Property(e => e.Touyudan)
-                .HasDefaultValue(false)
-                .HasComment("灯油暖房")
-                .HasColumnName("touyudan");
-            entity.Property(e => e.Tvdoahon)
-                .HasDefaultValue(false)
-                .HasComment("ＴＶドアホン")
-                .HasColumnName("tvdoahon");
-            entity.Property(e => e.Tyudaisu)
-                .HasComment("駐車場（台）")
-                .HasColumnName("tyudaisu");
-            entity.Property(e => e.Tyukinrinmade)
-                .HasComment("駐車場まで（m）")
-                .HasColumnName("tyukinrinmade");
-            entity.Property(e => e.Tyunedan)
-                .HasPrecision(10, 2)
-                .HasComment("駐車場（円/月）")
-                .HasColumnName("tyunedan");
-            entity.Property(e => e.Tyusyousetsu)
-                .HasDefaultValue(false)
-                .HasComment("駐車場消雪設備")
-                .HasColumnName("tyusyousetsu");
-            entity.Property(e => e.Tyutehangaku)
-                .HasDefaultValue(false)
-                .HasComment("仲介手数料半額")
-                .HasColumnName("tyutehangaku");
-            entity.Property(e => e.Tyutemuryou)
-                .HasDefaultValue(false)
-                .HasComment("仲介手数料無料")
-                .HasColumnName("tyutemuryou");
-            entity.Property(e => e.Tyutetani)
-                .IsRequired()
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("単位（仲介手数料）")
-                .HasColumnName("tyutetani");
-            entity.Property(e => e.Tyuurin)
-                .HasDefaultValue(false)
-                .HasComment("駐輪場")
-                .HasColumnName("tyuurin");
-            entity.Property(e => e.Tyuutehutan)
-                .HasDefaultValue((short)2)
-                .HasComment("借主負担比率%（仲介手数料）")
-                .HasColumnName("tyuutehutan");
-            entity.Property(e => e.TyuutehutanKasi)
-                .HasDefaultValue((short)2)
-                .HasComment("貸主負担比率%（仲介手数料）")
-                .HasColumnName("tyuutehutan_kasi");
-            entity.Property(e => e.Tyuutekin)
-                .HasPrecision(10, 2)
-                .HasComment("金額（仲介手数料）")
-                .HasColumnName("tyuutekin");
-            entity.Property(e => e.Tyuzaihi)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("駐車場")
-                .HasColumnName("tyuzaihi");
-            entity.Property(e => e.Uddodekki)
-                .HasDefaultValue(false)
-                .HasComment("ウッドデッキ")
-                .HasColumnName("uddodekki");
-            entity.Property(e => e.Wbarukoni)
-                .HasDefaultValue(false)
-                .HasComment("ワイドバルコニー")
-                .HasColumnName("wbarukoni");
-            entity.Property(e => e.Wkurozet)
-                .HasDefaultValue(false)
-                .HasComment("ウォークインクローゼット")
-                .HasColumnName("wkurozet");
-            entity.Property(e => e.Yachin)
-                .HasPrecision(15, 2)
-                .HasComment("家賃、価格")
-                .HasColumnName("yachin");
-            entity.Property(e => e.Yaneurasyuunou)
-                .HasDefaultValue(false)
-                .HasComment("屋根裏収納")
-                .HasColumnName("yaneurasyuunou");
-            entity.Property(e => e.Ykansouki)
-                .HasDefaultValue(false)
-                .HasComment("浴室乾燥機")
-                .HasColumnName("ykansouki");
-            entity.Property(e => e.Yokuhiro)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("浴室広さ")
-                .HasColumnName("yokuhiro");
-            entity.Property(e => e.Yokushitudan)
-                .HasDefaultValue(false)
-                .HasComment("浴室暖房")
-                .HasColumnName("yokushitudan");
-            entity.Property(e => e.Yokusitumado)
-                .HasDefaultValue(false)
-                .HasComment("浴室に窓")
-                .HasColumnName("yokusitumado");
-            entity.Property(e => e.Youchi)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("用途地域")
-                .HasColumnName("youchi");
-            entity.Property(e => e.Youseki)
-                .HasComment("容積率")
-                .HasColumnName("youseki");
-            entity.Property(e => e.Ysyuunou)
-                .HasDefaultValue(false)
-                .HasComment("床下収納")
-                .HasColumnName("ysyuunou");
-            entity.Property(e => e.Yujin24h)
-                .HasDefaultValue(false)
-                .HasComment("24時間有人管理")
-                .HasColumnName("yujin24h");
-            entity.Property(e => e.Yukadan)
-                .HasDefaultValue(false)
-                .HasComment("床暖房")
-                .HasColumnName("yukadan");
-            entity.Property(e => e.Zappaisui)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("雑排水")
-                .HasColumnName("zappaisui");
-            entity.Property(e => e.Zenmentounasi)
-                .HasDefaultValue(false)
-                .HasComment("前面棟無")
-                .HasColumnName("zenmentounasi");
-            entity.Property(e => e.Zensitumuki)
-                .HasMaxLength(32)
-                .HasDefaultValueSql("false")
-                .HasComment("全室向き")
-                .HasColumnName("zensitumuki");
         });
 
         OnModelCreatingPartial(modelBuilder);

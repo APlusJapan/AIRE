@@ -93,80 +93,336 @@ public partial class RentalListView : ContentPage
 
     private void LoadRentalList()
     {
-        IQueryable<ValidRental> queryable = DatabaseService.GetAireDbContext().ValidRentals;
+        IQueryable<Rental> queryable = DatabaseService.GetAireDbContext().Rentals;
 
-        List<String> queryItemList = [.. viewModel.SearchConditions.QueryItem.Select(item => item.ID)];
+        List<String> queryItemList = [.. viewModel.SearchConditions.QueryItem.Select(item => item.Name)];
 
         switch (viewModel.SearchConditions.MySearchType)
         {
             case SearchType.Station:
                 {
-                    queryable = queryable.Where(validRental => queryItemList.Contains(validRental.Ekiid1)
-                        || queryItemList.Contains(validRental.Ekiid2)
-                        || queryItemList.Contains(validRental.Ekiid3));
+                    queryable = queryable.Where(rental =>
+                        queryItemList.Any(name => rental.Transportation1.Contains(name))
+                        || queryItemList.Any(name => rental.Transportation2.Contains(name))
+                        || queryItemList.Any(name => rental.Transportation3.Contains(name)));
                     break;
                 }
             case SearchType.Area:
                 {
-                    queryable = queryable.Where(validRental => queryItemList.Contains(validRental.AreaId));
+                    queryable = queryable.Where(rental =>
+                        queryItemList.Any(name => rental.Address.Contains(name)));
                     break;
                 }
         }
 
-        var validRentals = queryable.Select(validRental => new ValidRental()
-        {
-            RentalId = validRental.RentalId,
-            Yachin = validRental.Yachin,
-            Kanrihi = validRental.Kanrihi,
-            Chimei = validRental.Chimei,
-            Syozai = validRental.Syozai,
-            Ekiid1 = validRental.Ekiid1,
-            Toho1 = validRental.Toho1,
-            Ekiid2 = validRental.Ekiid2,
-            Toho2 = validRental.Toho2,
-            Ekiid3 = validRental.Ekiid3,
-            Toho3 = validRental.Toho3,
-            Kinkum1 = validRental.Kinkum1,
-            Kinkagetu1 = validRental.Kinkagetu1,
-            Kinku1 = validRental.Kinku1,
-            Kinkum2 = validRental.Kinkum2,
-            Kinkagetu2 = validRental.Kinkagetu2,
-            Kinku2 = validRental.Kinku2,
-            Madoheya = validRental.Madoheya,
-            Madotaipu = validRental.Madotaipu,
-            Chijou = validRental.Chijou,
-            Chika = validRental.Chika,
-            SyokaiChika = validRental.SyokaiChika,
-            Syokai = validRental.Syokai,
-            Chikunen = validRental.Chikunen,
-            Chikutsuki = validRental.Chikutsuki,
-            Tatemen = validRental.Tatemen,
-            Manmei = validRental.Manmei,
-            Gporder1 = validRental.Gporder1,
-            Gporder2 = validRental.Gporder2,
-            Gporder3 = validRental.Gporder3
-        }).ToArray();
+        // 管理費・共益費込み
+        bool noKanrihi = viewModel.SearchConditions.NoKanrihi;
+        // 賃料下限
+        int yachinMin = Int32.Parse(viewModel.SearchConditions.YachinMin.ID);
+        // 賃料上限
+        int yachinMax = Int32.Parse(viewModel.SearchConditions.YachinMax.ID);
 
-        viewModel.Groups = [.. validRentals.GroupBy(validRental => new { validRental.Chimei, validRental.Syozai })
-            .Select(validRentalGroup => new RentalListGroupViewModel()
+        // 下限のみ
+        if (yachinMin != -1 && yachinMax == -1)
+        {
+            if (noKanrihi)
             {
-                Manmei = validRentalGroup.First().Manmei,
-                StationInfo = GetStationInfo(validRentalGroup.First()),
-                ChikuInfo = GetChikuInfo(validRentalGroup.First()),
-                KaisouInfo = GetKaisouInfo(validRentalGroup.First()),
-                ChimeiInfo = validRentalGroup.Key.Chimei,
-                ImageUrl = validRentalGroup.First().Gporder1,
-                Items = [.. validRentalGroup.Select(validRentalItem => new RentalListItemViewModel
+                queryable = queryable.Where(rental =>
+                    yachinMin <= rental.Rent + rental.ManagementFee + rental.MaintenanceFee);
+            }
+            else
+            {
+                queryable = queryable.Where(rental =>
+                    yachinMin <= rental.Rent);
+            }
+        }
+
+        // 上限のみ
+        if (yachinMin == -1 && yachinMax != -1)
+        {
+            if (noKanrihi)
+            {
+                queryable = queryable.Where(rental =>
+                    rental.Rent + rental.ManagementFee + rental.MaintenanceFee <= yachinMax);
+            }
+            else
+            {
+                queryable = queryable.Where(rental =>
+                    rental.Rent <= yachinMax);
+            }
+        }
+
+        // 両方あり
+        if (yachinMin != -1 && yachinMax != -1)
+        {
+            if (noKanrihi)
+            {
+                queryable = queryable.Where(rental =>
+                    yachinMin <= rental.Rent + rental.ManagementFee + rental.MaintenanceFee
+                    && rental.Rent + rental.ManagementFee + rental.MaintenanceFee <= yachinMax);
+            }
+            else
+            {
+                queryable = queryable.Where(rental =>
+                    yachinMin <= rental.Rent
+                    && rental.Rent <= yachinMax);
+            }
+        }
+
+        // 礼金なし
+        if (viewModel.SearchConditions.NoReikin)
+        {
+            queryable = queryable.Where(rental => rental.KeyMoney == "-");
+        }
+
+        // 敷金・保証金なし
+        if (viewModel.SearchConditions.NoReikin)
+        {
+            queryable = queryable.Where(rental =>
+                rental.SecurityDeposit == "-"
+                && rental.GuaranteeMoney == "-");
+        }
+
+        // ワンルーム
+        bool oneroom = viewModel.SearchConditions.Oneroom;
+        // 1K
+        bool room1k = viewModel.SearchConditions.Room1k;
+        // 1DK
+        bool room1dk = viewModel.SearchConditions.Room1dk;
+        // 1LDK
+        bool room1ldk = viewModel.SearchConditions.Room1ldk;
+        // 2K
+        bool room2k = viewModel.SearchConditions.Room2k;
+        // 2DK
+        bool room2dk = viewModel.SearchConditions.Room2dk;
+        // 2LDK
+        bool room2ldk = viewModel.SearchConditions.Room2ldk;
+        // 3K
+        bool room3k = viewModel.SearchConditions.Room3k;
+        // 3DK
+        bool room3dk = viewModel.SearchConditions.Room3dk;
+        // 3LDK
+        bool room3ldk = viewModel.SearchConditions.Room3ldk;
+        // 4K
+        bool room4k = viewModel.SearchConditions.Room4k;
+        // 4DK
+        bool room4dk = viewModel.SearchConditions.Room4dk;
+        // 4LDK
+        bool room4ldk = viewModel.SearchConditions.Room4ldk;
+        // 5k以上
+        bool room5k = viewModel.SearchConditions.Room5k;
+
+        if (oneroom || room1k || room1dk || room1ldk || room2k || room2dk || room2ldk
+            || room3k || room3dk || room3ldk || room4k || room4dk || room4ldk || room5k)
+        {
+            queryable = queryable.Where(rental =>
+                oneroom && rental.LayoutType == "0"
+                || room1k && rental.LayoutNumber == 1 && rental.LayoutType == "1"
+                || room1k && rental.LayoutNumber == 1 && rental.LayoutType == "9"
+                || room1dk && rental.LayoutNumber == 1 && rental.LayoutType == "3"
+                || room1dk && rental.LayoutNumber == 1 && rental.LayoutType == "11"
+                || room1ldk && rental.LayoutNumber == 1 && rental.LayoutType == "7"
+                || room1ldk && rental.LayoutNumber == 1 && rental.LayoutType == "15"
+                || room2k && rental.LayoutNumber == 2 && rental.LayoutType == "1"
+                || room2k && rental.LayoutNumber == 2 && rental.LayoutType == "9"
+                || room2dk && rental.LayoutNumber == 2 && rental.LayoutType == "3"
+                || room2dk && rental.LayoutNumber == 2 && rental.LayoutType == "11"
+                || room2ldk && rental.LayoutNumber == 2 && rental.LayoutType == "7"
+                || room2ldk && rental.LayoutNumber == 2 && rental.LayoutType == "15"
+                || room3k && rental.LayoutNumber == 3 && rental.LayoutType == "1"
+                || room3k && rental.LayoutNumber == 3 && rental.LayoutType == "9"
+                || room3dk && rental.LayoutNumber == 3 && rental.LayoutType == "3"
+                || room3dk && rental.LayoutNumber == 3 && rental.LayoutType == "11"
+                || room3ldk && rental.LayoutNumber == 3 && rental.LayoutType == "7"
+                || room3ldk && rental.LayoutNumber == 3 && rental.LayoutType == "15"
+                || room4k && rental.LayoutNumber == 4 && rental.LayoutType == "1"
+                || room4k && rental.LayoutNumber == 4 && rental.LayoutType == "9"
+                || room4dk && rental.LayoutNumber == 4 && rental.LayoutType == "3"
+                || room4dk && rental.LayoutNumber == 4 && rental.LayoutType == "11"
+                || room4ldk && rental.LayoutNumber == 4 && rental.LayoutType == "7"
+                || room4ldk && rental.LayoutNumber == 4 && rental.LayoutType == "15"
+                || room5k && rental.LayoutNumber >= 5);
+        }
+
+        // マンション
+        bool mansion = viewModel.SearchConditions.Mansion;
+        // アパート
+        bool apartment = viewModel.SearchConditions.Apartment;
+        // 一戸建て・その他
+        bool detachedHouse = viewModel.SearchConditions.DetachedHouse;
+
+        if (mansion || apartment || detachedHouse)
+        {
+            queryable = queryable.Where(rental =>
+                mansion && rental.BuildingType.Contains("マンション")
+                || apartment && rental.BuildingType.Contains("アパート")
+                || detachedHouse && !rental.BuildingType.Contains("マンション") && !rental.BuildingType.Contains("アパート"));
+        }
+
+        // 駅徒歩
+        int toho = Int32.Parse(viewModel.SearchConditions.Toho.ID);
+
+        if (toho != -1)
+        {
+            queryable = queryable.Where(rental =>
+                rental.WalkingDistance1 <= toho
+                || rental.WalkingDistance2 <= toho
+                || rental.WalkingDistance3 <= toho);
+        }
+
+        // 面積下限
+        int menMin = Int32.Parse(viewModel.SearchConditions.MenMin.ID);
+        // 面積上限
+        int menMax = Int32.Parse(viewModel.SearchConditions.MenMax.ID);
+
+        // 下限のみ
+        if (menMin != -1 && menMax == -1)
+        {
+            queryable = queryable.Where(rental =>
+                menMin <= rental.ExclusiveArea);
+        }
+
+        // 上限のみ
+        if (menMin == -1 && menMax != -1)
+        {
+            queryable = queryable.Where(rental =>
+                rental.ExclusiveArea <= menMax);
+        }
+
+        // 両方あり
+        if (menMin != -1 && menMax != -1)
+        {
+            queryable = queryable.Where(rental =>
+                menMin <= rental.ExclusiveArea
+                && rental.ExclusiveArea <= menMax);
+        }
+
+        // 築年数
+        int chikunensu = Int32.Parse(viewModel.SearchConditions.Chikunensu.ID);
+
+        if (chikunensu == 0)
+        {
+            // 新築
+            queryable = queryable.Where(rental =>
+                rental.NewConstruction == true);
+        }
+
+        if (chikunensu > 0)
+        {
+            // 何年前
+            var dateOnly = DateOnly.FromDateTime(DateTime.Today.AddYears(-chikunensu));
+
+            queryable = queryable.Where(rental =>
+                dateOnly <= rental.BuiltYearMonth);
+        }
+
+        // 駐車場あり
+        bool tyuurin = viewModel.SearchConditions.Tyuurin;
+
+        if(tyuurin)
+        {
+            queryable = queryable.Where(rental =>
+                rental.Parking != "-" && !rental.Parking.Contains("無"));
+        }
+
+        // バス・トイレ別
+        bool btbetu = viewModel.SearchConditions.Btbetu;
+
+        if(btbetu)
+        {
+            queryable = queryable.Where(rental => EF.Functions.Like(rental.FreeKeyword, "%バス%トイレ別%"));
+        }
+
+        // ペット相談
+        bool petka = viewModel.SearchConditions.Petka;
+
+        if(petka)
+        {
+            queryable = queryable.Where(rental => rental.RentalConditions.Contains("ペット相談"));
+        }
+
+        // 2階以上住戸
+        bool secondFloor = viewModel.SearchConditions.SecondFloor;
+
+        if(secondFloor)
+        {
+            queryable = queryable.Where(rental =>
+                !rental.FloorNumber.StartsWith("1階")
+                && !rental.FloorNumber.StartsWith("地下"));
+        }
+
+        // 室内洗濯機置場
+        bool situsentaku = viewModel.SearchConditions.Situsentaku;
+
+        if(situsentaku)
+        {
+            queryable = queryable.Where(rental => EF.Functions.Like(rental.FreeKeyword, "%洗濯%置%"));
+        }
+
+        // エアコン付
+        bool eakon = viewModel.SearchConditions.Eakon;
+
+        if (eakon)
+        {
+            queryable = queryable.Where(rental => rental.FreeKeyword.Contains("エアコン"));
+        }
+
+        // オートロック
+        bool outorok = viewModel.SearchConditions.Outorok;
+
+        if (outorok)
+        {
+            queryable = queryable.Where(rental => rental.FreeKeyword.Contains("オートロック"));
+        }
+
+        // フローリング
+        bool furoringu = viewModel.SearchConditions.Furoringu;
+
+        if (furoringu)
+        {
+            queryable = queryable.Where(rental => rental.FreeKeyword.Contains("フローリング"));
+        }
+
+        // 間取り図付
+        bool withFloorPlan = viewModel.SearchConditions.WithFloorPlan;
+
+        if (withFloorPlan)
+        {
+            queryable = queryable.Where(rental => rental.LayoutImage != null);
+        }
+
+        // 定期借家を含まない
+        bool noTeisyaku = viewModel.SearchConditions.NoTeisyaku;
+
+        if (noTeisyaku)
+        {
+            queryable = queryable.Where(rental =>
+                !rental.RentalConditions.Contains("定期借家")
+                && !rental.ContractPeriod.StartsWith("定期借家"));
+        }
+
+        var rentals = queryable.ToArray();
+
+        viewModel.Groups = [.. rentals.GroupBy(rental => new { rental.BuildingName, rental.Address })
+            .Select(rentalGroup => new RentalListGroupViewModel()
+            {
+                Manmei = rentalGroup.Key.BuildingName,
+                StationInfo = GetStationInfo(rentalGroup.First()),
+                ChikuInfo = GetChikuInfo(rentalGroup.First()),
+                KaisouInfo = rentalGroup.First().TotalFloors,
+                ChimeiInfo = rentalGroup.Key.Address,
+                ImageUrl = rentalGroup.First().ExteriorPhoto,
+                Items = [.. rentalGroup.Select(rentalItem => new RentalListItemViewModel
                 {
-                    RentalId = validRentalItem.RentalId,
-                    YachinInfo = GetMoneyInfo(validRentalItem.Yachin),
-                    KanrihiInfo = GetKanrihiInfo(validRentalItem),
-                    ShikikinInfo = GetShikikinInfo(validRentalItem),
-                    ReikinInfo = GetReikinInfo(validRentalItem),
-                    MadoriInfo = GetMadoriInfo(validRentalItem),
-                    TatemenInfo = $"{validRentalItem.Tatemen}m²",
-                    SyokaiInfo = GetSyokaiInfo(validRentalItem),
-                    ImageUrl = validRentalItem.Gporder2
+                    RentalId = rentalItem.RentalId,
+                    YachinInfo = GetMoneyInfo(rentalItem.Rent),
+                    KanrihiInfo = GetKanrihiInfo(rentalItem),
+                    ShikikinInfo = GetShikikinInfo(rentalItem),
+                    ReikinInfo = GetReikinInfo(rentalItem),
+                    MadoriInfo = GetMadoriInfo(rentalItem),
+                    TatemenInfo = $"{rentalItem.ExclusiveArea}m²",
+                    SyokaiInfo = rentalItem.FloorNumber,
+                    ImageUrl = rentalItem.LayoutImage
                 })]
             })];
     }
@@ -186,12 +442,12 @@ public partial class RentalListView : ContentPage
             $"{stationInfo.Item1} {String.Format(Constants.Toho, stationInfo.Item2)}";
     }
 
-    private static String GetStationInfo(ValidRental validRental)
+    private static String GetStationInfo(Rental rental)
     {
         (String, short)[] StationInfo = [
-            (GetStationInfo(validRental.Ekiid1), validRental.Toho1 ?? Int16.MaxValue),
-            (GetStationInfo(validRental.Ekiid2), validRental.Toho2 ?? Int16.MaxValue),
-            (GetStationInfo(validRental.Ekiid3), validRental.Toho3 ?? Int16.MaxValue)
+            (rental.Transportation1, rental.WalkingDistance1),
+            (rental.Transportation2, rental.WalkingDistance2 ?? Int16.MaxValue),
+            (rental.Transportation3, rental.WalkingDistance3 ?? Int16.MaxValue)
         ];
 
         var stationInfo = StationInfo.MinBy(stationInfo => stationInfo.Item2);
@@ -200,46 +456,49 @@ public partial class RentalListView : ContentPage
             $"{stationInfo.Item1}" :
             $"{stationInfo.Item1} {String.Format(Constants.Toho, stationInfo.Item2)}";
     }
-
-    private static String GetStationInfo(String ekiid)
-    {
-        if (String.IsNullOrWhiteSpace(ekiid))
-        {
-            return String.Empty;
-        }
-
-        Station station = StationService.GetStation(ekiid);
-        return $"{station.RailwayCompany}{station.RailwayName}/{station.StationName}";
-    }
-
     private static String GetChikuInfo(RentalSummary rentalSummary)
     {
         int year = DateTime.Now.Year - rentalSummary.ConstructionDate.Year;
+        int month = DateTime.Now.Month - rentalSummary.ConstructionDate.Month;
 
-        if (DateTime.Now.Month < rentalSummary.ConstructionDate.Month) year--;
+        if (month < 0)
+        {
+            year--;
+            month += 12;
+        }
 
-        return year > 0 ?
+        return month == 0 ?
             String.Format(Constants.Chikunen, year) :
-            Constants.Shinchiku;
+            String.Format(Constants.Chikunentsuki, year, month);
     }
 
-    private static String GetChikuInfo(ValidRental validRental)
+    private static String GetChikuInfo(Rental rental)
     {
-        if (validRental.Chikunen == null)
+        String chikuInfo;
+
+        int year = DateTime.Now.Year - rental.BuiltYearMonth.Year;
+        int month = DateTime.Now.Month - rental.BuiltYearMonth.Month;
+
+        if (month < 0)
         {
-            return String.Empty;
+            year--;
+            month += 12;
         }
 
-        int year = DateTime.Now.Year - validRental.Chikunen.Value;
-
-        if (validRental.Chikutsuki > 0)
+        if(rental.NewConstruction)
         {
-            if (DateTime.Now.Month < validRental.Chikutsuki.Value) year--;
+            chikuInfo = month == 0 ?
+                String.Format(Constants.Shinchikunen, year) :
+                String.Format(Constants.Shinchikunentsuki, year, month);
+        }
+        else
+        {
+            chikuInfo = month == 0 ?
+                String.Format(Constants.Chikunen, year) :
+                String.Format(Constants.Chikunentsuki, year, month);
         }
 
-        return year > 0 ?
-            String.Format(Constants.Chikunen, year) :
-            Constants.Shinchiku;
+        return chikuInfo;
     }
 
     private static String GetKaisouInfo(RentalSummary rentalSummary)
@@ -257,26 +516,6 @@ public partial class RentalListView : ContentPage
         if (rentalSummary.AboveGroundFloors > 0)
         {
             return String.Format(Constants.ChijouKaisou, rentalSummary.AboveGroundFloors);
-        }
-
-        return String.Empty;
-    }
-
-    private static String GetKaisouInfo(ValidRental validRental)
-    {
-        if (validRental.Chijou > 0 && validRental.Chika > 0)
-        {
-            return String.Format(Constants.ChijouChikaKaisou, validRental.Chijou, validRental.Chika);
-        }
-
-        if (validRental.Chika > 0)
-        {
-            return String.Format(Constants.ChikaKaisou, validRental.Chika);
-        }
-
-        if (validRental.Chijou > 0)
-        {
-            return String.Format(Constants.ChijouKaisou, validRental.Chijou);
         }
 
         return String.Empty;
@@ -316,10 +555,10 @@ public partial class RentalListView : ContentPage
             $"（管理費 -）";
     }
 
-    private static String GetKanrihiInfo(ValidRental validRental)
+    private static String GetKanrihiInfo(Rental rental)
     {
-        return validRental.Kanrihi > 0 ?
-            $"（管理費 {GetMoneyInfo(validRental.Kanrihi.Value)}）" :
+        return rental.ManagementFee > 0 ?
+            $"（管理費 {GetMoneyInfo(rental.ManagementFee)}）" :
             $"（管理費 -）";
     }
 
@@ -330,55 +569,9 @@ public partial class RentalListView : ContentPage
             $"敷金 -";
     }
 
-    private static String GetShikikinInfo(ValidRental validRental)
+    private static String GetShikikinInfo(Rental rental)
     {
-        decimal shikikin = 0;
-
-        // kinkum1 の 1 は「保証金」
-        // kinkum1 の 7 は「敷金」
-        if (validRental.Kinkum1 == "1" || validRental.Kinkum1 == "7")
-        {
-            switch (validRental.Kinku1)
-            {
-                // kinku1 の 0 は「万円」
-                case "0":
-                    {
-                        shikikin += validRental.Kinkagetu1 ?? 0;
-                        break;
-                    }
-                // kinku1 の 1 は「ヶ月」
-                case "1":
-                    {
-                        shikikin += (validRental.Kinkagetu1 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        // kinkum2 の 1 は「保証金」
-        // kinkum2 の 7 は「敷金」
-        if (validRental.Kinkum2 == "1" || validRental.Kinkum2 == "7")
-        {
-            switch (validRental.Kinku2)
-            {
-                // kinku2 の 0 は「万円」
-                case "0":
-                    {
-                        shikikin += validRental.Kinkagetu2 ?? 0;
-                        break;
-                    }
-                // kinku2 の 1 は「ヶ月」
-                case "1":
-                    {
-                        shikikin += (validRental.Kinkagetu2 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        return shikikin > 0 ?
-            $"敷金 {GetMoneyInfo(shikikin)}" :
-            $"敷金 -";
+        return $"敷金 {rental.SecurityDeposit}";
     }
 
     private static String GetReikinInfo(RentalSummary rentalSummary)
@@ -388,66 +581,19 @@ public partial class RentalListView : ContentPage
             $"礼金 -";
     }
 
-    private static String GetReikinInfo(ValidRental validRental)
+    private static String GetReikinInfo(Rental rental)
     {
-        decimal reikin = 0;
-
-        // kinkum1 の 3 は「権利金」
-        // kinkum1 の 5 は「礼金」
-        if (validRental.Kinkum1 == "3" || validRental.Kinkum1 == "5")
-        {
-            switch (validRental.Kinku1)
-            {
-                // kinku1 の 0 は「万円」
-                case "0":
-                    {
-                        reikin += validRental.Kinkagetu1 ?? 0;
-                        break;
-                    }
-                // kinku1 の 1 は「ヶ月」
-                case "1":
-                    {
-                        reikin += (validRental.Kinkagetu1 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        // kinkum2 の 3 は「権利金」
-        // kinkum2 の 5 は「礼金」
-        if (validRental.Kinkum2 == "3" || validRental.Kinkum2 == "5")
-        {
-            switch (validRental.Kinku2)
-            {
-                // kinku2 の 0 は「万円」
-                case "0":
-                    {
-                        reikin += validRental.Kinkagetu2 ?? 0;
-                        break;
-                    }
-                // kinku2 の 1 は「ヶ月」
-                case "1":
-                    {
-                        reikin += (validRental.Kinkagetu2 ?? 0) * validRental.Yachin;
-                        break;
-                    }
-            }
-        }
-
-        return reikin > 0 ?
-            $"礼金 {GetMoneyInfo(reikin)}" :
-            $"礼金 -";
+        return $"礼金 {rental.KeyMoney}";
     }
 
-    private static String GetMadoriInfo(ValidRental validRental)
+    private static String GetMadoriInfo(Rental rental)
     {
-        CodeMaster madotaipu = CodeMasterService.GetCodeMaster("madotaipu", validRental.Madotaipu);
+        CodeMaster madotaipu = CodeMasterService.GetCodeMaster("madotaipu", rental.LayoutType);
 
-        // madotaipu の 0 は空値
-        // madotaipu の 1 は「ワンルーム」
-        return validRental.Madotaipu == "0" || validRental.Madotaipu == "1" ?
+        // madotaipu の 0 は「ワンルーム」
+        return rental.LayoutType == "0" ?
             madotaipu.OptionName :
-            $"{validRental.Madoheya}{madotaipu.OptionName}";
+            $"{rental.LayoutNumber}{madotaipu.OptionName}";
     }
 
     private static String GetSyokaiInfo(RentalSummary rentalSummary)
@@ -460,27 +606,7 @@ public partial class RentalListView : ContentPage
         else
         {
             // 所在は地上
-            return rentalSummary.CurrentFloor > 0 ?
-                String.Format(Constants.ChijouSyokai, rentalSummary.CurrentFloor) :
-                Constants.Chijou;
-        }
-    }
-
-    private static String GetSyokaiInfo(ValidRental validRental)
-    {
-        if (validRental.SyokaiChika)
-        {
-            // 所在は地下
-            return validRental.Syokai > 0 ?
-                String.Format(Constants.ChikaSyokai, validRental.Syokai) :
-                Constants.Chika;
-        }
-        else
-        {
-            // 所在は地上
-            return validRental.Syokai > 0 ?
-                String.Format(Constants.ChijouSyokai, validRental.Syokai) :
-                Constants.Chijou;
+            return String.Format(Constants.ChijouSyokai, rentalSummary.CurrentFloor);
         }
     }
 

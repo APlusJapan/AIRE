@@ -1,8 +1,6 @@
 using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
-using AIRE_DB.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace AIRE_App.Views;
 
@@ -13,7 +11,7 @@ public partial class AIChatView : ContentPage
     private readonly AIStatusViewModel aiStatusViewModel;
 
     public AIChatView(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices(App.sqlAIServiceKey)] IAIService sqlAIService)
+        [FromKeyedServices(App.SqlAIServiceKey)] IAIService sqlAIService)
     {
         InitializeComponent();
 

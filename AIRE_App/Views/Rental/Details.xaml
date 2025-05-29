@@ -1,191 +1,304 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:Models="clr-namespace:AIRE_DB.Models"
              xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
+             xmlns:TemplateSelector="clr-namespace:AIRE_App.DataTemplates.TemplateSelector"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
              xmlns:carousel="clr-namespace:Syncfusion.Maui.Toolkit.Carousel;assembly=Syncfusion.Maui.Toolkit"
              x:DataType="ViewModels:RentalDetailsViewModel"
              x:Class="AIRE_App.Views.RentalDetailsView">
 
-    <Grid RowDefinitions="*,Auto">
-        <ScrollView Grid.Row="0">
-            <Grid RowDefinitions="Auto,Auto">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <TemplateSelector:MessageTemplateSelector x:Key="MessageTemplateSelector"/>
+            <toolkit:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <AbsoluteLayout>
+        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" RowDefinitions="Auto,*,Auto">
+            <Grid Padding="16" ColumnSpacing="16" ColumnDefinitions="Auto,*,Auto"
+                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
                 <Border
-                    Grid.Row="0"
-                    Margin="16"
-                    Padding="16"
-                    StrokeShape="RoundRectangle 10"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                    <Grid RowSpacing="8" RowDefinitions="Auto,Auto">
-                        <Label Text="{Binding Manmei}" FontSize="Title" Grid.Row="0"/>
-                        <carousel:SfCarousel Grid.Row="1" ItemHeight="256" ItemsSource="{Binding Images}">
-                            <carousel:SfCarousel.ItemTemplate>
-                                <DataTemplate x:DataType="ViewModels:ImageViewModel">
-                                    <Grid RowSpacing="8" RowDefinitions="Auto,Auto">
-                                        <Image Source="{Binding ImageUrl}" Grid.Row="0" HeightRequest="192" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}"/>
-                                        <Label Text="{Binding ImageInfo}" Grid.Row="1" FontSize="16" HorizontalOptions="Center"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </carousel:SfCarousel.ItemTemplate>
-                        </carousel:SfCarousel>
-                    </Grid>
+                    Grid.Column="0"
+                    Stroke="#FFFFFF"
+                    BackgroundColor="#EEEEEE"
+                    Style="{StaticResource ProfileBorderStyle}">
+                    <Image
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        Source="robot.png" />
                 </Border>
                 <Border
-                    Grid.Row="1"
-                    Margin="16"
-                    Padding="16"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="{AppThemeBinding Light={StaticResource PrimaryLightColor}, Dark={StaticResource PrimaryDarkColor}}" StrokeThickness="1">
-                    <Grid ColumnDefinitions="*,*" RowSpacing="8">
-                        <Grid.RowDefinitions>
-                            <!-- Row="0" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="1" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="2" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="3" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="4" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="5" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="6" -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Row="7" -->
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="0" Grid.Column="0" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="家賃" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding YachinInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="0" Grid.Column="1" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="管理費" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding KanrihiInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="1" Grid.Column="0" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="敷金" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding ShikikinInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="1" Grid.Column="1" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="礼金" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding ReikinInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="2" Grid.Column="0" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="間取り" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding MadoriInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="2" Grid.Column="1" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="広さ" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding TatemenInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan ="2">
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="階建" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding KaidateInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="4" Grid.Column="0" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="築年数" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding ChikuInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="4" Grid.Column="1" >
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="種別" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding BukkmokuInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan ="2">
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="住所" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding ChimeiSyozaiInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan ="2">
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="交通" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="{Binding Eki1Info}" IsVisible="{Binding hasEki1}"/>
-                                <Label Text="{Binding Eki2Info}" IsVisible="{Binding hasEki2}"/>
-                                <Label Text="{Binding Eki3Info}" IsVisible="{Binding hasEki3}"/>
-                            </VerticalStackLayout>
-                        </Grid>
-                        <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan ="2">
-                            <Border
-                                Padding="2"
-                                Grid.Column="0"
-                                StrokeShape="RoundRectangle 2"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                                <Label Text="不動産会社" VerticalOptions="Center" HorizontalOptions="Center"/>
-                            </Border>
-                            <Label Text="{Binding CompanyNameInfo}" Grid.Column="1" VerticalOptions="Center"/>
-                        </Grid>
-                    </Grid>
+                    Padding="0"
+                    Grid.Column="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource AssistantMessageBackgroundLightColor}, Dark={StaticResource AssistantMessageBackgroundDarkColor}}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 0, 24, 24, 24"
+                    HorizontalOptions="Start"
+                    Opacity="{Binding MyAIStatusViewModel.AssistantMessage,Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
+                    <StackLayout
+                        Margin="8"
+                        VerticalOptions="Fill">
+                        <Label
+                            FontSize="14"
+                            HorizontalOptions="Start"
+                            LineHeight="1.25"
+                            Text="{Binding MyAIStatusViewModel.AssistantMessage}"
+                            MaxLines="2"
+                            LineBreakMode="TailTruncation"
+                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"
+                            VerticalOptions="Fill"/>
+                    </StackLayout>
                 </Border>
+                <buttons:SfButton
+                    Grid.Column="2"
+                    VerticalOptions="End"
+                    Text="&#xe705;"
+                    FontFamily="MauiMaterialAssets"
+                    Clicked="OnClicked_ExpandMessage"
+                    Style="{StaticResource IconButtonStyle}"/>
             </Grid>
-        </ScrollView>
-        <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Padding="16" Spacing="16">
-            <buttons:SfButton Text="Line" Clicked="OnClicked_Line" Style="{StaticResource FormsButtonStyle}"/>
-        </HorizontalStackLayout>
-    </Grid>
+            <ScrollView Grid.Row="1">
+                <Grid RowDefinitions="Auto,Auto">
+                    <Border
+                        Grid.Row="0"
+                        Margin="16"
+                        Padding="16"
+                        StrokeShape="RoundRectangle 10"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                        <Grid RowSpacing="8" RowDefinitions="Auto,Auto">
+                            <Label Text="{Binding Manmei}" FontSize="Title" Grid.Row="0"/>
+                            <carousel:SfCarousel Grid.Row="1" ItemHeight="256" ItemsSource="{Binding Images}">
+                                <carousel:SfCarousel.ItemTemplate>
+                                    <DataTemplate x:DataType="ViewModels:ImageViewModel">
+                                        <Grid RowSpacing="8" RowDefinitions="Auto,Auto">
+                                            <Image Source="{Binding ImageUrl}" Grid.Row="0" HeightRequest="192" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}"/>
+                                            <Label Text="{Binding ImageInfo}" Grid.Row="1" FontSize="16" HorizontalOptions="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </carousel:SfCarousel.ItemTemplate>
+                            </carousel:SfCarousel>
+                        </Grid>
+                    </Border>
+                    <Border
+                        Grid.Row="1"
+                        Margin="16"
+                        Padding="16"
+                        StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light={StaticResource PrimaryLightColor}, Dark={StaticResource PrimaryDarkColor}}" StrokeThickness="1">
+                        <Grid ColumnDefinitions="*,*" RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <!-- Row="0" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="1" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="2" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="3" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="4" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="5" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="6" -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Row="7" -->
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="0" Grid.Column="0" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="家賃" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding YachinInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="0" Grid.Column="1" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="管理費" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding KanrihiInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="1" Grid.Column="0" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="敷金" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding ShikikinInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="1" Grid.Column="1" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="礼金" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding ReikinInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="2" Grid.Column="0" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="間取り" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding MadoriInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="2" Grid.Column="1" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="広さ" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding TatemenInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan ="2">
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="階建" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding KaidateInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="4" Grid.Column="0" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="築年数" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding ChikuInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="4" Grid.Column="1" >
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="種別" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding BukkmokuInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan ="2">
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="住所" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding ChimeiSyozaiInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan ="2">
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="交通" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Eki1Info}" IsVisible="{Binding hasEki1}"/>
+                                    <Label Text="{Binding Eki2Info}" IsVisible="{Binding hasEki2}"/>
+                                    <Label Text="{Binding Eki3Info}" IsVisible="{Binding hasEki3}"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*" ColumnSpacing="8" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan ="2">
+                                <Border
+                                    Padding="2"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle 2"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+                                    <Label Text="不動産会社" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Border>
+                                <Label Text="{Binding CompanyNameInfo}" Grid.Column="1" VerticalOptions="Center"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </ScrollView>
+            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Padding="16" Spacing="16">
+                <buttons:SfButton Text="Line" Clicked="OnClicked_Line" Style="{StaticResource FormsButtonStyle}"/>
+            </HorizontalStackLayout>
+        </Grid>
+        <Grid
+            AbsoluteLayout.LayoutFlags="All"
+            AbsoluteLayout.LayoutBounds="0,0,1,0.5"
+            RowDefinitions="*,Auto"
+            IsVisible="{Binding MyAIStatusViewModel.MessageIsExpanded}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
+            <ScrollView Grid.Row="0">
+                <CollectionView
+                    ItemsSource="{Binding MyAIStatusViewModel.MessageHistory}"
+                    ItemTemplate="{StaticResource MessageTemplateSelector}"
+                    SelectionMode="Single"
+                    VerticalOptions="Fill">
+                </CollectionView>
+            </ScrollView>
+            <Grid
+                Grid.Row="1"
+                ColumnSpacing="16"
+                Padding="16,8,16,16"
+                ColumnDefinitions="*,Auto,Auto">
+
+                <!--  Rounded Border  -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryBackgroundLightColor}, Dark={StaticResource SecondaryBackgroundDarkColor}}"
+                    Padding="5,0"
+                    Grid.Column="0"
+                    Stroke="#FFFFFF"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 25"
+                    Style="{StaticResource ThemeBorderStyle}">
+
+                    <Editor
+                        Margin="5,0"
+                        Style="{StaticResource BorderlessEditorStyle}"
+                        Text="{Binding MyAIStatusViewModel.UserMessage}"
+                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"/>
+
+                </Border>
+
+                <!--  Send Button  -->
+                <buttons:SfButton
+                    Grid.Column="1"
+                    Padding="0,2,2,0"
+                    Background="{AppThemeBinding Light={StaticResource PrimaryLightColor}, Dark={StaticResource PrimaryDarkColor}}"
+                    VerticalOptions="End"
+                    HorizontalOptions="End"
+                    Style="{StaticResource IconButtonStyle}"
+                    Text="&#xe759;"
+                    TextColor="White"
+                    FontFamily="MauiSampleFontIcon"
+                    Clicked="OnClicked_PostMessage"/>
+
+                <buttons:SfButton
+                    Grid.Column="2"
+                    VerticalOptions="End"
+                    Text="&#xe708;"
+                    FontFamily="MauiMaterialAssets"
+                    Clicked="OnClicked_ExpandMessage"
+                    Style="{StaticResource IconButtonStyle}"/>
+
+            </Grid>
+        </Grid>
+    </AbsoluteLayout>
 </ContentPage>

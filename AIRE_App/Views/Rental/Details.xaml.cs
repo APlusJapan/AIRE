@@ -1,4 +1,5 @@
 using AIRE_App.Data;
+using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
@@ -11,18 +12,36 @@ public partial class RentalDetailsView : ContentPage
 
     private CompanyGroup companyGroup;
 
+    private readonly IAIService detailsAIService;
+
     private readonly RentalDetailsViewModel viewModel;
 
-    public RentalDetailsView()
+    private readonly AIStatusViewModel aiStatusViewModel;
+
+    public RentalDetailsView(AIStatusViewModel aiStatusViewModel,
+        [FromKeyedServices(App.DetailsAIServiceKey)] IAIService detailsAIService)
     {
         InitializeComponent();
 
-        BindingContext = viewModel = new();
+        this.detailsAIService = detailsAIService;
+
+        this.aiStatusViewModel = aiStatusViewModel;
+
+        BindingContext = viewModel = new(aiStatusViewModel);
 
         viewModel.LoadRentalDetails += LoadRentalDetails;
     }
 
-    private void LoadRentalDetails(String rentalId)
+    private async Task GoToLine(String message)
+    {
+        await Shell.Current.GoToAsync($"Line", new Dictionary<String, Object>
+        {
+            { "companyGroup", companyGroup },
+            { "staffId", rental.StaffId }
+        });
+    }
+
+    private async Task LoadRentalDetails(String rentalId)
     {
         rental = DatabaseService.GetAireDbContext().Rentals.Where(rental => rental.RentalId == rentalId).Single();
         companyGroup = DatabaseService.GetAireDbContext().CompanyGroups.Where(companyGroup => companyGroup.CompanyId == rental.CompanyId).Single();
@@ -50,6 +69,22 @@ public partial class RentalDetailsView : ContentPage
         viewModel.CompanyNameInfo = companyGroup.CompanyName;
 
         viewModel.Images = [new() { ImageUrl = rental.ExteriorPhoto, ImageInfo = "建物外観" }, new() { ImageUrl = rental.LayoutImage, ImageInfo = "間取り" }];
+
+        aiStatusViewModel.MessageReceived = false;
+
+        await detailsAIService.ProcessRecommendAsync(CSVService.RentalDetailsToCSV(rental), response =>
+        {
+            aiStatusViewModel.AssistantMessage = response.Text;
+
+            aiStatusViewModel.MessageHistory.Add(response);
+
+            JSONService.AppendMessage(response);
+
+            aiStatusViewModel.MessageReceived = true;
+
+            return Task.CompletedTask;
+
+        });
     }
 
     private static String GetMoneyInfo(decimal money)
@@ -145,10 +180,49 @@ public partial class RentalDetailsView : ContentPage
 
     private async void OnClicked_Line(Object sender, EventArgs eventArgs)
     {
-        await Shell.Current.GoToAsync($"Line", new Dictionary<String, Object>
+        await GoToLine(String.Empty);
+    }
+
+    private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
+    {
+        aiStatusViewModel.MessageIsExpanded = !aiStatusViewModel.MessageIsExpanded;
+    }
+
+    private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
+    {
+        if (String.IsNullOrWhiteSpace(aiStatusViewModel.UserMessage))
         {
-            { "companyGroup", companyGroup },
-            { "staffId", rental.StaffId }
-        });
+            return;
+        }
+
+        var message = aiStatusViewModel.UserMessage;
+
+        aiStatusViewModel.UserMessage = String.Empty;
+
+        var messageViewModel = new MessageViewModel()
+        {
+            Role = "user",
+            Text = message
+        };
+
+        aiStatusViewModel.MessageHistory.Add(messageViewModel);
+
+        JSONService.AppendMessage(messageViewModel);
+
+        aiStatusViewModel.MessageReceived = false;
+
+        await detailsAIService.PostChatMessageAsync(message, response =>
+        {
+            aiStatusViewModel.AssistantMessage = response.Text;
+
+            aiStatusViewModel.MessageHistory.Add(response);
+
+            JSONService.AppendMessage(response);
+
+            aiStatusViewModel.MessageReceived = true;
+
+            return Task.CompletedTask;
+
+        }, GoToLine);
     }
 }

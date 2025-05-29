@@ -12,21 +12,21 @@ public partial class RentalListView : ContentPage
 {
     private readonly IAIService sqlAIService;
 
-    private readonly IAIService chatAIService;
+    private readonly IAIService summaryAIService;
 
     private readonly RentalListViewModel viewModel;
 
     private readonly AIStatusViewModel aiStatusViewModel;
 
     public RentalListView(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices("SqlAIService")] IAIService sqlAIService,
-        [FromKeyedServices("ChatAIService")] IAIService chatAIService)
+        [FromKeyedServices(App.SqlAIServiceKey)] IAIService sqlAIService,
+        [FromKeyedServices(App.SummaryAIServiceKey)] IAIService summaryAIService)
     {
         InitializeComponent();
 
         this.sqlAIService = sqlAIService;
 
-        this.chatAIService = chatAIService;
+        this.summaryAIService = summaryAIService;
 
         this.aiStatusViewModel = aiStatusViewModel;
 
@@ -76,7 +76,7 @@ public partial class RentalListView : ContentPage
 
         aiStatusViewModel.MessageReceived = false;
 
-        await chatAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
+        await summaryAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
         {
             aiStatusViewModel.AssistantMessage = response.Text;
 

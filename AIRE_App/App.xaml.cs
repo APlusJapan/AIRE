@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using AIRE_App.Interfaces;
 using AIRE_App.Services;
+using AIRE_App.Services.AIServices;
 using AIRE_App.ViewModels;
 using Microsoft.AspNetCore.Http;
 
@@ -8,17 +9,20 @@ namespace AIRE_App;
 
 public partial class App : Application
 {
-    public const String sqlAIServiceKey = "SqlAIService";
+    public const String SqlAIServiceKey = "SqlAIService";
 
-    public const String chatAIServiceKey = "ChatAIService";
+    public const String SummaryAIServiceKey = "SummaryAIService";
+
+    public const String DetailsAIServiceKey = "DetailsAIService";
 
     public ISession Session { get; }
 
     public IDictionary<Object, Object> Items { get; }
 
     public App(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices(sqlAIServiceKey)] IAIService sqlAIService,
-        [FromKeyedServices(chatAIServiceKey)] IAIService chatAIService)
+        [FromKeyedServices(SqlAIServiceKey)] IAIService sqlAIService,
+        [FromKeyedServices(SummaryAIServiceKey)] IAIService summaryAIService,
+        [FromKeyedServices(DetailsAIServiceKey)] IAIService detailsAIService)
     {
         InitializeComponent();
 
@@ -26,16 +30,22 @@ public partial class App : Application
 
         Items = new ConcurrentDictionary<Object, Object>();
 
-        if (Preferences.ContainsKey(sqlAIServiceKey))
+        if (Preferences.ContainsKey(SqlAIServiceKey))
         {
-            var id = Preferences.Get(sqlAIServiceKey, String.Empty);
+            var id = Preferences.Get(SqlAIServiceKey, String.Empty);
             sqlAIService.SetID(id);
         }
 
-        if (Preferences.ContainsKey(chatAIServiceKey))
+        if (Preferences.ContainsKey(SummaryAIServiceKey))
         {
-            var id = Preferences.Get(chatAIServiceKey, String.Empty);
-            chatAIService.SetID(id);
+            var id = Preferences.Get(SummaryAIServiceKey, String.Empty);
+            summaryAIService.SetID(id);
+        }
+
+        if (Preferences.ContainsKey(DetailsAIServiceKey))
+        {
+            var id = Preferences.Get(DetailsAIServiceKey, String.Empty);
+            detailsAIService.SetID(id);
         }
 
         JSONService.InitMessage(aiStatusViewModel);

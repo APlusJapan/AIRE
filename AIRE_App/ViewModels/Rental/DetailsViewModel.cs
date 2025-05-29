@@ -5,11 +5,33 @@ namespace AIRE_App.ViewModels;
 
 public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
 {
-    public event Action<String> LoadRentalDetails;
+    private bool uninitialized = true;
+
+    public event Func<String, Task> LoadRentalDetails;
+
+    public AIStatusViewModel MyAIStatusViewModel
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RentalDetailsViewModel(AIStatusViewModel aiStatusViewModel)
+    {
+        MyAIStatusViewModel = aiStatusViewModel;
+    }
 
     public void ApplyQueryAttributes(IDictionary<String, Object> query)
     {
-        LoadRentalDetails(WebUtility.UrlDecode(query["rentalId"] as String));
+        if (uninitialized)
+        {
+            LoadRentalDetails(WebUtility.UrlDecode(query["rentalId"] as String));
+        }
+
+        uninitialized = false;
     }
 
     public bool hasEki1

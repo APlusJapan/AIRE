@@ -5,11 +5,11 @@ using OpenAI.Responses;
 
 namespace AIRE_App.Services.AIServices;
 
-public class ChatAIService : IAIService
+public class SummaryAIService : IAIService
 {
     private const String modelaName = "gpt-4o";
 
-    private const String idKey = "ChatAIService";
+    private const String idKey = "SummaryAIService";
 
     private readonly OpenAIResponseClient openAIResponseClient;
 
@@ -23,7 +23,7 @@ public class ChatAIService : IAIService
 
     private const String recommendPrompt = "以下は見つかったデータです。この物件のメリットを紹介してください。";
 
-    public ChatAIService()
+    public SummaryAIService()
     {
         var systemPrompt = """
         あなたは住宅仲介業者の営業担当です。ユーザーに物件を紹介する際、以下のCSV形式で提供される物件情報をもとに、自然な会話調で魅力を伝えてください。ただ物件の基本情報だけでなく、周辺環境や生活利便性、アクセスの良さ、近隣の施設・観光スポットなども織り交ぜ物件を説明するのではなく、ユーザーの心に響くポイントを押さえた上で、「ちょっと話を聞いてみようかな」と思ってもらえるような一言（例：気軽な問い合わせや内見への誘導）を最後に添えてください。

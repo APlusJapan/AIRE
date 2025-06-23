@@ -13,7 +13,7 @@ public partial class IndexView : ContentPage
     {
         await DisplayAlert("Device Unique ID", app.Session.Id, "OK");
 
-        await Shell.Current.GoToAsync($"/Line", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("Line", new Dictionary<String, Object>
         {
             { "companyId", "A" },
             { "staffId", "A" }
@@ -24,7 +24,7 @@ public partial class IndexView : ContentPage
     {
         await DisplayAlert("Device Unique ID", app.Session.Id, "OK");
 
-        await Shell.Current.GoToAsync($"/Line", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("Line", new Dictionary<String, Object>
         {
             { "companyId", "B" },
             { "staffId", "B" }
@@ -35,7 +35,7 @@ public partial class IndexView : ContentPage
     {
         await DisplayAlert("Device Unique ID", app.Session.Id, "OK");
 
-        await Shell.Current.GoToAsync($"/Line", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("Line", new Dictionary<String, Object>
         {
             { "companyId", "C" },
             { "staffId", "C" }

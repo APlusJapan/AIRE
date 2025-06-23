@@ -39,7 +39,7 @@ public partial class RentalListView : ContentPage
 
     private async Task GoToList(String rawSQL)
     {
-        await Shell.Current.GoToAsync("../Rental/List?sqlModel=True", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("Rental/List?sqlModel=True", new Dictionary<String, Object>
         {
             { "rawSQL", rawSQL }
         });
@@ -176,7 +176,7 @@ public partial class RentalListView : ContentPage
         }
 
         // 敷金・保証金なし
-        if (viewModel.SearchConditions.NoReikin)
+        if (viewModel.SearchConditions.NoShikikin)
         {
             queryable = queryable.Where(rental =>
                 rental.SecurityDeposit == "-"
@@ -388,7 +388,7 @@ public partial class RentalListView : ContentPage
 
         if (withFloorPlan)
         {
-            queryable = queryable.Where(rental => rental.LayoutImage != null);
+            queryable = queryable.Where(rental => !String.IsNullOrWhiteSpace(rental.LayoutImage));
         }
 
         // 定期借家を含まない

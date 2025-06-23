@@ -34,7 +34,7 @@ public partial class RentalDetailsView : ContentPage
 
     private async Task GoToLine(String message)
     {
-        await Shell.Current.GoToAsync($"Line", new Dictionary<String, Object>
+        await Shell.Current.GoToAsync("Line", new Dictionary<String, Object>
         {
             { "companyGroup", companyGroup },
             { "staffId", rental.StaffId }

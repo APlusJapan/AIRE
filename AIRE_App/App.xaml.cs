@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using AIRE_App.Interfaces;
 using AIRE_App.Services;
-using AIRE_App.Services.AIServices;
 using AIRE_App.ViewModels;
 using Microsoft.AspNetCore.Http;
 

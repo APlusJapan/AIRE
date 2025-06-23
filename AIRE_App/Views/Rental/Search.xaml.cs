@@ -323,7 +323,7 @@ public partial class RentalSearchView : ContentPage
 
         if(queryItem.Count() == 0)
         {
-            await DisplayAlert("駅・エリア", "駅・エリアを選択してください", "OK");
+            await DisplayAlert("鬧�繝ｻ繧ｨ繝ｪ繧｢", "鬧�繝ｻ繧ｨ繝ｪ繧｢繧帝∈謚槭＠縺ｦ縺上□縺輔＞", "OK");
         }
         else
         { 

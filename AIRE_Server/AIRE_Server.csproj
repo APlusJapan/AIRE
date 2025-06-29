@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Swagger -->
+        <!-- https://learn.microsoft.com/aspnet/core/tutorials/web-api-help-pages-using-swagger -->
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- MCP Server -->
+        <!-- https://learn.microsoft.com/zh-cn/dotnet/ai/get-started-mcp -->
+        <PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.3.0-preview.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- PostgreSQL -->
+        <!-- https://learn.microsoft.com/ef/core/providers -->
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+    </ItemGroup>
+
+</Project>

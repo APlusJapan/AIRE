@@ -83,6 +83,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Kiota -->
+        <!-- https://learn.microsoft.com/openapi/kiota/quickstarts/dotnet -->
+        <PackageReference Include="Microsoft.Kiota.Bundle" Version="1.19.0" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- SQL Lite -->
         <!-- https://learn.microsoft.com/dotnet/standard/data/sqlite/custom-versions -->
         <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.11" />

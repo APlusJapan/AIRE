@@ -30,7 +30,9 @@ public static class Constants
 
     public const String OkuManYen = "{0}億{1}万円";
 
-    public static readonly String PostgreSQLConnectionString = $"Host=localhost;Username=postgres;Password=root;Database=AIRE_DB";
+    public static readonly String ServerUrl = "http://localhost:5000/";
+
+    public static readonly String PostgreSQLConnectionString = "Host=localhost;Username=postgres;Password=root;Database=AIRE_DB";
 
     public static readonly String SQLiteConnectionString = $"Data Source={Path.Combine(FileSystem.AppDataDirectory, "AIRE_SQLite")}";
 }

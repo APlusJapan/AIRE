@@ -27,6 +27,8 @@ public partial class AireDbContext : DbContext
 
     public virtual DbSet<Prefecture> Prefectures { get; set; }
 
+    public virtual DbSet<PromptMaster> PromptMasters { get; set; }
+
     public virtual DbSet<PropertyDocument> PropertyDocuments { get; set; }
 
     public virtual DbSet<PropertyFee> PropertyFees { get; set; }
@@ -265,6 +267,26 @@ public partial class AireDbContext : DbContext
                 .HasMaxLength(10)
                 .HasComment("都道府県名")
                 .HasColumnName("prefecture_name");
+        });
+
+        modelBuilder.Entity<PromptMaster>(entity =>
+        {
+            entity.HasKey(e => new { e.PromptName, e.PromptType }).HasName("prompt_master_pkey");
+
+            entity.ToTable("prompt_master", tb => tb.HasComment("プロンプトマスタ"));
+
+            entity.Property(e => e.PromptName)
+                .HasMaxLength(32)
+                .HasComment("プロンプト名")
+                .HasColumnName("prompt_name");
+            entity.Property(e => e.PromptType)
+                .HasMaxLength(16)
+                .HasComment("プロンプトタイプ")
+                .HasColumnName("prompt_type");
+            entity.Property(e => e.PromptValue)
+                .IsRequired()
+                .HasComment("プロンプト値")
+                .HasColumnName("prompt_value");
         });
 
         modelBuilder.Entity<PropertyDocument>(entity =>

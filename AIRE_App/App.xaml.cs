@@ -8,6 +8,10 @@ namespace AIRE_App;
 
 public partial class App : Application
 {
+    public const String InitPromptType = "Init";
+
+    public const String ExtraPromptType = "Extra";
+
     public const String SqlAIServiceKey = "SqlAIService";
 
     public const String SummaryAIServiceKey = "SummaryAIService";
@@ -46,6 +50,17 @@ public partial class App : Application
             var id = Preferences.Get(DetailsAIServiceKey, String.Empty);
             detailsAIService.SetID(id);
         }
+
+        var SqlAIServicePromptMasters = PromptService.GetPromptMasters(SqlAIServiceKey);
+        sqlAIService.SetPrompt(SqlAIServicePromptMasters[InitPromptType].PromptValue, null);
+
+        var SummaryAIServicePromptMasters = PromptService.GetPromptMasters(SummaryAIServiceKey);
+        summaryAIService.SetPrompt(SummaryAIServicePromptMasters[InitPromptType].PromptValue,
+            SummaryAIServicePromptMasters[ExtraPromptType].PromptValue);
+
+        var DetailsAIServicePromptMasters = PromptService.GetPromptMasters(DetailsAIServiceKey);
+        detailsAIService.SetPrompt(DetailsAIServicePromptMasters[InitPromptType].PromptValue,
+            DetailsAIServicePromptMasters[ExtraPromptType].PromptValue);
 
         JSONService.InitMessage(aiStatusViewModel);
     }

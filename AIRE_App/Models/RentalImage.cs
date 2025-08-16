@@ -4,14 +4,14 @@ using System.Collections.Generic;
 namespace AIRE_DB.Models;
 
 /// <summary>
-/// 掲載物件画像
+/// 賃貸物件画像
 /// </summary>
-public partial class PropertyImage
+public partial class RentalImage
 {
     /// <summary>
-    /// 物件ID
+    /// 賃貸物件ID
     /// </summary>
-    public string PropertyId { get; set; }
+    public string RentalId { get; set; }
 
     /// <summary>
     /// 画像ID
@@ -19,19 +19,19 @@ public partial class PropertyImage
     public short ImageId { get; set; }
 
     /// <summary>
-    /// 物件タイプ
+    /// 作成日時
     /// </summary>
-    public string PropertyType { get; set; }
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 変更日時
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
 
     /// <summary>
     /// 画像URI
     /// </summary>
     public string ImageUri { get; set; }
-
-    /// <summary>
-    /// カテゴリ
-    /// </summary>
-    public string Gpcategory { get; set; }
 
     /// <summary>
     /// 施設名

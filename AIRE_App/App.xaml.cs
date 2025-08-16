@@ -1,8 +1,9 @@
-using System.Collections.Concurrent;
+using AIRE_App.Data;
 using AIRE_App.Interfaces;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Concurrent;
 
 namespace AIRE_App;
 
@@ -14,8 +15,6 @@ public partial class App : Application
 
     public const String SqlAIServiceKey = "SqlAIService";
 
-    public const String SummaryAIServiceKey = "SummaryAIService";
-
     public const String DetailsAIServiceKey = "DetailsAIService";
 
     public ISession Session { get; }
@@ -24,7 +23,6 @@ public partial class App : Application
 
     public App(AIStatusViewModel aiStatusViewModel,
         [FromKeyedServices(SqlAIServiceKey)] IAIService sqlAIService,
-        [FromKeyedServices(SummaryAIServiceKey)] IAIService summaryAIService,
         [FromKeyedServices(DetailsAIServiceKey)] IAIService detailsAIService)
     {
         InitializeComponent();
@@ -39,28 +37,27 @@ public partial class App : Application
             sqlAIService.SetID(id);
         }
 
-        if (Preferences.ContainsKey(SummaryAIServiceKey))
-        {
-            var id = Preferences.Get(SummaryAIServiceKey, String.Empty);
-            summaryAIService.SetID(id);
-        }
-
         if (Preferences.ContainsKey(DetailsAIServiceKey))
         {
             var id = Preferences.Get(DetailsAIServiceKey, String.Empty);
             detailsAIService.SetID(id);
         }
 
-        var SqlAIServicePromptMasters = PromptService.GetPromptMasters(SqlAIServiceKey);
-        sqlAIService.SetPrompt(SqlAIServicePromptMasters[InitPromptType].PromptValue, null);
+        var sqlAISystemInitPrompt = PromptService.GetPromptMaster(SqlAIServiceKey, PromptType.SystemInit);
+        var sqlAIBusinessInitPrompt = PromptService.GetPromptMaster(SqlAIServiceKey, PromptType.BusinessInit);
+        var sqlAIExtraPrompt = PromptService.GetPromptMaster(SqlAIServiceKey, PromptType.Extra);
 
-        var SummaryAIServicePromptMasters = PromptService.GetPromptMasters(SummaryAIServiceKey);
-        summaryAIService.SetPrompt(SummaryAIServicePromptMasters[InitPromptType].PromptValue,
-            SummaryAIServicePromptMasters[ExtraPromptType].PromptValue);
+        sqlAIService.SetPrompt(sqlAISystemInitPrompt,
+            sqlAIBusinessInitPrompt,
+            sqlAIExtraPrompt);
 
-        var DetailsAIServicePromptMasters = PromptService.GetPromptMasters(DetailsAIServiceKey);
-        detailsAIService.SetPrompt(DetailsAIServicePromptMasters[InitPromptType].PromptValue,
-            DetailsAIServicePromptMasters[ExtraPromptType].PromptValue);
+        var detailsAISystemInitPrompt = PromptService.GetPromptMaster(DetailsAIServiceKey, PromptType.SystemInit);
+        var detailsAIBusinessInitPrompt = PromptService.GetPromptMaster(DetailsAIServiceKey, PromptType.BusinessInit);
+        var detailsAIExtraPrompt = PromptService.GetPromptMaster(DetailsAIServiceKey, PromptType.Extra);
+
+        detailsAIService.SetPrompt(detailsAISystemInitPrompt,
+            detailsAIBusinessInitPrompt,
+            detailsAIExtraPrompt);
 
         JSONService.InitMessage(aiStatusViewModel);
     }

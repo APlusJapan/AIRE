@@ -98,13 +98,13 @@
     <ItemGroup>
         <!-- Syncfusion Toolkit -->
         <!-- https://www.syncfusion.com/net-maui-toolkit -->
-        <PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.5" />
+        <PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.6" />
     </ItemGroup>
 
     <ItemGroup>
         <!-- Official OpenAI Library -->
         <!-- https://platform.openai.com/docs/libraries -->
-        <PackageReference Include="OpenAI" Version="2.2.0-beta.4" />
+        <PackageReference Include="OpenAI" Version="2.3.0" />
     </ItemGroup>
 
 </Project>

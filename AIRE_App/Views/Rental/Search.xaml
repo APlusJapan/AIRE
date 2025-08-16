@@ -5,6 +5,7 @@
              xmlns:Models="clr-namespace:AIRE_DB.Models"
              xmlns:ViewModels="clr-namespace:AIRE_App.ViewModels"
              xmlns:TemplateSelector="clr-namespace:AIRE_App.DataTemplates.TemplateSelector"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
              xmlns:expander="clr-namespace:Syncfusion.Maui.Toolkit.Expander;assembly=Syncfusion.Maui.Toolkit"
              xmlns:textInputLayout="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
@@ -102,82 +103,96 @@
                                     </Grid>
                                 </expander:SfExpander.Header>
                                 <expander:SfExpander.Content>
-                                    <FlexLayout Padding="16,8,0,0" Direction="Row" Wrap="Wrap">
-                                        <textInputLayout:SfTextInputLayout
-                                            Margin="0,0,8,0"
-                                            FlexLayout.Grow="1"
-                                            FlexLayout.Shrink="1"
-                                            FlexLayout.Basis="200"
-                                            Style="{StaticResource InputLayoutStyle}" Hint="都道府県" HelperText="都道府県を選択してください" ErrorText="都道府県を選択してください">
-                                            <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Prefectures}" SelectedIndex="{Binding PrefectureIndex}" SelectedIndexChanged="OnSelectedIndexChanged_Load"/>
-                                        </textInputLayout:SfTextInputLayout>
-                                        <StackLayout
-                                            Margin="0,0,8,0"
-                                            FlexLayout.Grow="0"
-                                            FlexLayout.Shrink="0"
-                                            FlexLayout.Basis="Auto"
-                                            RadioButtonGroup.GroupName="SearchType"
-                                            RadioButtonGroup.SelectedValue="{Binding SearchType}">
-                                            <RadioButton Value="None" IsVisible="False"/>
-                                            <RadioButton
-                                                Value="Station"
-                                                Content="沿線から検索"
-                                                CheckedChanged="OnCheckedChanged_Load"/>
-                                            <RadioButton
-                                                Value="Area"
-                                                Content="エリアから検索"
-                                                CheckedChanged="OnCheckedChanged_Load"/>
-                                        </StackLayout>
-                                    </FlexLayout>
+                                    <StackLayout>
+                                        <FlexLayout Padding="16,8,0,0" Direction="Row" Wrap="Wrap">
+                                            <textInputLayout:SfTextInputLayout
+                                                Margin="0,0,8,0"
+                                                FlexLayout.Grow="1"
+                                                FlexLayout.Shrink="1"
+                                                FlexLayout.Basis="200"
+                                                Style="{StaticResource InputLayoutStyle}" Hint="都道府県" HelperText="都道府県を選択してください" ErrorText="都道府県を選択してください">
+                                                <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Prefecture"/>
+                                                </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Prefectures}" SelectedIndex="{Binding PrefectureIndex}" SelectedIndexChanged="OnSelectedIndexChanged_Load"/>
+                                            </textInputLayout:SfTextInputLayout>
+                                            <StackLayout
+                                                Margin="0,0,8,0"
+                                                FlexLayout.Grow="0"
+                                                FlexLayout.Shrink="0"
+                                                FlexLayout.Basis="Auto"
+                                                RadioButtonGroup.GroupName="SearchType"
+                                                RadioButtonGroup.SelectedValue="{Binding SearchType}">
+                                                <RadioButton Value="None" IsVisible="False"/>
+                                                <RadioButton
+                                                    Value="Station"
+                                                    Content="沿線から検索"
+                                                    CheckedChanged="OnCheckedChanged_Load"/>
+                                                <RadioButton
+                                                    Value="Area"
+                                                    Content="エリアから検索"
+                                                    CheckedChanged="OnCheckedChanged_Load"/>
+                                            </StackLayout>
+                                        </FlexLayout>
+                                        <picker:SfPicker
+                                            Mode="Dialog"
+                                            IsOpen="{Binding PrefecturePickerIsOpen, Mode=TwoWay}"
+                                            OkButtonClicked="OkButtonClicked_Prefecture"
+                                            SelectionChanged="SelectionChanged_Prefecture"
+                                            CancelButtonClicked="CancelButtonClicked_Prefecture">
+                                            <picker:SfPicker.FooterView>
+                                                <picker:PickerFooterView
+                                                    CancelButtonText="キャンセル"
+                                                    ShowOkButton="True" Height="36"/>
+                                            </picker:SfPicker.FooterView>
+                                            <picker:SfPicker.Columns>
+                                                <picker:PickerColumn ItemsSource="{Binding Prefectures}"/>
+                                            </picker:SfPicker.Columns>
+                                        </picker:SfPicker>
+                                    </StackLayout>
                                 </expander:SfExpander.Content>
                             </expander:SfExpander>
                             <StackLayout IsVisible="{Binding IsGroupsExpanded}" Padding="16,0,16,16">
-                                <ListView IsVisible="{Binding IsGroupReady}" ItemsSource="{Binding Groups}" ItemTapped="OnItemTapped_Group">
-                                    <ListView.ItemTemplate>
+                                <CollectionView IsVisible="{Binding IsGroupReady}" ItemsSource="{Binding Groups}" SelectionMode="Single" SelectionChanged="OnSelectionChanged_Group">
+                                    <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:GroupViewModel(ViewModels:ItemViewModel))}">
-                                            <ViewCell>
-                                                <VerticalStackLayout>
-                                                    <HorizontalStackLayout>
-                                                        <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                        <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
-                                                    </HorizontalStackLayout>
-                                                    <StackLayout IsVisible="{Binding IsExpanded}">
-                                                        <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_GroupItem">
-                                                            <ListView.ItemTemplate>
-                                                                <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:ItemViewModel)}">
-                                                                    <ViewCell>
-                                                                        <VerticalStackLayout>
-                                                                            <HorizontalStackLayout Padding="32,0,0,0">
-                                                                                <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                                                <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
-                                                                            </HorizontalStackLayout>
-                                                                            <StackLayout IsVisible="{Binding IsExpanded}">
-                                                                                <ListView ItemsSource="{Binding Items}" ItemTapped="OnItemTapped_Item">
-                                                                                    <ListView.ItemTemplate>
-                                                                                        <DataTemplate x:DataType="{x:Type ViewModels:ItemViewModel}">
-                                                                                            <ViewCell>
-                                                                                                <VerticalStackLayout Padding="64,0,0,0">
-                                                                                                    <HorizontalStackLayout>
-                                                                                                        <CheckBox IsChecked="{Binding IsChecked}"/>
-                                                                                                        <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
-                                                                                                    </HorizontalStackLayout>
-                                                                                                </VerticalStackLayout>
-                                                                                            </ViewCell>
-                                                                                        </DataTemplate>
-                                                                                    </ListView.ItemTemplate>
-                                                                                </ListView>
-                                                                            </StackLayout>
-                                                                        </VerticalStackLayout>
-                                                                    </ViewCell>
-                                                                </DataTemplate>
-                                                            </ListView.ItemTemplate>
-                                                        </ListView>
-                                                    </StackLayout>
-                                                </VerticalStackLayout>
-                                            </ViewCell>
+                                            <VerticalStackLayout>
+                                                <HorizontalStackLayout>
+                                                    <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                    <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
+                                                </HorizontalStackLayout>
+                                                <StackLayout IsVisible="{Binding IsExpanded}">
+                                                    <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="OnSelectionChanged_GroupItem">
+                                                        <CollectionView.ItemTemplate>
+                                                            <DataTemplate x:DataType="{x:Type ViewModels:GroupViewModel(ViewModels:ItemViewModel)}">
+                                                                <VerticalStackLayout>
+                                                                    <HorizontalStackLayout Padding="32,0,0,0">
+                                                                        <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                        <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
+                                                                    </HorizontalStackLayout>
+                                                                    <StackLayout IsVisible="{Binding IsExpanded}">
+                                                                        <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="OnSelectionChanged_Item">
+                                                                            <CollectionView.ItemTemplate>
+                                                                                <DataTemplate x:DataType="{x:Type ViewModels:ItemViewModel}">
+                                                                                    <VerticalStackLayout Padding="64,0,0,0">
+                                                                                        <HorizontalStackLayout>
+                                                                                            <CheckBox IsChecked="{Binding IsChecked}"/>
+                                                                                            <Label Text="{Binding Name}" VerticalTextAlignment="Center"/>
+                                                                                        </HorizontalStackLayout>
+                                                                                    </VerticalStackLayout>
+                                                                                </DataTemplate>
+                                                                            </CollectionView.ItemTemplate>
+                                                                        </CollectionView>
+                                                                    </StackLayout>
+                                                                </VerticalStackLayout>
+                                                            </DataTemplate>
+                                                        </CollectionView.ItemTemplate>
+                                                    </CollectionView>
+                                                </StackLayout>
+                                            </VerticalStackLayout>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
                             </StackLayout>
                         </StackLayout>
                     </Border>
@@ -209,7 +224,10 @@
                                             FlexLayout.Shrink="0.5"
                                             FlexLayout.Basis="0"
                                             Style="{StaticResource InputLayoutStyle}" Hint="賃料下限">
-                                            <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding YachinMin}" SelectedIndex="{Binding YachinMinIndex}"/>
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_YachinMin"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding YachinMin}" SelectedIndex="{Binding YachinMinIndex}"/>
                                         </textInputLayout:SfTextInputLayout>
                                         <textInputLayout:SfTextInputLayout
                                             Margin="0,0,8,0"
@@ -217,7 +235,10 @@
                                             FlexLayout.Shrink="0.5"
                                             FlexLayout.Basis="0"
                                             Style="{StaticResource InputLayoutStyle}" Hint="賃料上限">
-                                            <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding YachinMax}" SelectedIndex="{Binding YachinMaxIndex}"/>
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_YachinMax"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding YachinMax}" SelectedIndex="{Binding YachinMaxIndex}"/>
                                         </textInputLayout:SfTextInputLayout>
                                     </FlexLayout>
                                     <FlexLayout Padding="16,0,0,0" Direction="Row" Wrap="Wrap">
@@ -250,6 +271,36 @@
                                             FlexLayout.Basis="0">
                                         </HorizontalStackLayout>
                                     </FlexLayout>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding YachinMinPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_YachinMin"
+                                        SelectionChanged="SelectionChanged_YachinMin"
+                                        CancelButtonClicked="CancelButtonClicked_YachinMin">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                                CancelButtonText="キャンセル"
+                                                ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding YachinMin}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding YachinMaxPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_YachinMax"
+                                        SelectionChanged="SelectionChanged_YachinMax"
+                                        CancelButtonClicked="CancelButtonClicked_YachinMax">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                                CancelButtonText="キャンセル"
+                                                ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding YachinMax}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
                                 </StackLayout>
                             </expander:SfExpander.Content>
                         </expander:SfExpander>
@@ -466,15 +517,35 @@
                                 </Grid>
                             </expander:SfExpander.Header>
                             <expander:SfExpander.Content>
-                                <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
-                                    <textInputLayout:SfTextInputLayout
-                                        FlexLayout.Grow="1"
-                                        FlexLayout.Shrink="1"
-                                        FlexLayout.Basis="0"
-                                        Style="{StaticResource InputLayoutStyle}" Hint="駅徒歩">
-                                        <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Toho}" SelectedIndex="{Binding TohoIndex}"/>
-                                    </textInputLayout:SfTextInputLayout>
-                                </FlexLayout>
+                                <StackLayout>
+                                    <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
+                                        <textInputLayout:SfTextInputLayout
+                                            FlexLayout.Grow="1"
+                                            FlexLayout.Shrink="1"
+                                            FlexLayout.Basis="0"
+                                            Style="{StaticResource InputLayoutStyle}" Hint="駅徒歩">
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Toho"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Toho}" SelectedIndex="{Binding TohoIndex}"/>
+                                        </textInputLayout:SfTextInputLayout>
+                                    </FlexLayout>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding TohoPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_Toho"
+                                        SelectionChanged="SelectionChanged_Toho"
+                                        CancelButtonClicked="CancelButtonClicked_Toho">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                                CancelButtonText="キャンセル"
+                                                ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding Toho}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
+                                </StackLayout>
                             </expander:SfExpander.Content>
                         </expander:SfExpander>
                     </Border>
@@ -498,24 +569,62 @@
                                 </Grid>
                             </expander:SfExpander.Header>
                             <expander:SfExpander.Content>
-                                <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
-                                    <textInputLayout:SfTextInputLayout
-                                        Margin="0,0,8,0"
-                                        FlexLayout.Grow="0.5"
-                                        FlexLayout.Shrink="0.5"
-                                        FlexLayout.Basis="0"
-                                        Style="{StaticResource InputLayoutStyle}" Hint="面積下限">
-                                        <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding MenMin}" SelectedIndex="{Binding MenMinIndex}"/>
-                                    </textInputLayout:SfTextInputLayout>
-                                    <textInputLayout:SfTextInputLayout
-                                        Margin="0,0,8,0"
-                                        FlexLayout.Grow="0.5"
-                                        FlexLayout.Shrink="0.5"
-                                        FlexLayout.Basis="0"
-                                        Style="{StaticResource InputLayoutStyle}" Hint="面積上限">
-                                        <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding MenMax}" SelectedIndex="{Binding MenMaxIndex}"/>
-                                    </textInputLayout:SfTextInputLayout>
-                                </FlexLayout>
+                                <StackLayout>
+                                    <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
+                                        <textInputLayout:SfTextInputLayout
+                                            Margin="0,0,8,0"
+                                            FlexLayout.Grow="0.5"
+                                            FlexLayout.Shrink="0.5"
+                                            FlexLayout.Basis="0"
+                                            Style="{StaticResource InputLayoutStyle}" Hint="面積下限">
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_MenMin"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding MenMin}" SelectedIndex="{Binding MenMinIndex}"/>
+                                        </textInputLayout:SfTextInputLayout>
+                                        <textInputLayout:SfTextInputLayout
+                                            Margin="0,0,8,0"
+                                            FlexLayout.Grow="0.5"
+                                            FlexLayout.Shrink="0.5"
+                                            FlexLayout.Basis="0"
+                                            Style="{StaticResource InputLayoutStyle}" Hint="面積上限">
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_MenMax"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding MenMax}" SelectedIndex="{Binding MenMaxIndex}"/>
+                                        </textInputLayout:SfTextInputLayout>
+                                    </FlexLayout>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding MenMinPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_MenMin"
+                                        SelectionChanged="SelectionChanged_MenMin"
+                                        CancelButtonClicked="CancelButtonClicked_MenMin">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                                CancelButtonText="キャンセル"
+                                                ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding MenMin}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding MenMaxPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_MenMax"
+                                        SelectionChanged="SelectionChanged_MenMax"
+                                        CancelButtonClicked="CancelButtonClicked_MenMax">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                                CancelButtonText="キャンセル"
+                                                ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding MenMax}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
+                                </StackLayout>
                             </expander:SfExpander.Content>
                         </expander:SfExpander>
                     </Border>
@@ -539,15 +648,35 @@
                                 </Grid>
                             </expander:SfExpander.Header>
                             <expander:SfExpander.Content>
-                                <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
-                                    <textInputLayout:SfTextInputLayout
-                                        FlexLayout.Grow="1"
-                                        FlexLayout.Shrink="1"
-                                        FlexLayout.Basis="0"
-                                        Style="{StaticResource InputLayoutStyle}" Hint="築後年数">
-                                        <Picker TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Chikunensu}" SelectedIndex="{Binding ChikunensuIndex}"/>
-                                    </textInputLayout:SfTextInputLayout>
-                                </FlexLayout>
+                                <StackLayout>
+                                    <FlexLayout Padding="16,8,16,0" Direction="Row" Wrap="Wrap">
+                                        <textInputLayout:SfTextInputLayout
+                                            FlexLayout.Grow="1"
+                                            FlexLayout.Shrink="1"
+                                            FlexLayout.Basis="0"
+                                            Style="{StaticResource InputLayoutStyle}" Hint="築後年数">
+                                            <textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Chikunensu"/>
+                                            </textInputLayout:SfTextInputLayout.GestureRecognizers>
+                                            <Picker InputTransparent="True" TextColor="{AppThemeBinding Light=Black,Dark=White}" ItemsSource="{Binding Chikunensu}" SelectedIndex="{Binding ChikunensuIndex}"/>
+                                        </textInputLayout:SfTextInputLayout>
+                                    </FlexLayout>
+                                    <picker:SfPicker
+                                        Mode="Dialog"
+                                        IsOpen="{Binding ChikunensuPickerIsOpen, Mode=TwoWay}"
+                                        OkButtonClicked="OkButtonClicked_Chikunensu"
+                                        SelectionChanged="SelectionChanged_Chikunensu"
+                                        CancelButtonClicked="CancelButtonClicked_Chikunensu">
+                                        <picker:SfPicker.FooterView>
+                                            <picker:PickerFooterView
+                                            CancelButtonText="キャンセル"
+                                            ShowOkButton="True" Height="36"/>
+                                        </picker:SfPicker.FooterView>
+                                        <picker:SfPicker.Columns>
+                                            <picker:PickerColumn ItemsSource="{Binding Chikunensu}"/>
+                                        </picker:SfPicker.Columns>
+                                    </picker:SfPicker>
+                                </StackLayout>
                             </expander:SfExpander.Content>
                         </expander:SfExpander>
                     </Border>

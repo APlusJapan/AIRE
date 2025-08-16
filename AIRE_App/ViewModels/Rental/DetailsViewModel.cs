@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net;
 
 namespace AIRE_App.ViewModels;
@@ -7,7 +8,7 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
 {
     private bool uninitialized = true;
 
-    public event Func<String, Task> LoadRentalDetails;
+    public event Func<String, String, Task> LoadRentalDetails;
 
     public AIStatusViewModel MyAIStatusViewModel
     {
@@ -28,7 +29,11 @@ public class RentalDetailsViewModel : BaseViewModel, IQueryAttributable
     {
         if (uninitialized)
         {
-            LoadRentalDetails(WebUtility.UrlDecode(query["rentalId"] as String));
+            String responseId = query.ContainsKey("responseId") ?
+                WebUtility.UrlDecode(query["responseId"] as String) :
+                String.Empty;
+
+            LoadRentalDetails(WebUtility.UrlDecode(query["rentalId"] as String), responseId);
         }
 
         uninitialized = false;

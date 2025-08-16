@@ -1,6 +1,8 @@
 CREATE TABLE rental
 (
     rental_id varchar(40) Not Null,
+    creation_time timestamp,
+    modification_time timestamp,
     rental_common_id varchar(40),
     company_id varchar(40) Not Null,
     staff_id varchar(20) Not Null,
@@ -58,11 +60,15 @@ CREATE TABLE rental
     layout_image varchar(255),
     remarks text,
     free_keyword text,
+    effective_start_date date,
+    effective_end_date date,
     PRIMARY KEY (rental_id)
 );
 
 COMMENT ON TABLE rental IS '賃貸物件';
 COMMENT ON COLUMN rental.rental_id IS '賃貸物件ID';
+COMMENT ON COLUMN rental.creation_time IS '作成日時';
+COMMENT ON COLUMN rental.modification_time IS '変更日時';
 COMMENT ON COLUMN rental.rental_common_id IS '賃貸物件共通ID';
 COMMENT ON COLUMN rental.company_id IS '会社ID';
 COMMENT ON COLUMN rental.staff_id IS '担当社員ID';
@@ -120,3 +126,5 @@ COMMENT ON COLUMN rental.exterior_photo IS '建物外観画像';
 COMMENT ON COLUMN rental.layout_image IS '間取り図面';
 COMMENT ON COLUMN rental.remarks IS '備考';
 COMMENT ON COLUMN rental.free_keyword IS 'フリーキーワード';
+COMMENT ON COLUMN rental_summary.creation_time IS '有効開始日';
+COMMENT ON COLUMN rental_summary.modification_time IS '有効終了日';

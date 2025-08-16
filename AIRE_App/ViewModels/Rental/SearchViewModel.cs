@@ -44,7 +44,27 @@ public class RentalSearchViewModel : BaseViewModel
         }
     }
 
+    public int PrefectureSfPickerIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public int YachinMinIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int YachinMinSfPickerIndex
     {
         get;
         set
@@ -63,6 +83,86 @@ public class RentalSearchViewModel : BaseViewModel
             OnPropertyChanged();
         }
     }
+
+    public int YachinMaxSfPickerIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool PrefecturePickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool YachinMinPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool YachinMaxPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool TohoPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool MenMinPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool MenMaxPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
+
+    public bool ChikunensuPickerIsOpen
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
 
     public bool NoKanrihi
     {
@@ -274,7 +374,27 @@ public class RentalSearchViewModel : BaseViewModel
         }
     }
 
+    public int TohoSfPickerIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public int MenMinIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int MenMinSfPickerIndex
     {
         get;
         set
@@ -294,7 +414,27 @@ public class RentalSearchViewModel : BaseViewModel
         }
     }
 
+    public int MenMaxSfPickerIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public int ChikunensuIndex
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ChikunensuSfPickerIndex
     {
         get;
         set

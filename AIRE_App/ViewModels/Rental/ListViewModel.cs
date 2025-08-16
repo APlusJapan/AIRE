@@ -11,7 +11,7 @@ public class RentalListViewModel : BaseViewModel, IQueryAttributable
 
     public event Action LoadRentalList;
 
-    public event Func<Task> ExecuteSql;
+    public event Action ExecuteSql;
 
     public RentalSearchConditions SearchConditions;
 

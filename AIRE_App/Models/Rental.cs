@@ -14,6 +14,16 @@ public partial class Rental
     public string RentalId { get; set; }
 
     /// <summary>
+    /// 作成日時
+    /// </summary>
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 変更日時
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
+
+    /// <summary>
     /// 賃貸物件共通ID
     /// </summary>
     public string RentalCommonId { get; set; }
@@ -297,4 +307,8 @@ public partial class Rental
     /// フリーキーワード
     /// </summary>
     public string FreeKeyword { get; set; }
+
+    public DateOnly? EffectiveStartDate { get; set; }
+
+    public DateOnly? EffectiveEndDate { get; set; }
 }

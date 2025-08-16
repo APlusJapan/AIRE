@@ -7,6 +7,13 @@ public enum SearchType
     Area
 }
 
+public enum PromptType
+{
+    SystemInit,
+    BusinessInit,
+    Extra
+}
+
 public enum RegionType
 {
     Hokkaido, // 北海道

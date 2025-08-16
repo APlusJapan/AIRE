@@ -54,7 +54,7 @@ public class RentalListGroupViewModel : BaseViewModel
         }
     }
 
-Å@Å@public String ImageUrl
+    public String ImageUrl
     {
         get;
         set

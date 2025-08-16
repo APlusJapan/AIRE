@@ -14,6 +14,16 @@ public partial class CompanyGroup
     public string CompanyId { get; set; }
 
     /// <summary>
+    /// 作成日時
+    /// </summary>
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 変更日時
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
+
+    /// <summary>
     /// 会社名
     /// </summary>
     public string CompanyName { get; set; }

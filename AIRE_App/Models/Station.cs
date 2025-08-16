@@ -14,6 +14,16 @@ public partial class Station
     public string StationId { get; set; }
 
     /// <summary>
+    /// 作成日時
+    /// </summary>
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 変更日時
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
+
+    /// <summary>
     /// 路線名
     /// </summary>
     public string RailwayName { get; set; }
@@ -27,9 +37,4 @@ public partial class Station
     /// 駅名
     /// </summary>
     public string StationName { get; set; }
-
-    /// <summary>
-    /// グループID
-    /// </summary>
-    public string GroupId { get; set; }
 }

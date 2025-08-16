@@ -34,8 +34,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AIStatusViewModel>();
 
         builder.Services.AddKeyedSingleton<IAIService, SqlAIService>(App.SqlAIServiceKey);
-        builder.Services.AddKeyedSingleton<IAIService, SummaryAIService>(App.SummaryAIServiceKey);
-        builder.Services.AddKeyedSingleton<IAIService, DetailsAIService>(App.DetailsAIServiceKey);
+        builder.Services.AddKeyedScoped<IAIService, DetailsAIService>(App.DetailsAIServiceKey);
 
         return builder.Build();
     }

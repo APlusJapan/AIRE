@@ -10,23 +10,14 @@ namespace AIRE_App.Views;
 
 public partial class RentalListView : ContentPage
 {
-    private readonly IAIService sqlAIService;
-
-    private readonly IAIService summaryAIService;
-
     private readonly RentalListViewModel viewModel;
 
     private readonly AIStatusViewModel aiStatusViewModel;
 
     public RentalListView(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices(App.SqlAIServiceKey)] IAIService sqlAIService,
-        [FromKeyedServices(App.SummaryAIServiceKey)] IAIService summaryAIService)
+        [FromKeyedServices(App.SqlAIServiceKey)] IAIService sqlAIService)
     {
         InitializeComponent();
-
-        this.sqlAIService = sqlAIService;
-
-        this.summaryAIService = summaryAIService;
 
         this.aiStatusViewModel = aiStatusViewModel;
 
@@ -45,20 +36,18 @@ public partial class RentalListView : ContentPage
         });
     }
 
-    private async Task ExecuteSql()
+    private void ExecuteSql()
     {
-        // await DisplayAlert("Log", viewModel.RawSQL, "OK");
-
         var rentalSummaries = DatabaseService.GetAireDbContext().RentalSummaries.FromSqlRaw(viewModel.RawSQL).ToArray();
 
-        viewModel.Groups = [.. rentalSummaries.GroupBy(rentalSummary => new { rentalSummary.AddressStreetPart, rentalSummary.AddressNumberPart })
+        viewModel.Groups = [.. rentalSummaries.GroupBy(rentalSummary => new { rentalSummary.Address })
             .Select(rentalSummaryGroup => new RentalListGroupViewModel()
             {
                 Manmei = rentalSummaryGroup.First().BuildingName,
                 StationInfo = GetStationInfo(rentalSummaryGroup.First()),
                 ChikuInfo = GetChikuInfo(rentalSummaryGroup.First()),
                 KaisouInfo = GetKaisouInfo(rentalSummaryGroup.First()),
-                ChimeiInfo = rentalSummaryGroup.Key.AddressStreetPart,
+                ChimeiInfo = rentalSummaryGroup.Key.Address,
                 ImageUrl = rentalSummaryGroup.First().ExteriorPhoto,
                 Items = [.. rentalSummaryGroup.Select(rentalSummaryItem => new RentalListItemViewModel()
                 {
@@ -73,22 +62,6 @@ public partial class RentalListView : ContentPage
                     ImageUrl = rentalSummaryItem.FloorPlanImage
                 })]
             })];
-
-        aiStatusViewModel.MessageReceived = false;
-
-        await summaryAIService.ProcessRecommendAsync(CSVService.RentalSummaryToCSV(rentalSummaries.Where(rentalSummary => rentalSummary.Recommend)), response =>
-        {
-            aiStatusViewModel.AssistantMessage = response.Text;
-
-            aiStatusViewModel.MessageHistory.Add(response);
-
-            JSONService.AppendMessage(response);
-
-            aiStatusViewModel.MessageReceived = true;
-
-            return Task.CompletedTask;
-
-        });
     }
 
     private void LoadRentalList()
@@ -608,49 +581,6 @@ public partial class RentalListView : ContentPage
             // 所在は地上
             return String.Format(Constants.ChijouSyokai, rentalSummary.CurrentFloor);
         }
-    }
-
-    private void OnClicked_ExpandMessage(Object sender, EventArgs eventArgs)
-    {
-        aiStatusViewModel.MessageIsExpanded = !aiStatusViewModel.MessageIsExpanded;
-    }
-
-    private async void OnClicked_PostMessage(Object sender, EventArgs eventArgs)
-    {
-        if (String.IsNullOrWhiteSpace(aiStatusViewModel.UserMessage))
-        {
-            return;
-        }
-
-        var message = aiStatusViewModel.UserMessage;
-
-        aiStatusViewModel.UserMessage = String.Empty;
-
-        var messageViewModel = new MessageViewModel()
-        {
-            Role = "user",
-            Text = message
-        };
-
-        aiStatusViewModel.MessageHistory.Add(messageViewModel);
-
-        JSONService.AppendMessage(messageViewModel);
-
-        aiStatusViewModel.MessageReceived = false;
-
-        await sqlAIService.PostChatMessageAsync(message, response =>
-        {
-            aiStatusViewModel.AssistantMessage = response.Text;
-
-            aiStatusViewModel.MessageHistory.Add(response);
-
-            JSONService.AppendMessage(response);
-
-            aiStatusViewModel.MessageReceived = true;
-
-            return Task.CompletedTask;
-
-        }, GoToList);
     }
 
     private async void OnClicked_Details(Object sender, EventArgs eventArgs)

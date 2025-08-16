@@ -18,14 +18,13 @@ public partial class RentalDetailsView : ContentPage
 
     private readonly AIStatusViewModel aiStatusViewModel;
 
-    public RentalDetailsView(AIStatusViewModel aiStatusViewModel,
-        [FromKeyedServices(App.DetailsAIServiceKey)] IAIService detailsAIService)
+    public RentalDetailsView([FromKeyedServices(App.DetailsAIServiceKey)] IAIService detailsAIService)
     {
         InitializeComponent();
 
-        this.detailsAIService = detailsAIService;
+        aiStatusViewModel = new();
 
-        this.aiStatusViewModel = aiStatusViewModel;
+        this.detailsAIService = detailsAIService;
 
         BindingContext = viewModel = new(aiStatusViewModel);
 
@@ -41,7 +40,7 @@ public partial class RentalDetailsView : ContentPage
         });
     }
 
-    private async Task LoadRentalDetails(String rentalId)
+    private async Task LoadRentalDetails(String rentalId, String responseId)
     {
         rental = DatabaseService.GetAireDbContext().Rentals.Where(rental => rental.RentalId == rentalId).Single();
         companyGroup = DatabaseService.GetAireDbContext().CompanyGroups.Where(companyGroup => companyGroup.CompanyId == rental.CompanyId).Single();
@@ -70,6 +69,11 @@ public partial class RentalDetailsView : ContentPage
 
         viewModel.Images = [new() { ImageUrl = rental.ExteriorPhoto, ImageInfo = "建物外観" }, new() { ImageUrl = rental.LayoutImage, ImageInfo = "間取り" }];
 
+        if(!String.IsNullOrWhiteSpace(responseId))
+        {
+            detailsAIService.SetID(responseId);
+        }
+        
         aiStatusViewModel.MessageReceived = false;
 
         await detailsAIService.ProcessRecommendAsync(CSVService.RentalDetailsToCSV(rental), response =>
@@ -77,8 +81,6 @@ public partial class RentalDetailsView : ContentPage
             aiStatusViewModel.AssistantMessage = response.Text;
 
             aiStatusViewModel.MessageHistory.Add(response);
-
-            JSONService.AppendMessage(response);
 
             aiStatusViewModel.MessageReceived = true;
 
@@ -207,8 +209,6 @@ public partial class RentalDetailsView : ContentPage
 
         aiStatusViewModel.MessageHistory.Add(messageViewModel);
 
-        JSONService.AppendMessage(messageViewModel);
-
         aiStatusViewModel.MessageReceived = false;
 
         await detailsAIService.PostChatMessageAsync(message, response =>
@@ -216,8 +216,6 @@ public partial class RentalDetailsView : ContentPage
             aiStatusViewModel.AssistantMessage = response.Text;
 
             aiStatusViewModel.MessageHistory.Add(response);
-
-            JSONService.AppendMessage(response);
 
             aiStatusViewModel.MessageReceived = true;
 

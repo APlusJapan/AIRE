@@ -17,49 +17,7 @@
     </ContentPage.Resources>
 
     <AbsoluteLayout>
-        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" RowDefinitions="Auto,*">
-            <Grid Padding="16" ColumnSpacing="16" ColumnDefinitions="Auto,*,Auto"
-                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-                <Border
-                    Grid.Column="0"
-                    Stroke="#FFFFFF"
-                    BackgroundColor="#EEEEEE"
-                    Style="{StaticResource ProfileBorderStyle}">
-                    <Image
-                        HeightRequest="40"
-                        WidthRequest="40"
-                        Source="robot.png" />
-                </Border>
-                <Border
-                    Padding="0"
-                    Grid.Column="1"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource AssistantMessageBackgroundLightColor}, Dark={StaticResource AssistantMessageBackgroundDarkColor}}"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 0, 24, 24, 24"
-                    HorizontalOptions="Start"
-                    Opacity="{Binding MyAIStatusViewModel.AssistantMessage,Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
-                    <StackLayout
-                        Margin="8"
-                        VerticalOptions="Fill">
-                        <Label
-                            FontSize="14"
-                            HorizontalOptions="Start"
-                            LineHeight="1.25"
-                            Text="{Binding MyAIStatusViewModel.AssistantMessage}"
-                            MaxLines="2"
-                            LineBreakMode="TailTruncation"
-                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"
-                            VerticalOptions="Fill"/>
-                    </StackLayout>
-                </Border>
-                <buttons:SfButton
-                    Grid.Column="2"
-                    VerticalOptions="End"
-                    Text="&#xe705;"
-                    FontFamily="MauiMaterialAssets"
-                    Clicked="OnClicked_ExpandMessage"
-                    Style="{StaticResource IconButtonStyle}"/>
-            </Grid>
+        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" RowDefinitions="*">
             <ScrollView Grid.Row="1">
                 <CollectionView ItemsSource="{Binding Groups}" >
                     <CollectionView.ItemTemplate>
@@ -132,66 +90,6 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </ScrollView>
-        </Grid>
-        <Grid
-            AbsoluteLayout.LayoutFlags="All"
-            AbsoluteLayout.LayoutBounds="0,0,1,0.5"
-            RowDefinitions="*,Auto"
-            IsVisible="{Binding MyAIStatusViewModel.MessageIsExpanded}"
-            BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryBackgroundLightColor}, Dark={StaticResource PrimaryBackgroundDarkColor}}">
-            <ScrollView Grid.Row="0">
-                <CollectionView
-                    ItemsSource="{Binding MyAIStatusViewModel.MessageHistory}"
-                    ItemTemplate="{StaticResource MessageTemplateSelector}"
-                    SelectionMode="Single"
-                    VerticalOptions="Fill">
-                </CollectionView>
-            </ScrollView>
-            <Grid
-                Grid.Row="1"
-                ColumnSpacing="16"
-                Padding="16,8,16,16"
-                ColumnDefinitions="*,Auto,Auto">
-
-                <!--  Rounded Border  -->
-                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryBackgroundLightColor}, Dark={StaticResource SecondaryBackgroundDarkColor}}"
-                    Padding="5,0"
-                    Grid.Column="0"
-                    Stroke="#FFFFFF"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 25"
-                    Style="{StaticResource ThemeBorderStyle}">
-
-                    <Editor
-                        Margin="5,0"
-                        Style="{StaticResource BorderlessEditorStyle}"
-                        Text="{Binding MyAIStatusViewModel.UserMessage}"
-                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLightColor}, Dark={StaticResource PrimaryTextDarkColor}}"/>
-
-                </Border>
-
-                <!--  Send Button  -->
-                <buttons:SfButton
-                    Grid.Column="1"
-                    Padding="0,2,2,0"
-                    Background="{AppThemeBinding Light={StaticResource PrimaryLightColor}, Dark={StaticResource PrimaryDarkColor}}"
-                    VerticalOptions="End"
-                    HorizontalOptions="End"
-                    Style="{StaticResource IconButtonStyle}"
-                    Text="&#xe759;"
-                    TextColor="White"
-                    FontFamily="MauiSampleFontIcon"
-                    Clicked="OnClicked_PostMessage"/>
-
-                <buttons:SfButton
-                    Grid.Column="2"
-                    VerticalOptions="End"
-                    Text="&#xe708;"
-                    FontFamily="MauiMaterialAssets"
-                    Clicked="OnClicked_ExpandMessage"
-                    Style="{StaticResource IconButtonStyle}"/>
-
-            </Grid>
         </Grid>
     </AbsoluteLayout>
 

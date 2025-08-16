@@ -8,10 +8,13 @@ public class MessageTemplateSelector : DataTemplateSelector
 
     public DataTemplate AssistantTemplate { get; set; }
 
+    public DataTemplate __RentalTemplate { get; set; }
+
     public MessageTemplateSelector()
     {
         UserTemplate = new DataTemplate(typeof(UserMessageTemplate));
         AssistantTemplate = new DataTemplate(typeof(AssistantMessageTemplate));
+        __RentalTemplate = new DataTemplate(typeof(RentalMessageTemplate));
     }
 
     protected override DataTemplate OnSelectTemplate(Object item, BindableObject container)
@@ -30,6 +33,11 @@ public class MessageTemplateSelector : DataTemplateSelector
                 case "assistant":
                     {
                         dataTemplate = AssistantTemplate;
+                        break;
+                    }
+                case "__rental":
+                    {
+                        dataTemplate = __RentalTemplate;
                         break;
                     }
             }

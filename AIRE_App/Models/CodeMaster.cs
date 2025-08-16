@@ -24,6 +24,16 @@ public partial class CodeMaster
     public string OptionValue { get; set; }
 
     /// <summary>
+    /// 作成日時
+    /// </summary>
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 変更日時
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
+
+    /// <summary>
     /// オプション名
     /// </summary>
     public string OptionName { get; set; }

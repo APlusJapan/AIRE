@@ -14,6 +14,16 @@ public partial class RentalSummary
     public string RentalId { get; set; }
 
     /// <summary>
+    /// 有効開始日
+    /// </summary>
+    public DateTime? CreationTime { get; set; }
+
+    /// <summary>
+    /// 有効終了日
+    /// </summary>
+    public DateTime? ModificationTime { get; set; }
+
+    /// <summary>
     /// 都道府県名
     /// </summary>
     public string PrefectureName { get; set; }
@@ -49,14 +59,9 @@ public partial class RentalSummary
     public decimal KeyMoney { get; set; }
 
     /// <summary>
-    /// 所在地（何丁目まで）
+    /// 所在地
     /// </summary>
-    public string AddressStreetPart { get; set; }
-
-    /// <summary>
-    /// 所在地（何番から）
-    /// </summary>
-    public string AddressNumberPart { get; set; }
+    public string Address { get; set; }
 
     /// <summary>
     /// 駅1の名前
@@ -64,19 +69,9 @@ public partial class RentalSummary
     public string Station1Name { get; set; }
 
     /// <summary>
-    /// 駅1までの所要時間（バス）
-    /// </summary>
-    public short? Station1BusMin { get; set; }
-
-    /// <summary>
     /// 駅1までの所要時間（徒歩）
     /// </summary>
     public short? Station1WalkMin { get; set; }
-
-    /// <summary>
-    /// 駅1までの所要時間（車）
-    /// </summary>
-    public short? Station1CarTime { get; set; }
 
     /// <summary>
     /// 駅2の名前
@@ -84,19 +79,9 @@ public partial class RentalSummary
     public string Station2Name { get; set; }
 
     /// <summary>
-    /// 駅2までの所要時間（バス）
-    /// </summary>
-    public short? Station2BusMin { get; set; }
-
-    /// <summary>
     /// 駅2までの所要時間（徒歩）
     /// </summary>
     public short? Station2WalkMin { get; set; }
-
-    /// <summary>
-    /// 駅2までの所要時間（車）
-    /// </summary>
-    public short? Station2CarTime { get; set; }
 
     /// <summary>
     /// 駅3の名前
@@ -104,19 +89,9 @@ public partial class RentalSummary
     public string Station3Name { get; set; }
 
     /// <summary>
-    /// 駅3までの所要時間（バス）
-    /// </summary>
-    public short? Station3BusMin { get; set; }
-
-    /// <summary>
     /// 駅3までの所要時間（徒歩）
     /// </summary>
     public short? Station3WalkMin { get; set; }
-
-    /// <summary>
-    /// 駅3までの所要時間（車）
-    /// </summary>
-    public short? Station3CarTime { get; set; }
 
     /// <summary>
     /// 物件種目
@@ -164,17 +139,16 @@ public partial class RentalSummary
     public string BuildingName { get; set; }
 
     /// <summary>
-    /// 建物外観画像（URL）
+    /// 建物外観画像
     /// </summary>
     public string ExteriorPhoto { get; set; }
 
     /// <summary>
-    /// 間取り図面（URL）
+    /// 間取り図面
     /// </summary>
     public string FloorPlanImage { get; set; }
 
-    /// <summary>
-    /// 推薦物件
-    /// </summary>
-    public bool Recommend { get; set; }
+    public DateOnly? EffectiveStartDate { get; set; }
+
+    public DateOnly? EffectiveEndDate { get; set; }
 }

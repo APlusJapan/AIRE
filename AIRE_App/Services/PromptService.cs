@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using AIRE_App.Data;
 using AIRE_DB.Models;
 
 namespace AIRE_App.Services;
@@ -42,13 +43,13 @@ public static class PromptService
         return dictionary[promptName];
     }
 
-    public static PromptMaster GetPromptMaster(String promptName, String promptType)
+    public static PromptMaster GetPromptMaster(String promptName, PromptType promptType)
     {
         if (dictionary == null)
         {
             Init();
         }
 
-        return dictionary[promptName][promptType];
+        return dictionary[promptName][promptType.ToString()];
     }
 }

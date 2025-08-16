@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using AIRE_App.Data;
 using AIRE_App.Services;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
+using Syncfusion.Maui.Toolkit.Picker;
 
 namespace AIRE_App.Views;
 
@@ -187,44 +189,68 @@ public partial class RentalSearchView : ContentPage
         }
     }
 
-    private void OnItemTapped_Group(Object sender, ItemTappedEventArgs eventArgs)
+    private async void OnSelectionChanged_Group(Object sender, SelectionChangedEventArgs eventArgs)
     {
-        var item = eventArgs.Item as GroupViewModel<GroupViewModel<ItemViewModel>>;
+        if (eventArgs.CurrentSelection.Count == 0) return;
 
-        if (item.Items != null)
+        var collectionView = sender as CollectionView;
+
+        foreach (GroupViewModel<GroupViewModel<ItemViewModel>> currentItem in eventArgs.CurrentSelection)
         {
-            item.IsExpanded = !item.IsExpanded;
+            if (currentItem.Items != null)
+            {
+                currentItem.IsExpanded = !currentItem.IsExpanded;
+            }
+            else
+            {
+                currentItem.IsChecked = !currentItem.IsChecked;
+            }
         }
-        else
-        {
-            item.IsChecked = !item.IsChecked;
-        }
+
+        await Task.Yield();
+        collectionView.SelectedItem = null;
     }
 
-    private void OnItemTapped_GroupItem(Object sender, ItemTappedEventArgs eventArgs)
+    private async void OnSelectionChanged_GroupItem(Object sender, SelectionChangedEventArgs eventArgs)
     {
-        var item = eventArgs.Item as GroupViewModel<ItemViewModel>;
+        if (eventArgs.CurrentSelection.Count == 0) return;
 
-        if (searchType == SearchType.Station)
+        var collectionView = sender as CollectionView;
+
+        foreach (GroupViewModel<ItemViewModel> currentItem in eventArgs.CurrentSelection)
         {
-            LoadStation(item);
+            if (searchType == SearchType.Station)
+            {
+                LoadStation(currentItem);
+            }
+
+            if (currentItem.Items != null)
+            {
+                currentItem.IsExpanded = !currentItem.IsExpanded;
+            }
+            else
+            {
+                currentItem.IsChecked = !currentItem.IsChecked;
+            }
         }
 
-        if (item.Items != null)
-        {
-            item.IsExpanded = !item.IsExpanded;
-        }
-        else
-        {
-            item.IsChecked = !item.IsChecked;
-        }
+        await Task.Yield();
+        collectionView.SelectedItem = null;
     }
 
-    private void OnItemTapped_Item(Object sender, ItemTappedEventArgs eventArgs)
+    private async void OnSelectionChanged_Item(Object sender, SelectionChangedEventArgs eventArgs)
     {
-        var item = eventArgs.Item as ItemViewModel;
+        if (eventArgs.CurrentSelection.Count == 0) return;
 
-        item.IsChecked = !item.IsChecked;
+        var collectionView = sender as CollectionView;
+
+        foreach (ItemViewModel currentItem in eventArgs.CurrentSelection)
+        {
+            currentItem.IsChecked = !currentItem.IsChecked;
+        }
+
+        await Task.Yield();
+        collectionView.SelectedItem = null;
     }
 
     private void OnSelectedIndexChanged_Load(Object sender, EventArgs eventArgs)
@@ -253,6 +279,195 @@ public partial class RentalSearchView : ContentPage
                     break;
                 }
         }
+    }
+
+    void TapGestureRecognizer_Prefecture(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_Prefecture(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_Prefecture(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Prefecture(sender, eventArgs);
+
+        viewModel.PrefectureIndex = viewModel.PrefectureSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_Prefecture(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Prefecture(sender, eventArgs);
+    }
+
+    private void SelectionChanged_Prefecture(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.PrefectureSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_Prefecture(Object sender, EventArgs eventArgs)
+    {
+        viewModel.PrefecturePickerIsOpen = !viewModel.PrefecturePickerIsOpen;
+    }
+
+    void TapGestureRecognizer_YachinMin(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_YachinMin(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_YachinMin(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_YachinMin(sender, eventArgs);
+
+        viewModel.YachinMinIndex = viewModel.YachinMinSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_YachinMin(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_YachinMin(sender, eventArgs);
+    }
+
+    private void SelectionChanged_YachinMin(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.YachinMinSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_YachinMin(Object sender, EventArgs eventArgs)
+    {
+        viewModel.YachinMinPickerIsOpen = !viewModel.YachinMinPickerIsOpen;
+    }
+
+    void TapGestureRecognizer_YachinMax(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_YachinMax(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_YachinMax(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_YachinMax(sender, eventArgs);
+
+        viewModel.YachinMaxIndex = viewModel.YachinMaxSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_YachinMax(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_YachinMax(sender, eventArgs);
+    }
+
+    private void SelectionChanged_YachinMax(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.YachinMaxSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_YachinMax(Object sender, EventArgs eventArgs)
+    {
+        viewModel.YachinMaxPickerIsOpen = !viewModel.YachinMaxPickerIsOpen;
+    }
+
+    void TapGestureRecognizer_Toho(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_Toho(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_Toho(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Toho(sender, eventArgs);
+
+        viewModel.TohoIndex = viewModel.TohoSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_Toho(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Toho(sender, eventArgs);
+    }
+
+    private void SelectionChanged_Toho(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.TohoSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_Toho(Object sender, EventArgs eventArgs)
+    {
+        viewModel.TohoPickerIsOpen = !viewModel.TohoPickerIsOpen;
+    }
+
+    void TapGestureRecognizer_MenMin(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_MenMin(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_MenMin(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_MenMin(sender, eventArgs);
+
+        viewModel.MenMinIndex = viewModel.MenMinSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_MenMin(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_MenMin(sender, eventArgs);
+    }
+
+    private void SelectionChanged_MenMin(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.MenMinSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_MenMin(Object sender, EventArgs eventArgs)
+    {
+        viewModel.MenMinPickerIsOpen = !viewModel.MenMinPickerIsOpen;
+    }
+
+    void TapGestureRecognizer_MenMax(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_MenMax(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_MenMax(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_MenMax(sender, eventArgs);
+
+        viewModel.MenMaxIndex = viewModel.MenMaxSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_MenMax(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_MenMax(sender, eventArgs);
+    }
+
+    private void SelectionChanged_MenMax(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.MenMaxSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_MenMax(Object sender, EventArgs eventArgs)
+    {
+        viewModel.MenMaxPickerIsOpen = !viewModel.MenMaxPickerIsOpen;
+    }
+
+    void TapGestureRecognizer_Chikunensu(Object sender, TappedEventArgs eventArgs)
+    {
+        PickerSwitch_Chikunensu(sender, eventArgs);
+    }
+
+    private void OkButtonClicked_Chikunensu(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Chikunensu(sender, eventArgs);
+
+        viewModel.ChikunensuIndex = viewModel.ChikunensuSfPickerIndex;
+    }
+
+    private void CancelButtonClicked_Chikunensu(Object sender, EventArgs eventArgs)
+    {
+        PickerSwitch_Chikunensu(sender, eventArgs);
+    }
+
+    private void SelectionChanged_Chikunensu(Object sender, PickerSelectionChangedEventArgs eventArgs)
+    {
+        viewModel.ChikunensuSfPickerIndex = eventArgs.NewValue;
+    }
+
+    private void PickerSwitch_Chikunensu(Object sender, EventArgs eventArgs)
+    {
+        viewModel.ChikunensuPickerIsOpen = !viewModel.ChikunensuPickerIsOpen;
     }
 
     private async void OnClicked_Submit(Object sender, EventArgs eventArgs)

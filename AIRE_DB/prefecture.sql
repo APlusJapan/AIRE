@@ -1,12 +1,16 @@
 CREATE TABLE prefecture
 (
     prefecture_id char(5) Not Null,
+    creation_time timestamp,
+    modification_time timestamp,
     prefecture_name varchar(10) Not Null,
     PRIMARY KEY (prefecture_id)
 );
 
 COMMENT ON TABLE prefecture IS '都道府県';
 COMMENT ON COLUMN prefecture.prefecture_id IS '都道府県ID';
+COMMENT ON COLUMN prefecture.creation_time IS '作成日時';
+COMMENT ON COLUMN prefecture.modification_time IS '変更日時';
 COMMENT ON COLUMN prefecture.prefecture_name IS '都道府県名';
 INSERT INTO prefecture(prefecture_id, prefecture_name) VALUES
     ('01000', '北海道'),

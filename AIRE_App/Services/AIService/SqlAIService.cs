@@ -1,9 +1,9 @@
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using AIRE_App.Interfaces;
 using AIRE_App.ViewModels;
 using AIRE_DB.Models;
 using OpenAI.Responses;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 #pragma warning disable OPENAI001
 
@@ -147,6 +147,8 @@ public class SqlAIService : IAIService
         {
             Preferences.Set(idKey, openAIResponse.Id);
 
+            Preferences.Set(businessPromptSendTimeKey, businessPromptSendTime.ToString("s"));
+
             await messageProcessor?.Invoke(new()
             {
                 Role = "assistant",
@@ -164,6 +166,8 @@ public class SqlAIService : IAIService
         openAIResponse = await openAIResponseClient.CreateResponseAsync([functionCallOutputItem], responseCreationOptions);
 
         Preferences.Set(idKey, openAIResponse.Id);
+
+        Preferences.Set(businessPromptSendTimeKey, businessPromptSendTime.ToString("s"));
 
         responseCreationOptions.PreviousResponseId = openAIResponse.Id;
 

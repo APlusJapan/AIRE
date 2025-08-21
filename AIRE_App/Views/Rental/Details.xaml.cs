@@ -57,7 +57,7 @@ public partial class RentalDetailsView : ContentPage
         viewModel.BukkmokuInfo = rental.BuildingType;
         viewModel.ChimeiSyozaiInfo = rental.Address;
         viewModel.Eki1Info = GetEkiInfo(rental.Transportation1, rental.WalkingDistance1);
-        if(!String.IsNullOrWhiteSpace(rental.Transportation2))
+        if (!String.IsNullOrWhiteSpace(rental.Transportation2))
         {
             viewModel.Eki2Info = GetEkiInfo(rental.Transportation2, rental.WalkingDistance2);
         }
@@ -67,9 +67,26 @@ public partial class RentalDetailsView : ContentPage
         }
         viewModel.CompanyNameInfo = companyGroup.CompanyName;
 
-        viewModel.Images = [new() { ImageUrl = rental.ExteriorPhoto, ImageInfo = "建物外観" }, new() { ImageUrl = rental.LayoutImage, ImageInfo = "間取り" }];
+        viewModel.Images = [];
 
-        if(!String.IsNullOrWhiteSpace(responseId))
+        if (!String.IsNullOrWhiteSpace(rental.ExteriorPhoto))
+        {
+            viewModel.Images.Add(new() { ImageUrl = rental.ExteriorPhoto, ImageInfo = "建物外観" });
+        }
+
+        if (!String.IsNullOrWhiteSpace(rental.LayoutImage))
+        {
+            viewModel.Images.Add(new() { ImageUrl = rental.LayoutImage, ImageInfo = "間取り" });
+        }
+
+        var rentalImages = DatabaseService.GetAireDbContext().RentalImages.Where(rentalImage => rentalImage.RentalId == rentalId).ToArray();
+
+        foreach(var rentalImage in rentalImages)
+        {
+            viewModel.Images.Add(new() { ImageUrl = rentalImage.ImageUri, ImageInfo = rentalImage.Shuhenmei });
+        }
+
+        if (!String.IsNullOrWhiteSpace(responseId))
         {
             detailsAIService.SetID(responseId);
         }

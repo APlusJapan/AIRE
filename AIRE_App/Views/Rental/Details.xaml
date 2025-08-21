@@ -289,6 +289,7 @@
                     Style="{StaticResource IconButtonStyle}"
                     Text="&#xe759;"
                     TextColor="White"
+                    IsEnabled="{Binding MyAIStatusViewModel.MessageReceived}"
                     FontFamily="MauiSampleFontIcon"
                     Clicked="OnClicked_PostMessage"/>
 

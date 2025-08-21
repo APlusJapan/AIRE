@@ -62,6 +62,7 @@
                 Style="{StaticResource IconButtonStyle}"
                 Text="&#xe759;"
                 TextColor="White"
+                IsEnabled="{Binding MessageReceived}"
                 FontFamily="MauiSampleFontIcon"
                 Clicked="OnClicked_PostMessage"/>
 

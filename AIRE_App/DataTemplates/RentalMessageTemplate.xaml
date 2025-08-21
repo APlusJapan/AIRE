@@ -20,7 +20,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="96"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="{OnIdiom *, Phone=224, Tablet=360, Desktop=360}"/>
             </Grid.ColumnDefinitions>
             <Label Text="{Binding Manmei}" FontSize="16" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan ="2"/>
             <Grid Grid.Row="1" Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="16">
